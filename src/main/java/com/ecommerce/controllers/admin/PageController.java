@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
@@ -27,7 +26,6 @@ import com.ecommerce.requests.admin.PageRequest;
 import com.ecommerce.services.admin.ImageService;
 import com.ecommerce.services.admin.PageService;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -143,9 +141,34 @@ public class PageController {
     @PostMapping("/pages/update/{id}")
     public ResponseEntity<Map<String, Object>> updatePage(
             @PathVariable Long id,
-            @ModelAttribute PageRequest request) {
+            @Valid @ModelAttribute PageRequest request,
+            BindingResult bindingResult) {
 
         Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        // Collect field validation errors from BindingResult
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(),
+                    error.getDefaultMessage()));
+        }
+
+        // No need for update
+        // if (request.getImage() == null || request.getImage().isEmpty()) {
+        // errors.put("image", "Thumbnail image is required");
+        // }
+
+        // if (request.getCoverImage() == null || request.getCoverImage().isEmpty()) {
+        // errors.put("coverImage", "Cover image is required");
+        // }
+
+        // Return all errors together if any exist
+        if (!errors.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
 
         try {
             Page oldPage = pageService.findById(id).orElseThrow(() -> new RuntimeException("Page not found"));
@@ -161,6 +184,7 @@ public class PageController {
             oldPage.setDescription(request.getDescription());
             oldPage.setStatus(request.isStatus());
             oldPage.setOrder(request.getSortOrder());
+            oldPage.setType(oldPage.getType());
 
             Page updatedPage = pageService.savePage(oldPage);
 

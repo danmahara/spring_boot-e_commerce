@@ -49,7 +49,7 @@ public class ProductController {
     public String index(HttpSession session, Model model) {
 
         model.addAttribute("title", "Products");
-       
+
         return "admin/product/index";
     }
 
@@ -168,9 +168,32 @@ public class ProductController {
     @PostMapping("/products/update/{id}")
     public ResponseEntity<Map<String, Object>> updateProduct(
             @PathVariable Long id,
-            @ModelAttribute ProductRequest request) {
+            @Valid @ModelAttribute ProductRequest request,
+            BindingResult bindingResult) {
 
         Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        }
+
+        // Add manual validation for file uploads
+        // if (request.getImage() == null || request.getImage().isEmpty()) {
+        // errors.put("image", "Thumbnail image is required");
+        // }
+
+        // if (request.getCoverImage() == null || request.getCoverImage().isEmpty()) {
+        // errors.put("coverImage", "Cover image is required");
+        // }
+
+        // Return all errors together if any exist
+        if (!errors.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
 
         try {
             // Fetch existing product

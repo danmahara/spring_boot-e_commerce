@@ -11,7 +11,6 @@ import lombok.Setter;
 public class ProductRequest {
 
     @NotBlank(message = "Product Name field is required")
-
     private String title;
     private String slug;
 

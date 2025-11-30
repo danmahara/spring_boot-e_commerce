@@ -18,9 +18,6 @@ public class PageRequest {
     @NotBlank(message = "Description field is required")
     private String description;
 
-    @NotBlank(message = "Page type field is required")
-    private String type;
-
     @NotBlank(message = "Template field is required")
     private String templateName;
 
@@ -40,7 +37,7 @@ public class PageRequest {
     @Override
     public String toString() {
         return "PageRequest [title=" + title + ", slug=" + slug + ", description=" + description
-                + ", type=" + type + ", templateName=" + templateName
+                + ", templateName=" + templateName
                 + ", status=" + status + ", sortOrder=" + sortOrder
                 + ", isMainMenu=" + isMainMenu + ", isDropdownMenu=" + isDropdownMenu
                 + ", image=" + image + ", coverImage=" + coverImage + "]";
