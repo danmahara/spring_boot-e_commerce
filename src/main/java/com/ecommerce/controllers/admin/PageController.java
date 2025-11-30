@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
 import com.ecommerce.models.Page;
-import com.ecommerce.repository.admin.PageRepository;
 import com.ecommerce.requests.admin.PageRequest;
 import com.ecommerce.services.admin.ImageService;
 import com.ecommerce.services.admin.PageService;
@@ -32,17 +31,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/admin")
 public class PageController {
 
-    // private final PageRepository pageRepository;
-
     @Autowired
     PageService pageService;
 
     @Autowired
     ImageService imageService;
-
-    // PageController(PageRepository pageRepository) {
-    // this.pageRepository = pageRepository;
-    // }
 
     @GetMapping("/pages")
     public String index(Model model) {
@@ -159,7 +152,8 @@ public class PageController {
                     ? request.getSlug()
                     : oldPage.getSlug());
 
-            oldPage.setTemplateName(!request.getTemplateName().isEmpty()?request.getTemplateName():oldPage.getTemplateName());
+            oldPage.setTemplateName(
+                    !request.getTemplateName().isEmpty() ? request.getTemplateName() : oldPage.getTemplateName());
             oldPage.setDescription(request.getDescription());
             oldPage.setStatus(request.isStatus());
             oldPage.setOrder(request.getSortOrder());
