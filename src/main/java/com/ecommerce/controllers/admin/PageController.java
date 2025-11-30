@@ -93,7 +93,7 @@ public class PageController {
             page.setSlug(
                     (request.getSlug() == null || request.getSlug().isEmpty())
                             ? request.getTitle().toLowerCase().replaceAll("\\s+", "-")
-                            : request.getSlug());
+                            : request.getSlug().toLowerCase().replaceAll("\\s+", "-"));
             page.setType(PageType.PAGE.getPageName());
             page.setDescription(request.getDescription());
             page.setStatus(request.isStatus());
@@ -176,8 +176,8 @@ public class PageController {
             oldPage.setTitle(request.getTitle());
 
             oldPage.setSlug(request.getSlug() != null && !request.getSlug().isEmpty()
-                    ? request.getSlug()
-                    : oldPage.getSlug());
+                    ? request.getSlug().toLowerCase().replaceAll("\\s+", "-")
+                    : oldPage.getSlug().toLowerCase().replaceAll("\\s+", "-"));
 
             oldPage.setTemplateName(
                     !request.getTemplateName().isEmpty() ? request.getTemplateName() : oldPage.getTemplateName());
