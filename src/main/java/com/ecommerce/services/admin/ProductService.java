@@ -13,10 +13,16 @@ import com.ecommerce.repository.admin.ProductRepository;
 
 @Service
 public class ProductService {
+
+    private final ImageService imageService;
     @Autowired
     ProductRepository productRepository;
     @Autowired
     ImageRepository imageRepository;
+
+    ProductService(ImageService imageService) {
+        this.imageService = imageService;
+    }
 
     public List<Page> getAllProducts(String type) {
 
@@ -53,6 +59,18 @@ public class ProductService {
 
     public Page saveProduct(Page product) {
         return productRepository.save(product);
+    }
+
+    public void deleteById(Long id) {
+        try {
+            productRepository.deleteById(id);
+            imageService.deleteImagesByImageable("page", id);
+        } catch (Exception e) {
+            System.out.println("Image Delete Failed: " + e.getMessage());
+            System.out.println("Full Stack Trace below");
+            e.printStackTrace();
+        }
+
     }
 
     public void toggleStatus(Long id) {

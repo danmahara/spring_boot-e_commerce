@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ import com.ecommerce.services.admin.ProductService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequestMapping("/admin")
@@ -221,6 +223,24 @@ public class ProductController {
             response.put("success", false);
             response.put("message", "Failed to update product: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @DeleteMapping("/products/delete/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            productService.deleteById(id);
+            response.put("success", true);
+            response.put("message", "Page deleted Successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to delete page: " + e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(response);
         }
     }
 

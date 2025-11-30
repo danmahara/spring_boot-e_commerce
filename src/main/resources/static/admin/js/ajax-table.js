@@ -158,6 +158,7 @@ function initAjaxTable(tableSelector) {
         deleteButtons.forEach(button => {
             button.addEventListener("click", function () {
                 const itemId = this.getAttribute("data-id");
+                console.log("Deletign item id:" + itemId)
                 deleteItem(itemId);
             });
         });

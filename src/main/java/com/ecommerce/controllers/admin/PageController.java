@@ -198,7 +198,7 @@ public class PageController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Failed to delete page: " + e.getMessage());
-            return ResponseEntity.badRequest()
+            return ResponseEntity.internalServerError()
                     .body(response);
         }
     }
