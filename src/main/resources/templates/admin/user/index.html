@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!-- <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="admin/layouts/admin_base :: layout(~{::section})"> -->
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Pages',
+         ~{admin/components/breadcrumb-icons :: icon-users}
+     )">
+</div>
+
+<!-- <div th:fragment="section" class="admin-content"> -->
+<div th:fragment="section" class="admin-content" data-status-route="/admin/pages">
+
+
+
+</div>

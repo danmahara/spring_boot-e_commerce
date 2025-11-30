@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<div lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
+
+    <div th:fragment="section">
+
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-24">
+            <div class="container mx-auto text-center px-6">
+                <h1 class="text-5xl font-extrabold drop-shadow-lg">
+                    Welcome to <span class="text-yellow-300">MyShop</span>
+                </h1>
+
+                <p class="mt-6 text-xl text-gray-100 max-w-2xl mx-auto">
+                    Your one-stop destination for premium products, great deals and fast delivery.
+                </p>
+
+                <a href="/products"
+                    class="mt-10 inline-block bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold py-3 px-8 rounded-full shadow-lg transition">
+                    Shop Now →
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Categories -->
+        <section class="py-16">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Featured Categories</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+                    <div class="bg-white shadow-lg rounded-xl p-6 text-center hover:-translate-y-2 transition">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" class="w-20 mx-auto" />
+                        <h3 class="mt-4 text-xl font-semibold">Electronics</h3>
+                        <p class="text-gray-600 mt-2">Phones, laptops, gadgets & more.</p>
+                    </div>
+
+                    <div class="bg-white shadow-lg rounded-xl p-6 text-center hover:-translate-y-2 transition">
+                        <img src="https://cdn-icons-png.flaticon.com/512/892/892458.png" class="w-20 mx-auto" />
+                        <h3 class="mt-4 text-xl font-semibold">Fashion</h3>
+                        <p class="text-gray-600 mt-2">Trendy styles for everyone.</p>
+                    </div>
+
+                    <div class="bg-white shadow-lg rounded-xl p-6 text-center hover:-translate-y-2 transition">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" class="w-20 mx-auto" />
+                        <h3 class="mt-4 text-xl font-semibold">Home & Living</h3>
+                        <p class="text-gray-600 mt-2">Make your home beautiful.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Promo Banner -->
+        <section class="py-16 bg-indigo-50">
+            <div class="container mx-auto text-center px-6">
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Flat <span class="text-indigo-600">30% OFF</span> on All Products!
+                </h2>
+                <p class="mt-4 text-gray-600">Limited-time offer. Hurry up!</p>
+
+                <a href="/products"
+                    class="mt-8 inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-10 rounded-full shadow">
+                    Grab the Deal →
+                </a>
+            </div>
+        </section>
+
+    </div>
+</div>

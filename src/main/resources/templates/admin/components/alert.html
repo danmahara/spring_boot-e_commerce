@@ -1,0 +1,70 @@
+<!-- working -->
+
+<!-- <div th:fragment="custom-alert">
+    <style>
+        .flash-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+
+            /* HIDE BY DEFAULT */
+            display: none;
+        }
+
+        .flash-notification.hide {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    </style>
+
+    <div id="flashMessage" class="flash-notification">
+        <span class="flash-text"></span>
+    </div>
+</div> -->
+
+<div th:fragment="custom-alert">
+    <style>
+        .flash-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            display: none;
+        }
+
+        .flash-notification.flash-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .flash-notification.flash-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .flash-notification.hide {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    </style>
+
+    <div id="flashMessage" class="flash-notification">
+        <span class="flash-text"></span>
+    </div>
+</div>

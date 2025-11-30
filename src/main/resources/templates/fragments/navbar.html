@@ -1,0 +1,38 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<nav th:fragment="navbar" class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+
+        <!-- Logo -->
+        <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-500">
+            MyShop
+        </a>
+
+        <!-- Navigation Links -->
+        <div class="space-x-4">
+            <th:block th:each="p : ${pages}">
+                <a th:if="${p.templateName!=PageTemplate.LOGIN.getTemplateName and p.templateName!=PageTemplate.REGISTER.getTemplateName}"
+                    th:href="@{|/${p.slug}|}" th:text="${p.title}"
+                    class="text-gray-700 hover:text-indigo-600 font-medium transition">
+                </a>
+            </th:block>
+        </div>
+
+        <!-- Login / Register -->
+        <div class="space-x-6">
+            <th:block th:each="p : ${pages}">
+                <a th:if="${p.templateName==PageTemplate.LOGIN.getTemplateName}" th:href="@{|/${p.slug}|}"
+                    class="text-gray-700 hover:text-indigo-600 font-medium transition" th:text="${p.title}">
+                </a>
+
+                <a th:if="${p.templateName==PageTemplate.REGISTER.getTemplateName}" th:href="@{|/${p.slug}|}"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition"
+                    th:text="${p.title}">
+                </a>
+            </th:block>
+        </div>
+
+    </div>
+
+</nav>

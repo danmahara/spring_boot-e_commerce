@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Color Theme',
+         ~{admin/components/breadcrumb-icons :: icon-pages}
+     )">
+</div>
+
+<div th:fragment="section" class="admin-content" data-status-route="/admin/pages">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem;
+            background: var(--bg-gray-50);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--text-gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-gray-600);
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-gray-800);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .color-item {
+            border: 1px solid var(--border-gray-200);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .color-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .color-swatch {
+            height: 100px;
+            width: 100%;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .color-swatch:hover::after {
+            content: 'Click to copy';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .color-info {
+            padding: 1rem;
+            background: var(--bg-gray-50);
+        }
+
+        .color-name {
+            font-weight: 600;
+            color: var(--text-gray-800);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .color-var {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: var(--text-gray-600);
+            background: var(--bg-light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+
+        .color-hex {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: var(--text-gray-500);
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--success-500);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xl);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+
+        .copy-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gradient-demo {
+            height: 100px;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .color-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <h1>🎨 Admin Dashboard Color Reference</h1>
+        <p class="subtitle">Click any color to copy its CSS variable name</p>
+
+        <!-- Primary Colors -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔷</span>
+                Primary Brand Colors
+            </h2>
+            <div class="color-grid">
+                <div class="color-item" onclick="copyToClipboard('--primary-600')">
+                    <div class="color-swatch" style="background: var(--primary-600);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Dark</div>
+                        <div class="color-var">--primary-600</div>
+                        <div class="color-hex">#4338ca</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--primary-500')">
+                    <div class="color-swatch" style="background: var(--primary-500);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Main</div>
+                        <div class="color-var">--primary-500</div>
+                        <div class="color-hex">#4f46e5</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--primary-400')">
+                    <div class="color-swatch" style="background: var(--primary-400);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Light</div>
+                        <div class="color-var">--primary-400</div>
+                        <div class="color-hex">#6366f1</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--primary-300')">
+                    <div class="color-swatch" style="background: var(--primary-300);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Accent</div>
+                        <div class="color-var">--primary-300</div>
+                        <div class="color-hex">#818cf8</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State Colors -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🚦</span>
+                State Colors (Buttons & Alerts)
+            </h2>
+            <div class="color-grid">
+                <div class="color-item" onclick="copyToClipboard('--success-500')">
+                    <div class="color-swatch" style="background: var(--success-500);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Success / Active</div>
+                        <div class="color-var">--success-500</div>
+                        <div class="color-hex">#22c55e</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--warning-500')">
+                    <div class="color-swatch" style="background: var(--warning-500);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Warning / Edit</div>
+                        <div class="color-var">--warning-500</div>
+                        <div class="color-hex">#eab308</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--danger-500')">
+                    <div class="color-swatch" style="background: var(--danger-500);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Danger / Delete</div>
+                        <div class="color-var">--danger-500</div>
+                        <div class="color-hex">#ef4444</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--info-500')">
+                    <div class="color-swatch" style="background: var(--info-500);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Info / View</div>
+                        <div class="color-var">--info-500</div>
+                        <div class="color-hex">#3b82f6</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-buttons">
+                <button class="btn btn-primary">Primary Button</button>
+                <button class="btn btn-info">View Button</button>
+                <button class="btn btn-warning">Edit Button</button>
+                <button class="btn btn-danger">Delete Button</button>
+            </div>
+        </div>
+
+        <!-- Background Colors -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🎭</span>
+                Background Colors
+            </h2>
+            <div class="color-grid">
+                <div class="color-item" onclick="copyToClipboard('--bg-dark-900')">
+                    <div class="color-swatch" style="background: var(--bg-dark-900);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Dark 900 (Sidebar)</div>
+                        <div class="color-var">--bg-dark-900</div>
+                        <div class="color-hex">#111827</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--bg-dark-800')">
+                    <div class="color-swatch" style="background: var(--bg-dark-800);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Dark 800</div>
+                        <div class="color-var">--bg-dark-800</div>
+                        <div class="color-hex">#1f2937</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--bg-dark-700')">
+                    <div class="color-swatch" style="background: var(--bg-dark-700);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Dark 700 (Hover)</div>
+                        <div class="color-var">--bg-dark-700</div>
+                        <div class="color-hex">#374151</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--bg-gray-100')">
+                    <div class="color-swatch" style="background: var(--bg-gray-100);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 100 (Table Header)</div>
+                        <div class="color-var">--bg-gray-100</div>
+                        <div class="color-hex">#f3f4f6</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--bg-gray-50')">
+                    <div class="color-swatch" style="background: var(--bg-gray-50);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 50 (Page BG)</div>
+                        <div class="color-var">--bg-gray-50</div>
+                        <div class="color-hex">#f9fafb</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--bg-light')">
+                    <div class="color-swatch" style="background: var(--bg-light); border: 1px solid #ddd;"></div>
+                    <div class="color-info">
+                        <div class="color-name">Light (Cards)</div>
+                        <div class="color-var">--bg-light</div>
+                        <div class="color-hex">#ffffff</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gradients -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🌈</span>
+                Gradients
+            </h2>
+            <div class="gradient-demo" style="background: var(--gradient-primary);"
+                onclick="copyToClipboard('--gradient-primary')">
+                Primary Gradient (Buttons)
+            </div>
+            <div class="gradient-demo" style="background: var(--gradient-sidebar);"
+                onclick="copyToClipboard('--gradient-sidebar')">
+                Sidebar Gradient
+            </div>
+            <div class="gradient-demo" style="background: var(--gradient-logo);"
+                onclick="copyToClipboard('--gradient-logo')">
+                Logo Gradient
+            </div>
+            <div class="gradient-demo" style="background: var(--gradient-avatar);"
+                onclick="copyToClipboard('--gradient-avatar')">
+                Avatar Gradient
+            </div>
+        </div>
+
+        <!-- Text Colors -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📝</span>
+                Text Colors
+            </h2>
+            <div class="color-grid">
+                <div class="color-item" onclick="copyToClipboard('--text-gray-900')">
+                    <div class="color-swatch" style="background: var(--text-gray-900);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 900 (Darkest)</div>
+                        <div class="color-var">--text-gray-900</div>
+                        <div class="color-hex">#111827</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--text-gray-800')">
+                    <div class="color-swatch" style="background: var(--text-gray-800);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 800 (Main Text)</div>
+                        <div class="color-var">--text-gray-800</div>
+                        <div class="color-hex">#1f2937</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--text-gray-600')">
+                    <div class="color-swatch" style="background: var(--text-gray-600);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 600 (Secondary)</div>
+                        <div class="color-var">--text-gray-600</div>
+                        <div class="color-hex">#4b5563</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--text-gray-400')">
+                    <div class="color-swatch" style="background: var(--text-gray-400);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 400 (Muted)</div>
+                        <div class="color-var">--text-gray-400</div>
+                        <div class="color-hex">#9ca3af</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--text-gray-300')">
+                    <div class="color-swatch" style="background: var(--text-gray-300);"></div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 300 (Sidebar Text)</div>
+                        <div class="color-var">--text-gray-300</div>
+                        <div class="color-hex">#d1d5db</div>
+                    </div>
+                </div>
+                <div class="color-item" onclick="copyToClipboard('--text-white')">
+                    <div class="color-swatch" style="background: var(--text-white); border: 1px solid #ddd;"></div>
+                    <div class="color-info">
+                        <div class="color-name">White</div>
+                        <div class="color-var">--text-white</div>
+                        <div class="color-hex">#ffffff</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="section" style="background: linear-gradient(135deg, #4f46e5, #6366f1); color: white;">
+            <h2 class="section-title" style="color: white;">
+                <span class="icon">💡</span>
+                Quick Tips
+            </h2>
+            <ul style="line-height: 2;">
+                <li>Click any color above to copy its CSS variable name</li>
+                <li>All colors are defined in <code
+                        style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">admin-dashboard-global.css</code>
+                </li>
+                <li>Change colors in one place to update the entire dashboard</li>
+                <li>Use the QUICK-REFERENCE.css file for popular color schemes</li>
+                <li>Test your changes in different browsers and devices</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Copy Notification -->
+    <div class="copy-notification" id="copyNotification">
+        ✓ Copied to clipboard!
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function () {
+                showNotification();
+            }, function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+    </body>
+</div>

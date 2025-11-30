@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(breadcrumb,content)">
+
+<head th:replace="admin/fragments/admin_header :: head(${title})"></head>
+
+<body class="bg-gray-100">
+    <div id="alert-container" th:replace="admin/components/alert :: custom-alert"></div>
+
+
+    <nav th:include="admin/fragments/sidebar :: sidebar"></nav>
+
+    <div id="main-content" class="flex-1 p-4 md:p-6">
+        <nav class=" bg-white shadow-md rounded-lg p-4 flex justify-between items-center mb-6">
+
+            <span class="font-bold text-xl md:text-2xl text-indigo-600">Dashboard</span>
+            <div class="relative">
+                <button id="profile-btn"
+                    class="w-10 h-10 rounded-full primary-bg text-white flex items-center justify-center font-bold hover:bg-indigo-700 transition">
+                    <span
+                        th:text="${admin != null and admin.fullName != null ? admin.fullName.substring(0,1).toUpperCase() : 'A'}">A</span>
+                </button>
+                <div id="profile-menu"
+                    class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg overflow-hidden z-10">
+                    <a href="/admin/profile" class="block px-4 py-2 hover:bg-gray-100 transition">Profile</a>
+                    <a href="/admin/settings" class="block px-4 py-2 hover:bg-gray-100 transition">Settings</a>
+                    <div class="border-t border-gray-200"></div>
+                    <a href="/admin/logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 transition">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <!-- <div th:replace="${content}"></div> -->
+        <div class="content-wrapper">
+            <div class="">
+
+                <div th:if="${breadcrumb != null}" th:replace="${breadcrumb}"></div>
+
+                <!-- <div th:insert="${content}"></div> -->
+                <div th:replace="${content}"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Profile menu toggle
+        const profileBtn = document.getElementById('profile-btn');
+        const profileMenu = document.getElementById('profile-menu');
+
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileMenu.classList.toggle('hidden');
+        });
+
+        // Close profile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+    </script>
+
+    <script>
+        // Global function to show flash messages with proper animation handling
+        let flashTimeout = null;
+        let hideTimeout = null;
+
+        function showFlashMessage(message, type) {
+            let flash = document.getElementById("flashMessage");
+            if (!flash) return;
+
+            // Clear any existing timeouts
+            if (flashTimeout) clearTimeout(flashTimeout);
+            if (hideTimeout) clearTimeout(hideTimeout);
+
+            // Check if flash is currently visible
+            const isCurrentlyVisible = flash.style.display === "block" && !flash.classList.contains("hide");
+
+            if (isCurrentlyVisible) {
+                // If visible, hide it first with animation
+                flash.classList.add("hide");
+
+                // Wait for hide animation to complete, then show new message
+                hideTimeout = setTimeout(() => {
+                    displayMessage(flash, message, type);
+                }, 300); // Match the CSS transition duration
+            } else {
+                // If not visible, show immediately
+                displayMessage(flash, message, type);
+            }
+        }
+
+        function displayMessage(flash, message, type) {
+            // Remove any existing type classes
+            flash.classList.remove('flash-success', 'flash-error', 'hide');
+
+            // Add appropriate type class
+            if (type === 'error') {
+                flash.classList.add('flash-error');
+            } else {
+                flash.classList.add('flash-success');
+            }
+
+            // Set the message text
+            flash.querySelector(".flash-text").innerText = message;
+
+            // Show flash
+            flash.style.display = "block";
+
+            // Force reflow to ensure animation plays
+            void flash.offsetWidth;
+
+            // Auto-hide after 3 seconds
+            flashTimeout = setTimeout(() => {
+                flash.classList.add("hide");
+                hideTimeout = setTimeout(() => {
+                    flash.style.display = "none";
+                }, 300); // Match the CSS transition duration
+            }, 3000);
+        }
+
+        // On page load
+        document.addEventListener("DOMContentLoaded", function () {
+            // Check for success message
+            /*[# th:if="${success}"]*/
+            const successMessage = /*[[${message}]]*/ '';
+            if (successMessage) {
+                showFlashMessage(successMessage, 'success');
+            }
+            /*[/]*/
+
+            // Check for error message
+            /*[# th:if="${auth_error}"]*/
+            const errorMessage = /*[[${auth_error}]]*/ '';
+            if (errorMessage) {
+                showFlashMessage(errorMessage, 'error');
+            }
+            /*[/]*/
+        });
+    </script>
+</body>
+
+
+</html>

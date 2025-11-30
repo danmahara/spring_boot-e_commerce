@@ -1,0 +1,118 @@
+<div th:fragment="breadcrumb-component(currentPage, currentIcon)">
+    <nav class="mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-3 bg-gradient-to-r from-white via-indigo-50/30 to-white 
+                   px-6 py-4 rounded-2xl shadow-lg shadow-indigo-100/50 border border-indigo-100/50 
+                   backdrop-blur-xl relative overflow-hidden group">
+
+            <!-- Animated gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-purple-500/0 
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <!-- Dashboard -->
+            <li class="relative z-10">
+                <a th:href="@{/admin/dashboard}" class="flex items-center gap-2.5 text-gray-700 hover:text-indigo-600 
+                          font-medium transition-all duration-300 group/link">
+
+                    <span class="p-2 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-50 
+                                 group-hover/link:from-indigo-500 group-hover/link:to-indigo-600 
+                                 shadow-md group-hover/link:shadow-lg group-hover/link:shadow-indigo-300/50
+                                 transition-all duration-300 transform group-hover/link:scale-110 
+                                 group-hover/link:rotate-3">
+                        <svg class="w-4 h-4 text-indigo-600 group-hover/link:text-white transition-colors duration-300"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                    </span>
+
+                    <span class="group-hover/link:translate-x-0.5 transition-transform duration-300">
+                        Dashboard
+                    </span>
+                </a>
+            </li>
+
+            <!-- Animated Arrow Separator -->
+            <li class="relative z-10">
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 
+                                 animate-pulse"></span>
+                    <svg class="w-5 h-5 text-indigo-300 animate-[wiggle_1s_ease-in-out_infinite]" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span class="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-purple-400 to-indigo-400 
+                                 animate-pulse animation-delay-150"></span>
+                </div>
+            </li>
+
+            <!-- Current Page (Dynamic) -->
+            <li class="relative z-10">
+                <span class="flex items-center gap-2.5 font-semibold text-gray-900 
+                             px-4 py-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 
+                             text-white shadow-lg shadow-indigo-300/50 
+                             transform hover:scale-105 transition-all duration-300
+                             relative overflow-hidden group/current">
+
+                    <!-- Shine effect -->
+                    <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                 translate-x-[-200%] group-hover/current:translate-x-[200%] 
+                                 transition-transform duration-700"></span>
+
+                    <span class="p-1.5 rounded-lg bg-white/20 backdrop-blur-sm relative z-10
+                                 group-hover/current:bg-white/30 transition-colors duration-300">
+                        <!-- Dynamic Icon (use th:utext to render SVG) -->
+                        <span th:utext="${currentIcon}"></span>
+                    </span>
+
+                    <!-- Dynamic Page Name -->
+                    <span class="relative z-10" th:text="${currentPage}">Pages</span>
+
+                    <!-- Sparkle effect -->
+                    <span class="absolute top-1 right-1 w-1 h-1 bg-white rounded-full 
+                                 animate-ping opacity-75"></span>
+                </span>
+            </li>
+
+        </ol>
+    </nav>
+</div>
+
+<style>
+    @keyframes wiggle {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-2px);
+        }
+
+        75% {
+            transform: translateX(2px);
+        }
+    }
+
+    .animation-delay-150 {
+        animation-delay: 150ms;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    nav[aria-label="Breadcrumb"] ol {
+        animation: slideIn 0.5s ease-out;
+    }
+</style>

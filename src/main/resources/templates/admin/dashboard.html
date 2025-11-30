@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!-- <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="admin/layouts/admin_base :: layout(~{::section})"> -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<!-- Empty breadcrumb fragment -->
+<div th:fragment="breadcrumb"></div>
+
+
+<div th:fragment="section">
+    <!-- Statistics Cards -->
+    <div class="stats-grid mb-8">
+        <!-- Total Orders -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Orders</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${ordersCount}">150</p>
+                <p class="text-xs text-green-500 mt-1">↑ 12% from last month</p>
+            </div>
+            <div class="text-5xl">📦</div>
+        </div>
+
+        <!-- Total Products -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Products</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${productsCount}">320</p>
+                <p class="text-xs text-green-500 mt-1">↑ 8% from last month</p>
+            </div>
+            <div class="text-5xl">🛒</div>
+        </div>
+
+        <!-- Total Users -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Users</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${usersCount}">1200</p>
+                <p class="text-xs text-green-500 mt-1">↑ 5% from last month</p>
+            </div>
+            <div class="text-5xl">👤</div>
+        </div>
+
+        <!-- Revenue -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Revenue</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${revenue}">$12,500</p>
+                <p class="text-xs text-green-500 mt-1">↑ 18% from last month</p>
+            </div>
+            <div class="text-5xl">💰</div>
+        </div>
+        <a th:href="@{/admin/pages}" class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between 
+          hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer">
+
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Pages</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${pageCount}">150</p>
+            </div>
+
+            <i class='bx bx-file text-6xl text-blue-600'></i>
+        </a>
+
+
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Recent Orders</h2>
+            <a href="/admin/orders" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All →</a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead class="table-header">
+                    <tr>
+                        <th class="table-th">Order ID</th>
+                        <th class="table-th">Customer</th>
+                        <th class="table-th">Date</th>
+                        <th class="table-th">Status</th>
+                        <th class="table-th">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#001</td>
+                        <td class="table-td text-gray-700">John Doe</td>
+                        <td class="table-td text-gray-700">2025-11-24</td>
+                        <td class="table-td">
+                            <span class="status-badge status-pending">Pending</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$250</td>
+                    </tr>
+
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#002</td>
+                        <td class="table-td text-gray-700">Jane Smith</td>
+                        <td class="table-td text-gray-700">2025-11-23</td>
+                        <td class="table-td">
+                            <span class="status-badge status-success">Completed</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$450</td>
+                    </tr>
+
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#003</td>
+                        <td class="table-td text-gray-700">Bob Johnson</td>
+                        <td class="table-td text-gray-700">2025-11-23</td>
+                        <td class="table-td">
+                            <span class="status-badge status-processing">Processing</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$320</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+</html>

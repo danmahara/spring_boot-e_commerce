@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Products',
+         ~{admin/components/breadcrumb-icons :: icon-product},
+        )">
+</div>
+
+
+<div th:fragment="section" class="admin-content" data-status-route="/admin/products">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+
+        <div>
+            <div class="flex items-center justify-between mb-4">
+
+                <!-- Create Button -->
+                <a th:href="@{/admin/products/create}" class="primary-btn px-4 py-2 rounded-lg shadow  transition">
+                    + Create
+                </a>
+
+                <!-- Search Field -->
+                <div>
+                    <input type="text" placeholder="Search products..."
+                        class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="data-table" id="data-table" data-ajax-url="/admin/products/json">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-th">S.N</th>
+                            <th class="table-th">Image</th>
+                            <th class="table-th">Title</th>
+                            <th class="table-th">Category</th>
+                            <th class="table-th">Order</th>
+                            <th class="table-th text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- <tr th:if="${products.size>0}" th:each="page,item : ${products}" class="table-row">
+                            <td class="table-td" th:text="${item.count}">
+                            </td>
+                            <td class="table-td">
+                                <img th:src="${page.getFeatureImageOrDefault() != null 
+                ? page.getFeatureImageOrDefault().url 
+                : 'https://via.placeholder.com/100'}" class="table-image" />
+
+                            </td>
+                            <td class="table-td table-title" th:text="${page.title}">About Us</td>
+                            <td class="table-td table-subtitle" th:text="${page.templateName}">category</td>
+                            <td class="table-td table-subtitle" th:text="${page.order}">order</td>
+                            <td class="table-td">
+                                <div class="action-group">
+
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="toggle-input" th:data-id="${page.id}"
+                                            th:checked="${page.status == 1}">
+                                        <div class="toggle-slider">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                    </label>
+
+                                    <a th:href="@{'/admin/products/edit/' + ${page.id}}"
+                                        class="btn btn-warning btn-sm">Edit</a>
+
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </div>
+                            </td>
+                        </tr> -->
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <!-- Just include the script -->
+    <script th:src="@{/admin/js/status-toggle.js}"></script>
+
+    <script th:src="@{/admin/js/ajax-table.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            initAjaxTable("#data-table");
+        });
+    </script>
+</div>

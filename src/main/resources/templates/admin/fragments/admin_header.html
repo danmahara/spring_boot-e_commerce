@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/admin/admin-dashboard-global.css}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
+    <style type="text/tailwindcss">
+        @layer components {
+            .primary-btn {
+                background-color: var(--primary-bg);
+                color: var(--text-white);
+            }
+
+            .primary-btn:hover {
+                background-color: var(--primary-hover-bg) !important;
+
+
+            }
+        }
+    </style>
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Main content responsive styles */
+        #main-content {
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* Desktop: Add left margin for sidebar */
+        @media (min-width: 768px) {
+            #main-content {
+                margin-left: 16rem;
+                /* 256px - matches sidebar width */
+            }
+        }
+
+        /* Mobile: Full width */
+        @media (max-width: 767px) {
+            #main-content {
+                margin-left: 0;
+                padding-top: 4rem;
+                /* Space for hamburger button */
+            }
+        }
+
+        /* Responsive grid adjustments */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+
+
+</head>

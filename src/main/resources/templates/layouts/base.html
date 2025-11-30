@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+
+<!-- <head th:replace="fragments/header :: head">
+    <title>test</title>
+</head> -->
+
+<head th:replace="fragments/header :: head(${title})"></head>
+
+
+<body>
+
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+
+    <!-- Spacer matching navbar height -->
+    <div class="" style="margin-top: 65px;"></div>
+
+    <div th:replace="${content}"></div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+
+</body>
+
+
+</html>
