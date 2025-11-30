@@ -18,8 +18,8 @@
             <!-- Title -->
             <div class="w-full">
                 <label class="block mb-1 font-medium text-gray-700">Page Title</label>
-                <input type="text" name="title" placeholder="Enter page title" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
-         focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+                <input type="text" name="title" placeholder="Enter page title"
+                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
             </div>
 
             <!-- Slug -->
@@ -32,49 +32,37 @@
             <!-- Thumbnail Image -->
             <div class="w-full">
                 <label class="block mb-1 font-medium text-gray-700">Thumbnail Image</label>
-                <label
-                    class="flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition">
-                    <span class="text-gray-700">Choose File</span>
-                    <input type="file" name="image" class="hidden" accept="image/*"
+
+                <div tabindex="0" role="button"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)] hover:bg-gray-50 flex items-center justify-between"
+                    onclick="this.querySelector('input').click()"
+                    onkeypress="if(event.key === 'Enter' || event.key === ' ') this.querySelector('input').click()">
+                    <span id="thumbnail-name" class="text-gray-500">Choose File</span>
+
+                    <input type="file" name="image" accept="image/*" class="hidden"
                         onchange="updateFilePreview(this, 'thumbnail-preview', 'thumbnail-name')">
-                </label>
-                <span id="thumbnail-name" class="text-gray-500 text-sm mt-1 block hidden"></span>
-                <img id="thumbnail-preview" src="" alt="Thumbnail Preview"
-                    class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2 hidden">
+                </div>
+
+                <div th:replace="admin/components/image-preview :: preview('thumbnail-preview','thumbnail-name')"></div>
             </div>
 
+
+            <!-- Cover Image -->
             <div class="w-full">
                 <label class="block mb-1 font-medium text-gray-700">Cover Image</label>
-                <label
-                    class="flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition">
-                    <span class="text-gray-700">Choose File</span>
-                    <input type="file" name="cover_image" class="hidden" accept="image/*"
+
+                <div tabindex="0" role="button"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)] hover:bg-gray-50 flex items-center justify-between"
+                    onclick="this.querySelector('input').click()"
+                    onkeypress="if(event.key === 'Enter' || event.key === ' ') this.querySelector('input').click()">
+                    <span id="cover-name" class="text-gray-500">Choose File</span>
+
+                    <input type="file" name="cover_image" accept="image/*" class="hidden"
                         onchange="updateFilePreview(this, 'cover-preview', 'cover-name')">
-                </label>
-                <span id="cover-name" class="text-gray-500 text-sm mt-1 block hidden"></span>
-                <img id="cover-preview" src="" alt="Cover Preview"
-                    class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2 hidden">
+                </div>
+
+                <div th:replace="admin/components/image-preview :: preview('cover-preview','cover-name')"></div>
             </div>
-
-            <script>
-                function updateFilePreview(input, imgId, spanId) {
-                    const file = input.files[0];
-                    const preview = document.getElementById(imgId);
-                    const nameSpan = document.getElementById(spanId);
-
-                    if (file) {
-                        nameSpan.textContent = file.name;
-                        nameSpan.classList.remove('hidden'); // show file name
-                        preview.src = URL.createObjectURL(file); // temporary preview
-                        preview.classList.remove('hidden'); // show image
-                    } else {
-                        nameSpan.textContent = "";
-                        nameSpan.classList.add('hidden');
-                        preview.src = "";
-                        preview.classList.add('hidden');
-                    }
-                }
-            </script>
 
 
             <!-- Template Selection -->
@@ -87,12 +75,8 @@
                         th:text="${#strings.capitalizeWords(template.templateName.replace('_', ' '))}">
                     </option>
 
-                    <!-- <option th:each="template : ${templates}" th:value="${template.templateName}"
-                        th:text="${template.templateName}">
-                    </option> -->
                 </select>
             </div>
-
 
 
             <!-- Content (Full Width) -->
@@ -114,8 +98,6 @@
                   dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-[var(--primary-bg)]">
             </div>
 
-
-            <!-- Submit Button (Full Width) -->
 
             <div class=" md:col-span-2 pt-2">
                 <button type="submit" class="primary-btn  px-6 py-2 rounded-lg  ">
