@@ -2,6 +2,7 @@ package com.ecommerce.requests.admin;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,26 +10,28 @@ import lombok.Setter;
 @Setter
 public class ProductRequest {
 
-    private String title; // maps to Page.title
-    private String slug; // maps to Page.slug
-    private String description; // maps to Page.description
-    private String type; // maps to Page.type
-    private String templateName; // maps to Page.templateName
-    private boolean status; // maps to Page.status
-    private String sortOrder; // maps to Page.orderInput
+    @NotBlank(message = "Product Name field is required")
 
-    private boolean isMainMenu; // maps to Page.isMainMenu
-    private boolean isDropdownMenu; // maps to Page.isDropdownMenu
+    private String title;
+    private String slug;
 
-    private MultipartFile image; // for feature image
-    private MultipartFile coverImage; // for cover image
+    @NotBlank(message = "Description field is required")
+    private String description;
+
+    private boolean status;
+    private String sortOrder;
+
+    private boolean isMainMenu;
+    private boolean isDropdownMenu;
+
+    private MultipartFile image;
+    private MultipartFile coverImage;
 
     @Override
     public String toString() {
-        return "ProductRequest [title=" + title + ", slug=" + slug + ", description=" + description
-                + ", type=" + type + ", templateName=" + templateName
-                + ", status=" + status + ", orderInput=" + sortOrder
-                + ", isMainMenu=" + isMainMenu + ", isDropdownMenu=" + isDropdownMenu
-                + ", image=" + image + ", coverImage=" + coverImage + "]";
+        return "ProductRequest [title=" + title + ", slug=" + slug + ", description=" + description + ", status="
+                + status + ", sortOrder=" + sortOrder + ", isMainMenu=" + isMainMenu + ", isDropdownMenu="
+                + isDropdownMenu + ", image=" + image + ", coverImage=" + coverImage + "]";
     }
+
 }

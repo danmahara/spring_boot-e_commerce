@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import com.ecommerce.services.admin.ImageService;
 import com.ecommerce.services.admin.ProductService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -65,10 +67,32 @@ public class ProductController {
     }
 
     @PostMapping("/products/store")
-    public ResponseEntity<Map<String, Object>> storePage(@ModelAttribute ProductRequest request) {
+    public ResponseEntity<Map<String, Object>> storePage(@Valid @ModelAttribute ProductRequest request,
+            BindingResult bindingResult) {
 
         Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        }
+
+        // Add manual validation for file uploads
+        if (request.getImage() == null || request.getImage().isEmpty()) {
+            errors.put("image", "Thumbnail image is required");
+        }
+
+        if (request.getCoverImage() == null || request.getCoverImage().isEmpty()) {
+            errors.put("coverImage", "Cover image is required");
+        }
+
+        // Return all errors together if any exist
+        if (!errors.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
         try {
             Page product = mapProductRequestToPage(request);
 
@@ -105,8 +129,10 @@ public class ProductController {
                 ? request.getSlug()
                 : request.getTitle().toLowerCase().replaceAll("\\s+", "-"));
         page.setDescription(request.getDescription());
-        page.setType(request.getType());
-        page.setTemplateName(request.getTemplateName());
+
+        // Default
+        page.setType(PageType.PRODUCT.getPageName());
+        page.setTemplateName(PageTemplate.PRODUCT.getTemplateName());
 
         // Sort order
         try {
@@ -157,11 +183,6 @@ public class ProductController {
                     ? request.getSlug()
                     : request.getTitle().toLowerCase().replaceAll("\\s+", "-"));
             existingProduct.setDescription(request.getDescription());
-
-            // existingProduct.setType(request.getType());
-
-            existingProduct.setTemplateName(
-                    request.getTemplateName() != null ? request.getTemplateName() : existingProduct.getTemplateName());
 
             // Sort order
             try {
