@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
@@ -26,6 +27,7 @@ import com.ecommerce.requests.admin.PageRequest;
 import com.ecommerce.services.admin.ImageService;
 import com.ecommerce.services.admin.PageService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -66,7 +68,8 @@ public class PageController {
 
         // Collect field validation errors from BindingResult
         if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(),
+                    error.getDefaultMessage()));
         }
 
         // Add manual validation for file uploads

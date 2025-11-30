@@ -133,32 +133,22 @@
                 body: formData,
                 headers: { [csrfHeader]: csrfToken }
             })
-                .then(res => res.text())
-                .then(text => {
-                    try {
-                        const data = JSON.parse(text);
-                        const flash = document.getElementById('flashMessage');
-                        const flashText = flash.querySelector('.flash-text');
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showFlashMessage(data.message, 'success', "Success");
 
-                        if (data.success) {
-                            flash.className = 'flash-notification flash-success show';
-                            flashText.textContent = data.message;
+                        setTimeout(() => {
+                            window.location.href = '/admin/pages';
+                        }, 1700);
 
-                            setTimeout(() => {
-                                window.location.href = '/admin/pages';
-                            }, 1500);
+                    } else {
+                        showFlashMessage(data.message, 'error', "Failed");
 
-                        } else {
-                            flash.className = 'flash-notification flash-error show';
-                            flashText.textContent = data.message;
-                        }
-
-                        flash.style.display = 'block';
-                    } catch (e) {
-                        console.error("Update failed:", text);
                     }
                 })
                 .catch(err => console.error("Fetch error:", err));
+
         });
     </script>
 

@@ -60,6 +60,29 @@
     </script>
     <script th:src="@{/admin/js/status-toggle.js}"></script>
 
+    <!-- This will handle redirect messages -->
+    <script th:inline="javascript">
+        // Check flash attributes first (from RedirectAttributes)
+        let serverMessage = /*[[${message}]]*/ null;
+        let serverAlertType = /*[[${alertType}]]*/ null;
+
+
+
+        console.log('Message:', serverMessage);
+        console.log('Alert Type:', serverAlertType);
+
+        if (serverMessage) {
+            const title = serverAlertType === 'success' ? 'Success' :
+                serverAlertType === 'error' ? 'Error' : 'Info';
+
+            console.log('Showing flash message');
+            showFlashMessage(serverMessage, serverAlertType || 'success', title);
+
+            // Clear session attributes after displaying
+            // This prevents the message from showing on every page load
+            fetch('/admin/clear-flash', { method: 'POST' }).catch(() => { });
+        }
+    </script>
 </body>
 
 

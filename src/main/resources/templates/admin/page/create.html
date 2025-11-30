@@ -99,11 +99,14 @@
             e.preventDefault();
             const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
             const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+
             if (!csrfToken || !csrfHeader) {
                 console.error('CSRF token or header not found');
                 return;
             }
+
             const formData = new FormData(this);
+
             fetch('/admin/pages/store', {
                 method: 'POST',
                 body: formData,
@@ -111,8 +114,30 @@
                     [csrfHeader]: csrfToken,
                 }
             })
-                .then(res => res.json())
+                .then(res => {
+                    // Check if response is JSON or HTML (redirect)
+                    const contentType = res.headers.get('content-type');
+
+                    // If it's a redirect (status 3xx), check the location header
+                    if (res.redirected) {
+                        // Show success message and redirect
+                        showFlashMessage('Page created successfully', 'success', 'Success');
+                        setTimeout(() => {
+                            window.location.href = res.url;
+                        }, 2000);
+                        return;
+                    }
+
+                    // Otherwise parse JSON response
+                    if (contentType && contentType.includes('application/json')) {
+                        return res.json();
+                    } else {
+                        throw new Error('Unexpected response format');
+                    }
+                })
                 .then(data => {
+                    if (!data) return; // Already handled redirect
+
                     // clear previous errors
                     document.querySelectorAll(".input-error").forEach(el => el.remove());
 
@@ -145,19 +170,22 @@
                                 }
                             });
                         }
+                        showFlashMessage(data.message || 'Validation failed', 'error', 'Error');
                         return; // stop here, do not redirect
                     }
 
                     showFlashMessage(data.message, 'success', "Success");
-                    window.location.href = '/admin/pages';
-
+                    setTimeout(() => {
+                        window.location.href = '/admin/pages';
+                    }, 1700);
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while creating the page. Please try again.');
+                    showFlashMessage('An error occurred while creating the page. Please try again.', 'error', 'Error');
                 });
         });
     </script>
+
 
 </div>
 
