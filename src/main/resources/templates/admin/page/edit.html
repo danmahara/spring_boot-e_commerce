@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<!-- Breadcrumb -->
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+        'Update Page',
+        ~{admin/components/breadcrumb-icons :: icon-pages}
+     )"></div>
+
+
+<div th:fragment="section" class="admin-content">
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full">
+
+        <form id="updateProductForm" enctype="multipart/form-data" th:data-id="${page.id}"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Product Name -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">Page Name</label>
+                <input type="text" name="title" th:value="${page.title}" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Slug -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">Slug</label>
+                <input type="text" name="slug" th:value="${page.slug}" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Thumbnail -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">Thumbnail Image</label>
+
+                <label
+                    class="flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition">
+                    <span class="text-gray-700">Choose File</span>
+
+                    <input type="file" name="image" class="hidden" accept="image/*"
+                        onchange="updateFilePreview(this,'thumbnail-preview','thumbnail-name')">
+                </label>
+
+                <span id="thumbnail-name" class="text-gray-500 text-sm mt-1 block hidden"></span>
+
+                <img id="thumbnail-preview" th:src="@{${page.featureImage}}"
+                    class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2">
+            </div>
+
+
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">Cover Image</label>
+
+                <label
+                    class="flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition">
+                    <span class="text-gray-700">Choose File</span>
+
+                    <input type="file" name="coverImage" class="hidden" accept="image/*"
+                        onchange="updateFilePreview(this,'cover-preview','cover-name')">
+                </label>
+
+                <span id="cover-name" class="text-gray-500 text-sm mt-1 block hidden"></span>
+
+                <img id="cover-preview" th:src="@{${page.coverImage}}"
+                    class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2">
+            </div>
+
+            <!-- Hidden Template -->
+            <input type="hidden" name="templateName" th:value="${page.templateName}">
+            <!-- <input type="hidden" name="type" th:value="${product.type}"> -->
+
+            <!-- Description -->
+            <div class="w-full md:col-span-2">
+                <label class="block mb-1 font-medium text-gray-700">Description</label>
+                <textarea name="description" rows="6" th:text="${page.description}" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                          focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]"></textarea>
+            </div>
+
+            <!-- Order -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">Order</label>
+                <input type="number" name="sortOrder" th:value="${page.order}" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Status -->
+            <div class="flex items-center space-x-3 mt-6 md:mt-0">
+                <label class="block font-medium text-gray-700">Status</label>
+
+                <input type="checkbox" name="status" value="1" th:checked="${page.status == true}" class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded 
+                       focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Submit -->
+            <div class="md:col-span-2 pt-2">
+                <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
+                    Update Page
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- JS for preview + fetch -->
+    <script>
+        function updateFilePreview(input, imgId, spanId) {
+            const file = input.files[0];
+            const preview = document.getElementById(imgId);
+            const nameSpan = document.getElementById(spanId);
+
+            if (file) {
+                nameSpan.textContent = file.name;
+                nameSpan.classList.remove('hidden');
+
+                preview.src = URL.createObjectURL(file);
+            } else {
+                nameSpan.classList.add('hidden');
+                preview.src = "";
+            }
+        }
+
+        document.getElementById('updateProductForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const id = this.dataset.id;
+            const csrfToken = document.querySelector("meta[name='_csrf']").content;
+            const csrfHeader = document.querySelector("meta[name='_csrf_header']").content;
+
+            const formData = new FormData(this);
+
+            fetch(`/admin/pages/update/${id}`, {
+                method: 'POST',
+                body: formData,
+                headers: { [csrfHeader]: csrfToken }
+            })
+                .then(res => res.text())
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        const flash = document.getElementById('flashMessage');
+                        const flashText = flash.querySelector('.flash-text');
+
+                        if (data.success) {
+                            flash.className = 'flash-notification flash-success show';
+                            flashText.textContent = data.message;
+
+                            setTimeout(() => {
+                                window.location.href = '/admin/pages';
+                            }, 1500);
+
+                        } else {
+                            flash.className = 'flash-notification flash-error show';
+                            flashText.textContent = data.message;
+                        }
+
+                        flash.style.display = 'block';
+                    } catch (e) {
+                        console.error("Update failed:", text);
+                    }
+                })
+                .catch(err => console.error("Fetch error:", err));
+        });
+    </script>
+
+</div>

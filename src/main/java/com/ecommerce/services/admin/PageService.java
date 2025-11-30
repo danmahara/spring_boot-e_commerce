@@ -1,8 +1,10 @@
 package com.ecommerce.services.admin;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.enums.PageType;
@@ -14,10 +16,26 @@ import com.ecommerce.repository.admin.PageRepository;
 @Service
 public class PageService {
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
     PageRepository pageRepository;
     @Autowired
     ImageRepository imageRepository;
+
+    PageService(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public Optional<Page> findById(Long id) {
+        return pageRepository.findById(id)
+                .map(page -> {
+                    List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("page",
+                            page.getId());
+                    page.setImages(imgs);
+                    return page;
+                });
+    }
 
     public List<Page> getAllPages() {
         List<Page> pages = pageRepository.findByTemplateNameInAndType(Page.getPageLists(), PageType.PAGE.getPageName());

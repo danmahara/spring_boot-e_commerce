@@ -12,11 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/admin")
 public class PageController {
 
-    private final PageRepository pageRepository;
+    // private final PageRepository pageRepository;
 
     @Autowired
     PageService pageService;
@@ -40,9 +40,9 @@ public class PageController {
     @Autowired
     ImageService imageService;
 
-    PageController(PageRepository pageRepository) {
-        this.pageRepository = pageRepository;
-    }
+    // PageController(PageRepository pageRepository) {
+    // this.pageRepository = pageRepository;
+    // }
 
     @GetMapping("/pages")
     public String index(Model model) {
@@ -123,6 +123,13 @@ public class PageController {
         }
     }
 
+    @GetMapping("/pages/edit/{id}")
+    public String edit(@PathVariable Long id, Model model) {
+        Page page = pageService.findById(id).orElseThrow(() -> new RuntimeException("Page not found"));
+        model.addAttribute("page", page);
+        return "admin/page/edit";
+    }
+
     @PostMapping("/pages/status")
     @ResponseBody
     public Map<String, Object> updateStatus(@RequestParam Long id) {
@@ -134,6 +141,54 @@ public class PageController {
         response.put("message", "Status Changed Successfully");
 
         return response;
+    }
+
+    @PostMapping("/pages/update/{id}")
+    public ResponseEntity<Map<String, Object>> updatePage(
+            @PathVariable Long id,
+            @ModelAttribute PageRequest request) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Page oldPage = pageService.findById(id).orElseThrow(() -> new RuntimeException("Page not found"));
+
+            oldPage.setTitle(request.getTitle());
+
+            oldPage.setSlug(request.getSlug() != null && !request.getSlug().isEmpty()
+                    ? request.getSlug()
+                    : oldPage.getSlug());
+
+            oldPage.setTemplateName(!request.getTemplateName().isEmpty()?request.getTemplateName():oldPage.getTemplateName());
+            oldPage.setDescription(request.getDescription());
+            oldPage.setStatus(request.isStatus());
+            oldPage.setOrder(request.getSortOrder());
+
+            Page updatedPage = pageService.savePage(oldPage);
+
+            if (request.getImage() != null && !request.getImage().isEmpty()) {
+                updatedPage.updateFeatureImage(imageService, request.getImage());
+            }
+            if (request.getCoverImage() != null && !request.getCoverImage().isEmpty()) {
+                updatedPage.updateCoverImage(imageService, request.getCoverImage());
+            }
+
+            response.put("success", true);
+            response.put("message", "Page updated successfully");
+            response.put("data", updatedPage);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            System.out.println("page update failed: ");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    public String slugHelper(String slug) {
+        return slug.toLowerCase().replaceAll("\\s+", "-");
     }
 
     @GetMapping("/color-reference")
