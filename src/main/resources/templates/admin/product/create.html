@@ -101,72 +101,7 @@
 
         </form>
     </div>
-    <!-- <script>
-        document.getElementById('createProductForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
-            const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
 
-            if (!csrfToken || !csrfHeader) {
-                console.error('CSRF token or header not found');
-                return;
-            }
-
-            const formData = new FormData(this);
-
-            console.log('Form Data being sent:');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}:`, value);
-            }
-
-            // Create headers object with CSRF token only
-            const headers = {
-                [csrfHeader]: csrfToken
-            };
-
-            fetch('/admin/products/store', {
-                method: 'POST',
-                body: formData, // FormData will set correct Content-Type automatically
-                headers: headers // Only CSRF header
-            })
-                .then(res => {
-                    console.log('Response Status:', res.status);
-                    console.log('Content-Type:', res.headers.get('content-type'));
-
-                    return res.text().then(text => {
-                        console.log('Response Body:', text);
-                        return text;
-                    });
-                })
-                .then(text => {
-                    try {
-                        const data = JSON.parse(text);
-                        const flash = document.getElementById('flashMessage');
-                        const flashText = flash.querySelector('.flash-text');
-
-                        if (data.success) {
-                            flash.className = 'flash-notification flash-success show';
-                            flashText.textContent = data.message;
-                            setTimeout(() => {
-                                window.location.href = '/admin/products';
-                            }, 1500);
-                        } else {
-                            flash.className = 'flash-notification flash-error show';
-                            flashText.textContent = data.message;
-                        }
-                        flash.style.display = 'block';
-                        setTimeout(() => {
-                            flash.classList.add('hide');
-                            setTimeout(() => flash.style.display = 'none', 500);
-                        }, 3000);
-                    } catch (e) {
-                        console.error('Failed to parse JSON:', e);
-                        console.error('Raw response was:', text);
-                    }
-                })
-                .catch(err => console.error('Fetch error:', err));
-        });
-    </script> -->
     <script>
         document.getElementById('createProductForm').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -221,16 +156,7 @@
                         return; // stop here, do not redirect
                     }
 
-                    // success flash msg + redirect with delay (matching update form timing)
-                    const flash = document.getElementById('flashMessage');
-                    if (flash) {
-                        const text = flash.querySelector('.flash-text');
-                        if (text) {
-                            flash.className = 'flash-notification flash-success show';
-                            flash.style.display = 'block';
-                            text.textContent = data.message;
-                        }
-                    }
+                    showFlashMessage(data.message, 'success', "Success");
 
                     // Add delay before redirecting to allow flash message to display
                     setTimeout(() => {

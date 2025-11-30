@@ -44,36 +44,6 @@
                     </thead>
 
                     <tbody>
-                        <!-- <tr th:if="${products.size>0}" th:each="page,item : ${products}" class="table-row">
-                            <td class="table-td" th:text="${item.count}">
-                            </td>
-                            <td class="table-td">
-                                <img th:src="${page.getFeatureImageOrDefault() != null 
-                ? page.getFeatureImageOrDefault().url 
-                : 'https://via.placeholder.com/100'}" class="table-image" />
-
-                            </td>
-                            <td class="table-td table-title" th:text="${page.title}">About Us</td>
-                            <td class="table-td table-subtitle" th:text="${page.templateName}">category</td>
-                            <td class="table-td table-subtitle" th:text="${page.order}">order</td>
-                            <td class="table-td">
-                                <div class="action-group">
-
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" class="toggle-input" th:data-id="${page.id}"
-                                            th:checked="${page.status == 1}">
-                                        <div class="toggle-slider">
-                                            <div class="toggle-thumb"></div>
-                                        </div>
-                                    </label>
-
-                                    <a th:href="@{'/admin/products/edit/' + ${page.id}}"
-                                        class="btn btn-warning btn-sm">Edit</a>
-
-                                    <button class="btn btn-danger btn-sm">Delete</button>
-                                </div>
-                            </td>
-                        </tr> -->
 
                     </tbody>
                 </table>
@@ -81,8 +51,6 @@
         </div>
 
     </div>
-    <!-- Just include the script -->
-    <script th:src="@{/admin/js/status-toggle.js}"></script>
 
     <script th:src="@{/admin/js/ajax-table.js}"></script>
     <script>
