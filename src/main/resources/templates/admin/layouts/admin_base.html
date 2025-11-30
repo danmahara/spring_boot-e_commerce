@@ -58,85 +58,8 @@
             }
         });
     </script>
+    <script th:src="@{/admin/js/status-toggle.js}"></script>
 
-    <script>
-        // Global function to show flash messages with proper animation handling
-        let flashTimeout = null;
-        let hideTimeout = null;
-
-        function showFlashMessage(message, type) {
-            let flash = document.getElementById("flashMessage");
-            if (!flash) return;
-
-            // Clear any existing timeouts
-            if (flashTimeout) clearTimeout(flashTimeout);
-            if (hideTimeout) clearTimeout(hideTimeout);
-
-            // Check if flash is currently visible
-            const isCurrentlyVisible = flash.style.display === "block" && !flash.classList.contains("hide");
-
-            if (isCurrentlyVisible) {
-                // If visible, hide it first with animation
-                flash.classList.add("hide");
-
-                // Wait for hide animation to complete, then show new message
-                hideTimeout = setTimeout(() => {
-                    displayMessage(flash, message, type);
-                }, 300); // Match the CSS transition duration
-            } else {
-                // If not visible, show immediately
-                displayMessage(flash, message, type);
-            }
-        }
-
-        function displayMessage(flash, message, type) {
-            // Remove any existing type classes
-            flash.classList.remove('flash-success', 'flash-error', 'hide');
-
-            // Add appropriate type class
-            if (type === 'error') {
-                flash.classList.add('flash-error');
-            } else {
-                flash.classList.add('flash-success');
-            }
-
-            // Set the message text
-            flash.querySelector(".flash-text").innerText = message;
-
-            // Show flash
-            flash.style.display = "block";
-
-            // Force reflow to ensure animation plays
-            void flash.offsetWidth;
-
-            // Auto-hide after 3 seconds
-            flashTimeout = setTimeout(() => {
-                flash.classList.add("hide");
-                hideTimeout = setTimeout(() => {
-                    flash.style.display = "none";
-                }, 300); // Match the CSS transition duration
-            }, 3000);
-        }
-
-        // On page load
-        document.addEventListener("DOMContentLoaded", function () {
-            // Check for success message
-            /*[# th:if="${success}"]*/
-            const successMessage = /*[[${message}]]*/ '';
-            if (successMessage) {
-                showFlashMessage(successMessage, 'success');
-            }
-            /*[/]*/
-
-            // Check for error message
-            /*[# th:if="${auth_error}"]*/
-            const errorMessage = /*[[${auth_error}]]*/ '';
-            if (errorMessage) {
-                showFlashMessage(errorMessage, 'error');
-            }
-            /*[/]*/
-        });
-    </script>
 </body>
 
 

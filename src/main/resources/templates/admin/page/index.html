@@ -26,22 +26,9 @@
                 <div>
                     <input type="text" placeholder="Search pages..."
                         class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
+                </div> 
             </div>
 
-            <style>
-                .table-td {
-                    padding: 0.25rem 0.5rem;
-                    /* top-bottom, left-right */
-                    vertical-align: middle;
-                }
-
-                .table-row {
-                    height: 2.5rem;
-                    /* adjust as needed */
-                }
-            </style>
             <div class="overflow-x-auto">
                 <table class="data-table" id="pages-table" data-ajax-url="/admin/pages/json">
                     <thead class="table-header">
@@ -63,7 +50,6 @@
         </div>
 
     </div>
-    <script th:src="@{/admin/js/status-toggle.js}"></script>
 
     <script th:src="@{/admin/js/ajax-table.js}"></script>
     <script>

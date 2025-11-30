@@ -30,7 +30,6 @@ import com.ecommerce.services.admin.ProductService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequestMapping("/admin")
@@ -50,8 +49,7 @@ public class ProductController {
     public String index(HttpSession session, Model model) {
 
         model.addAttribute("title", "Products");
-        // model.addAttribute("products",
-        // productService.getAllProducts(PageType.PRODUCT.getPageName()));
+       
         return "admin/product/index";
     }
 
@@ -233,7 +231,7 @@ public class ProductController {
         try {
             productService.deleteById(id);
             response.put("success", true);
-            response.put("message", "Page deleted Successfully");
+            response.put("message", "Product deleted Successfully");
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {

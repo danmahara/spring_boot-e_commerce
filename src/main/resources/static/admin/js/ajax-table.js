@@ -191,24 +191,28 @@ function initAjaxTable(tableSelector) {
         })
             .then(res => {
                 if (!res.ok) {
+                    showFlashMessage(res.message, 'erro', "Failed");
+
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
                 return res.json();
             })
             .then(data => {
                 if (data.success) {
-                    showNotification("Item deleted successfully", "success");
+                    showFlashMessage(data.message, 'success', "Success");
+                    // Example: showFlashMessage('Status updated', 'success', 'Success');
                     // Reload table data
                     loadTableData();
                 } else {
-                    showNotification(data.message || "Failed to delete item", "error");
+                    showFlashMessage(data.message, 'error', "Failed");
                     deleteBtn.textContent = originalText;
                     deleteBtn.disabled = false;
                 }
             })
             .catch(err => {
                 console.error("Error deleting item:", err);
-                showNotification("Error deleting item", "error");
+                showFlashMessage(err, 'error', "Failed");
+
                 deleteBtn.textContent = originalText;
                 deleteBtn.disabled = false;
             });
@@ -220,15 +224,4 @@ function initAjaxTable(tableSelector) {
         return token ? token.getAttribute('content') : '';
     }
 
-    // Helper function to show notifications
-    function showNotification(message, type) {
-        // You can use your existing notification system here
-        // Or create a simple alert
-        if (type === 'success') {
-            console.log("✓ " + message);
-            // Customize this based on your notification library (toastr, sweetalert, etc.)
-        } else {
-            console.error("✗ " + message);
-        }
-    }
 }
