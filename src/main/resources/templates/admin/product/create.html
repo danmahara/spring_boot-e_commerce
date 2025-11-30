@@ -37,9 +37,9 @@
                     <input type="file" name="image" class="hidden" accept="image/*"
                         onchange="updateFilePreview(this, 'thumbnail-preview', 'thumbnail-name')">
                 </label>
-                <span id="thumbnail-name" class="text-gray-500 text-sm mt-1 block hidden"></span>
-                <img id="thumbnail-preview" src="" alt="Thumbnail Preview"
-                    class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2 hidden">
+
+                <!-- Include preview fragment -->
+                <div th:replace="admin/components/image-preview :: preview('thumbnail-preview','thumbnail-name')"></div>
             </div>
 
             <div class="w-full">
@@ -50,30 +50,11 @@
                     <input type="file" name="coverImage" class="hidden" accept="image/*"
                         onchange="updateFilePreview(this, 'cover-preview', 'cover-name')">
                 </label>
-                <span id="cover-name" class="text-gray-500 text-sm mt-1 block hidden"></span>
-                <img id="cover-preview" src="" alt="Cover Preview"
-                    class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2 hidden">
+
+                <!-- Include preview fragment -->
+                <div th:replace="admin/components/image-preview :: preview('cover-preview','cover-name')"></div>
             </div>
 
-            <script>
-                function updateFilePreview(input, imgId, spanId) {
-                    const file = input.files[0];
-                    const preview = document.getElementById(imgId);
-                    const nameSpan = document.getElementById(spanId);
-
-                    if (file) {
-                        nameSpan.textContent = file.name;
-                        nameSpan.classList.remove('hidden'); // show file name
-                        preview.src = URL.createObjectURL(file); // temporary preview
-                        preview.classList.remove('hidden'); // show image
-                    } else {
-                        nameSpan.textContent = "";
-                        nameSpan.classList.add('hidden');
-                        preview.src = "";
-                        preview.classList.add('hidden');
-                    }
-                }
-            </script>
 
 
             <!-- <input type="hidden" th:value="${pageTemplate}" name="type"> -->

@@ -1,0 +1,28 @@
+<!-- Only Image Preview Fragment -->
+<div th:fragment="preview(previewId, nameId)">
+
+    <span th:id="${nameId}" class="text-gray-500 text-sm mt-1 block hidden"></span>
+
+    <img th:id="${previewId}" src="" alt="Preview"
+        class="w-32 h-32 object-cover border border-gray-300 rounded-lg mt-2 hidden">
+    <script>
+        function updateFilePreview(input, imgId, spanId) {
+            const file = input.files[0];
+            const preview = document.getElementById(imgId);
+            const nameSpan = document.getElementById(spanId);
+
+            if (file) {
+                nameSpan.textContent = file.name;
+                nameSpan.classList.remove('hidden'); // show file name
+                preview.src = URL.createObjectURL(file); // temporary preview
+                preview.classList.remove('hidden'); // show image
+            } else {
+                nameSpan.textContent = "";
+                nameSpan.classList.add('hidden');
+                preview.src = "";
+                preview.classList.add('hidden');
+            }
+        }
+    </script>
+
+</div>
