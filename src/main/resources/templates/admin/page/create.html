@@ -1,111 +1,89 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
     th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
-
 <div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
          'Create Page',
          ~{admin/components/breadcrumb-icons :: icon-pages}
         )">
 </div>
-
 <div th:fragment="section" class="admin-content">
     <div class="bg-white shadow-lg rounded-lg p-6 w-full">
-
-        <!-- <form th:action="@{/admin/pages/store}" th:method="post" enctype="multipart/form-data"
-            class="grid grid-cols-1 md:grid-cols-2 gap-6"> -->
         <form id="createPageForm" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             <!-- Title -->
             <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Page Title</label>
+                <label class="block mb-1 font-medium text-gray-700">
+                    Page Title <span class="text-red-500">*</span>
+                </label>
                 <input type="text" name="title" placeholder="Enter page title"
                     class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
             </div>
-
             <!-- Slug -->
             <div class="w-full">
                 <label class="block mb-1 font-medium text-gray-700">Slug</label>
                 <input type="text" name="slug" placeholder="Enter page slug (optional)"
                     class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
             </div>
-
             <!-- Thumbnail Image -->
             <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Thumbnail Image</label>
-
+                <label class="block mb-1 font-medium text-gray-700">Thumbnail Image <span
+                        class="text-red-500">*</span></label>
                 <div tabindex="0" role="button"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)] hover:bg-gray-50 flex items-center justify-between"
                     onclick="this.querySelector('input').click()"
                     onkeypress="if(event.key === 'Enter' || event.key === ' ') this.querySelector('input').click()">
                     <span id="thumbnail-name" class="text-gray-500">Choose File</span>
-
                     <input type="file" name="image" accept="image/*" class="hidden"
                         onchange="updateFilePreview(this, 'thumbnail-preview', 'thumbnail-name')">
                 </div>
-
                 <div th:replace="admin/components/image-preview :: preview('thumbnail-preview','thumbnail-name')"></div>
             </div>
-
-
             <!-- Cover Image -->
             <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Cover Image</label>
-
+                <label class="block mb-1 font-medium text-gray-700">Cover Image <span
+                        class="text-red-500">*</span></label>
                 <div tabindex="0" role="button"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)] hover:bg-gray-50 flex items-center justify-between"
                     onclick="this.querySelector('input').click()"
                     onkeypress="if(event.key === 'Enter' || event.key === ' ') this.querySelector('input').click()">
                     <span id="cover-name" class="text-gray-500">Choose File</span>
-
-                    <input type="file" name="cover_image" accept="image/*" class="hidden"
+                    <input type="file" name="coverImage" accept="image/*" class="hidden"
                         onchange="updateFilePreview(this, 'cover-preview', 'cover-name')">
                 </div>
-
                 <div th:replace="admin/components/image-preview :: preview('cover-preview','cover-name')"></div>
             </div>
-
-
             <!-- Template Selection -->
             <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Template</label>
+                <label class="block mb-1 font-medium text-gray-700">Template <span class="text-red-500">*</span></label>
                 <select name="templateName"
                     class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
                     <option value="">-- Select Template --</option>
                     <option th:each="template : ${templates}" th:value="${template.templateName}"
                         th:text="${#strings.capitalizeWords(template.templateName.replace('_', ' '))}">
                     </option>
-
                 </select>
             </div>
-
-
+            <!-- Page Type (Hidden) -->
+            <input type="hidden" name="type" value="PAGE">
             <!-- Content (Full Width) -->
             <div class="w-full md:col-span-2">
-                <label class="block mb-1 font-medium text-gray-700">Content</label>
+                <label class="block mb-1 font-medium text-gray-700">Content <span class="text-red-500">*</span></label>
                 <textarea name="description" rows="6" placeholder="Enter page content"
                     class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]"></textarea>
             </div>
-
             <!-- Status -->
             <div class="w-full flex items-center space-x-3 mt-6 md:mt-0">
                 <label class="block font-medium text-gray-700">Status</label>
-
                 <!-- Hidden input for unchecked state -->
-                <input type="hidden" name="status" value="0">
-
+                <input type="hidden" name="status" value="false">
                 <!-- Checkbox for checked state -->
-                <input type="checkbox" name="status" value="1" checked class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded focus:ring-2 focus:ring-[var(--primary-bg)]
+                <input type="checkbox" name="status" value="true" checked class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded focus:ring-2 focus:ring-[var(--primary-bg)]
                   dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-[var(--primary-bg)]">
             </div>
-
-
-            <div class=" md:col-span-2 pt-2">
-                <button type="submit" class="primary-btn  px-6 py-2 rounded-lg  ">
+            <div class="md:col-span-2 pt-2">
+                <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
                     Create Page
                 </button>
             </div>
-
-
         </form>
     </div>
     <script>
@@ -113,13 +91,11 @@
             e.preventDefault();
             const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
             const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
-
             if (!csrfToken || !csrfHeader) {
                 console.error('CSRF token or header not found');
                 return;
             }
             const formData = new FormData(this);
-
             fetch('/admin/pages/store', {
                 method: 'POST',
                 body: formData,
@@ -129,27 +105,55 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    const flash = document.getElementById('flashMessage');
-                    const text = flash.querySelector('.flash-text');
+                    // clear previous errors
+                    document.querySelectorAll(".input-error").forEach(el => el.remove());
 
-                    if (data.success) {
-                        flash.className = 'flash-notification flash-success show';
-                        text.textContent = data.message;
-                        window.location.href = '/admin/pages';
-                    } else {
-                        flash.className = 'flash-notification flash-error show';
-                        text.textContent = data.message;
-                        console.log(data.message);
+                    if (!data.success) {
+                        if (data.errors && typeof data.errors === 'object') {
+                            Object.keys(data.errors).forEach(fieldName => {
+                                const field = document.querySelector(`[name="${fieldName}"]`);
 
+                                if (field) {
+                                    const errorEl = document.createElement("p");
+                                    errorEl.className = "input-error text-red-600 text-sm mt-1";
+                                    errorEl.textContent = data.errors[fieldName];
+
+                                    // For file inputs, insert error after the parent button wrapper
+                                    if (field.type === 'file') {
+                                        const parentWrapper = field.parentElement;
+
+                                        // Check if parent has role="button"
+                                        if (parentWrapper && parentWrapper.hasAttribute('role') &&
+                                            parentWrapper.getAttribute('role') === 'button') {
+                                            parentWrapper.insertAdjacentElement("afterend", errorEl);
+                                        } else {
+                                            // Fallback to inserting after the field
+                                            field.insertAdjacentElement("afterend", errorEl);
+                                        }
+                                    } else {
+                                        // For regular inputs
+                                        field.insertAdjacentElement("afterend", errorEl);
+                                    }
+                                }
+                            });
+                        }
+                        return; // stop here, do not redirect
                     }
 
-                    flash.style.display = 'block';
-                    setTimeout(() => {
-                        flash.classList.add('hide');
-                        setTimeout(() => flash.style.display = 'none', 500);
-                    }, 3000);
+                    // success flash msg + redirect
+                    const flash = document.getElementById('flashMessage');
+                    const text = flash.querySelector('.flash-text');
+                    flash.className = 'flash-notification flash-success show';
+                    text.textContent = data.message;
+                    window.location.href = '/admin/pages';
                 })
-                .catch(err => console.error(err));
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while creating the page. Please try again.');
+                });
         });
     </script>
+
 </div>
+
+</html>

@@ -21,6 +21,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,18 +37,23 @@ public class Page implements Imageable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title field is required")
     @Column(nullable = false)
     private String title;
 
+    // @NotBlank(message = "Slug is required")
     @Column(unique = true)
     private String slug;
 
+    @NotBlank(message = "Content is required")
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // @NotBlank(message = "Type is required")
     @Column(nullable = false)
     private String type;
 
+    @NotBlank(message = "Template is required")
     @Column(nullable = false)
     private String templateName;
 

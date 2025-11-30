@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,18 +21,28 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
 import com.ecommerce.models.Page;
+import com.ecommerce.repository.admin.PageRepository;
+import com.ecommerce.requests.admin.PageRequest;
 import com.ecommerce.services.admin.ImageService;
 import com.ecommerce.services.admin.PageService;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/admin")
 public class PageController {
+
+    private final PageRepository pageRepository;
 
     @Autowired
     PageService pageService;
 
     @Autowired
     ImageService imageService;
+
+    PageController(PageRepository pageRepository) {
+        this.pageRepository = pageRepository;
+    }
 
     @GetMapping("/pages")
     public String index(Model model) {
@@ -53,32 +64,56 @@ public class PageController {
 
     @PostMapping("/pages/store")
     public ResponseEntity<Map<String, Object>> storePage(
-            @ModelAttribute Page page,
-            @RequestParam(value = "image") MultipartFile image,
-            @RequestParam(value = "cover_image") MultipartFile coverImage) {
+            @Valid @ModelAttribute PageRequest request,
+            BindingResult bindingResult) {
 
         Map<String, Object> response = new HashMap<>();
-        try {
-            page.setType(PageType.PAGE.getPageName());
+        Map<String, String> errors = new HashMap<>();
 
-            // Slug
-            if (page.getSlug() == null || page.getSlug().isEmpty()) {
-                page.setSlug(page.getTitle().toLowerCase().replaceAll("\\s+", "-"));
-            }
+        // Collect field validation errors from BindingResult
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        }
+
+        // Add manual validation for file uploads
+        if (request.getImage() == null || request.getImage().isEmpty()) {
+            errors.put("image", "Thumbnail image is required");
+        }
+
+        if (request.getCoverImage() == null || request.getCoverImage().isEmpty()) {
+            errors.put("coverImage", "Cover image is required");
+        }
+
+        // Return all errors together if any exist
+        if (!errors.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        try {
+            Page page = new Page();
+            page.setTitle(request.getTitle());
+            page.setSlug(
+                    (request.getSlug() == null || request.getSlug().isEmpty())
+                            ? request.getTitle().toLowerCase().replaceAll("\\s+", "-")
+                            : request.getSlug());
+            page.setType(PageType.PAGE.getPageName());
+            page.setDescription(request.getDescription());
+            page.setStatus(request.isStatus());
+            page.setOrder(request.getSortOrder());
+            page.setTemplateName(request.getTemplateName());
 
             Page savedPage = pageService.savePage(page);
 
-            // File uploads
-            if (image != null && !image.isEmpty()) {
-                savedPage.addFeatureImage(imageService, image);
-            }
-            if (coverImage != null && !coverImage.isEmpty()) {
-                savedPage.addCoverImage(imageService, coverImage);
-            }
+            savedPage.addFeatureImage(imageService, request.getImage());
+            savedPage.addCoverImage(imageService, request.getCoverImage());
 
             response.put("success", true);
             response.put("message", "Page created successfully");
             response.put("data", savedPage);
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
