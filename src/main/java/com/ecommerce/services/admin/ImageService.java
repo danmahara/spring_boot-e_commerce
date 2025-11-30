@@ -168,60 +168,8 @@ public class ImageService {
         return updatedImage;
     }
 
-    // public Image updateImage(Long imageId, MultipartFile file) throws IOException
-    // {
-    // validateImage(file);
-
-    // log.info("Starting image update for imageId: {}", imageId);
-
-    // Image existingImage = imageRepository.findById(imageId)
-    // .orElseThrow(() -> new RuntimeException("Image not found with ID: " +
-    // imageId));
-
-    // // Delete old file
-    // Path oldFilePath = Paths.get(existingImage.getPath());
-    // if (Files.exists(oldFilePath)) {
-    // Files.delete(oldFilePath);
-    // log.info("Deleted old image: {}", oldFilePath);
-    // }
-
-    // // Prepare directory
-    // String storagePath =
-    // imageProperties.getStoragePath(existingImage.getImageableType());
-    // Path uploadPath = Paths.get(storagePath);
-
-    // if (!Files.exists(uploadPath)) {
-    // Files.createDirectories(uploadPath);
-    // log.info("Created directory: {}", uploadPath);
-    // }
-
-    // // Generate new filename
-    // String originalFilename = file.getOriginalFilename();
-    // String newFilename = generateUniqueFilename(originalFilename);
-    // Path newFilePath = uploadPath.resolve(newFilename);
-
-    // // Save new file
-    // Files.copy(file.getInputStream(), newFilePath,
-    // StandardCopyOption.REPLACE_EXISTING);
-    // log.info("New file saved to: {}", newFilePath);
-
-    // // Update image entity fields
-    // existingImage.setFilename(newFilename);
-    // existingImage.setPath(newFilePath.toString());
-    // existingImage.setOriginalName(originalFilename);
-    // existingImage.setSize(file.getSize());
-    // existingImage.setMimeType(file.getContentType());
-
-    // Image updatedImage = imageRepository.save(existingImage);
-    // log.info("Image updated successfully. New file: {}",
-    // updatedImage.getFilename());
-
-    // return updatedImage;
-    // }
-
     public List<Image> getImagesByImageable(String imageableType, Long imageableId) {
-        return imageRepository.findByImageableTypeAndImageableIdOrderBySortOrder(
-                imageableType, imageableId);
+        return imageRepository.findByImageableTypeAndImageableId(imageableType, imageableId);
     }
 
     public void deleteImage(Long imageId) throws IOException {
