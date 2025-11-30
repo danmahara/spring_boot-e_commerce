@@ -6,8 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.ecommerce.enums.PageTemplate;
 // import com.ecommerce.repository.UserRepository;
 import com.ecommerce.repository.FrontendRepository;
+import com.ecommerce.repository.admin.DashboardRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -17,13 +19,13 @@ public class DashboardController {
     // private UserRepository userRepository;
 
     @Autowired
-    private FrontendRepository frontendRepository;
+    private DashboardRepository dashboardRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
 
         // long userCount = userRepository.count(); // total users
-        long pageCount = frontendRepository.count(); // total pages
+        long pageCount = dashboardRepository.countByTemplateNameNot(PageTemplate.PRODUCT.getTemplateName()); // total pages
 
         // model.addAttribute("userCount", userCount);
         model.addAttribute("pageCount", pageCount);
