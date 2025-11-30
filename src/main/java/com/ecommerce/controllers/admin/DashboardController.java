@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ecommerce.enums.PageTemplate;
-// import com.ecommerce.repository.UserRepository;
-import com.ecommerce.repository.FrontendRepository;
 import com.ecommerce.repository.admin.DashboardRepository;
 
 @Controller
