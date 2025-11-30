@@ -15,12 +15,18 @@ import com.ecommerce.repository.admin.PageRepository;
 @Service
 public class PageService {
 
+    private final ImageService imageService;
+
     // private final PasswordEncoder passwordEncoder;
 
     @Autowired
     PageRepository pageRepository;
     @Autowired
     ImageRepository imageRepository;
+
+    PageService(ImageService imageService) {
+        this.imageService = imageService;
+    }
 
     // PageService(PasswordEncoder passwordEncoder) {
     // this.passwordEncoder = passwordEncoder;
@@ -50,6 +56,18 @@ public class PageService {
 
     public Page savePage(Page page) {
         return pageRepository.save(page);
+    }
+
+    public void deleteById(Long id) {
+        try {
+            pageRepository.deleteById(id);
+            imageService.deleteImagesByImageable("page", id);
+        } catch (Exception e) {
+            System.out.println("Image Delete Failed: " + e.getMessage());
+            System.out.println("Full Stack Trace below");
+            e.printStackTrace();
+        }
+
     }
 
     public void toggleStatus(Long id) {
