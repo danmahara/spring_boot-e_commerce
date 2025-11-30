@@ -26,7 +26,7 @@
             class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
             <div>
                 <p class="text-gray-500 font-medium text-sm">Total Products</p>
-                <p class="text-3xl font-bold text-gray-800" th:text="${productsCount}">320</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${productCount}">320</p>
                 <p class="text-xs text-green-500 mt-1">↑ 8% from last month</p>
             </div>
             <div class="text-5xl">🛒</div>
@@ -53,6 +53,7 @@
             </div>
             <div class="text-5xl">💰</div>
         </div>
+
         <a th:href="@{/admin/pages}" class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between 
           hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer">
 

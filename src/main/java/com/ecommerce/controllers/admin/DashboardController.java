@@ -25,10 +25,13 @@ public class DashboardController {
     public String dashboard(Model model) {
 
         // long userCount = userRepository.count(); // total users
-        long pageCount = dashboardRepository.countByTemplateNameNot(PageTemplate.PRODUCT.getTemplateName()); // total pages
+        long pageCount = dashboardRepository.countByTemplateNameNot(PageTemplate.PRODUCT.getTemplateName());
+
+        long productCount = dashboardRepository.countByTemplateName(PageTemplate.PRODUCT.getTemplateName());
 
         // model.addAttribute("userCount", userCount);
         model.addAttribute("pageCount", pageCount);
+        model.addAttribute("productCount", productCount);
         model.addAttribute("title", "Home | Dashboard");
 
         return "admin/dashboard"; // Thymeleaf template
