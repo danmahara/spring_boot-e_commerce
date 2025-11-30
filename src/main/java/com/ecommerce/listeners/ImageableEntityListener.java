@@ -1,12 +1,13 @@
 package com.ecommerce.listeners;
 
-import com.ecommerce.models.admin.Image;
-import com.ecommerce.services.admin.ImageService;
-import com.ecommerce.traits.Imageable;
-import jakarta.persistence.PostLoad;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.ecommerce.services.admin.ImageService;
+import com.ecommerce.traits.Imageable;
+
+import jakarta.persistence.PostLoad;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j

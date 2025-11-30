@@ -1,19 +1,11 @@
 package com.ecommerce.controllers.admin;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,13 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.ecommerce.enums.ImageType;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
 import com.ecommerce.models.Page;
-import com.ecommerce.models.admin.Image;
 import com.ecommerce.repository.admin.ImageRepository;
 import com.ecommerce.requests.admin.ProductRequest;
 import com.ecommerce.services.admin.ImageService;
