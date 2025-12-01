@@ -1,38 +1,78 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<nav th:fragment="navbar" class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+<div th:fragment="navbar" x-data="{ open: false }">
 
-    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50 px-6 md:px-20 py-4 flex items-center justify-between">
 
         <!-- Logo -->
         <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-500">
             MyShop
         </a>
 
-        <!-- Navigation Links -->
-        <div class="space-x-4">
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex space-x-4">
             <th:block th:each="p : ${pages}">
-                <a th:if="${p.templateName!=PageTemplate.LOGIN.getTemplateName and p.templateName!=PageTemplate.REGISTER.getTemplateName}"
-                    th:href="@{|/${p.slug}|}" th:text="${p.title}"
-                    class="text-gray-700 hover:text-indigo-600 font-medium transition">
+                <a th:if="${p.templateName!=PageTemplate.LOGIN.getTemplateName 
+                           and p.templateName!=PageTemplate.REGISTER.getTemplateName}" th:href="@{|/${p.slug}|}"
+                    th:text="${p.title}" class="text-gray-700 hover:text-indigo-600 font-medium transition">
                 </a>
             </th:block>
         </div>
 
-        <!-- Login / Register -->
-        <div class="space-x-6">
+        <!-- Desktop Login/Register -->
+        <div class="hidden md:flex space-x-6">
             <th:block th:each="p : ${pages}">
                 <a th:if="${p.templateName==PageTemplate.LOGIN.getTemplateName}" th:href="@{|/${p.slug}|}"
-                    class="text-gray-700 hover:text-indigo-600 font-medium transition" th:text="${p.title}">
+                    th:text="${p.title}" class="text-gray-700 hover:text-indigo-600 font-medium transition">
                 </a>
 
                 <a th:if="${p.templateName==PageTemplate.REGISTER.getTemplateName}" th:href="@{|/${p.slug}|}"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition"
-                    th:text="${p.title}">
+                    th:text="${p.title}"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition">
+                </a>
+            </th:block>
+        </div>
+
+        <!-- Mobile Hamburger -->
+        <button @click="open = !open" class="md:hidden focus:outline-none">
+            <svg x-show="!open" class="h-7 w-7 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+
+            <svg x-show="open" class="h-7 w-7 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+    </nav>
+
+    <!-- MOBILE DROPDOWN -->
+    <div x-show="open" x-transition
+        class="md:hidden bg-white shadow-md w-full px-6 py-4 space-y-4 fixed top-[64px] left-0 z-40">
+
+        <div class="flex flex-col space-y-3">
+            <th:block th:each="p : ${pages}">
+                <a th:if="${p.templateName!=PageTemplate.LOGIN.getTemplateName 
+                           and p.templateName!=PageTemplate.REGISTER.getTemplateName}" th:href="@{|/${p.slug}|}"
+                    th:text="${p.title}" class="text-gray-700 hover:text-indigo-600 font-medium transition">
+                </a>
+            </th:block>
+        </div>
+
+        <div class="flex flex-col space-y-3 pt-3 border-t">
+            <th:block th:each="p : ${pages}">
+                <a th:if="${p.templateName==PageTemplate.LOGIN.getTemplateName}" th:href="@{|/${p.slug}|}"
+                    th:text="${p.title}" class="text-gray-700 hover:text-indigo-600 font-medium transition">
+                </a>
+
+                <a th:if="${p.templateName==PageTemplate.REGISTER.getTemplateName}" th:href="@{|/${p.slug}|}"
+                    th:text="${p.title}"
+                    class="bg-indigo-600 text-center hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition">
                 </a>
             </th:block>
         </div>
 
     </div>
 
-</nav>
+</div>
