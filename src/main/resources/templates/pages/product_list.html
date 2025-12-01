@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<div lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
+
+    <div th:fragment="section">
+
+        <!-- Hero Section -->
+        <!-- <section class="relative h-72 bg-cover bg-center" -->
+        <section class="relative bg-cover bg-center"
+            style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff'); height: calc(100vh - 65px); ">
+            <div class="absolute inset-0 bg-black/60"></div>
+
+            <div class="relative z-10 flex items-center justify-center h-full text-center px-6">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white">
+                    Our <span class="text-indigo-400">Products</span>
+                </h1>
+            </div>
+        </section>
+
+        <!-- Main Product Section -->
+        <section class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
+
+            <!-- Filters Sidebar -->
+            <aside class="bg-white p-6 rounded-xl shadow h-fit space-y-10">
+
+                <!-- Categories -->
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Categories</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="font-semibold text-gray-800">Clothing</li>
+                        <ul class="pl-4 space-y-1 text-sm">
+                            <li><a href="#" class="hover:text-indigo-600">Men’s Wear</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Women’s Wear</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Kids</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Winter Collection</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Summer Collection</a></li>
+                        </ul>
+                        <li class="font-semibold text-gray-800 mt-4">Electronics</li>
+                        <ul class="pl-4 space-y-1 text-sm">
+                            <li><a href="#" class="hover:text-indigo-600">Mobiles</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Laptops</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Smart Gadgets</a></li>
+                        </ul>
+                        <li class="font-semibold text-gray-800 mt-4">Home & Living</li>
+                        <ul class="pl-4 space-y-1 text-sm">
+                            <li><a href="#" class="hover:text-indigo-600">Furniture</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Kitchenware</a></li>
+                            <li><a href="#" class="hover:text-indigo-600">Decorations</a></li>
+                        </ul>
+                    </ul>
+                </div>
+
+                <!-- Price Filter -->
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Price</h3>
+                    <input type="range" min="100" max="5000" class="w-full">
+                    <p class="text-sm text-gray-500 mt-2">Up to Rs 5000</p>
+                </div>
+
+                <!-- Color Filter (Clothing) -->
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Color</h3>
+                    <div class="flex flex-wrap gap-3">
+
+                        <button
+                            class="h-7 w-7 rounded-full bg-red-500 border-2 border-gray-200 hover:scale-110 transition"></button>
+                        <button
+                            class="h-7 w-7 rounded-full bg-blue-500 border-2 border-gray-200 hover:scale-110 transition"></button>
+                        <button
+                            class="h-7 w-7 rounded-full bg-black border-2 border-gray-200 hover:scale-110 transition"></button>
+                        <button
+                            class="h-7 w-7 rounded-full bg-white border-2 border-gray-300 hover:scale-110 transition"></button>
+                        <button
+                            class="h-7 w-7 rounded-full bg-green-500 border-2 border-gray-200 hover:scale-110 transition"></button>
+                        <button
+                            class="h-7 w-7 rounded-full bg-yellow-400 border-2 border-gray-200 hover:scale-110 transition"></button>
+
+                    </div>
+                </div>
+
+                <!-- Sizes -->
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Size</h3>
+                    <div class="grid grid-cols-4 gap-2">
+                        <span
+                            class="px-2 py-1 border rounded-md text-center text-sm hover:bg-indigo-500 hover:text-white cursor-pointer">S</span>
+                        <span
+                            class="px-2 py-1 border rounded-md text-center text-sm hover:bg-indigo-500 hover:text-white cursor-pointer">M</span>
+                        <span
+                            class="px-2 py-1 border rounded-md text-center text-sm hover:bg-indigo-500 hover:text-white cursor-pointer">L</span>
+                        <span
+                            class="px-2 py-1 border rounded-md text-center text-sm hover:bg-indigo-500 hover:text-white cursor-pointer">XL</span>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- Product Grid -->
+            <div class="md:col-span-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">All Products</h2>
+                    <select class="border rounded-lg px-4 py-2 text-gray-600">
+                        <option>Sort by: Popular</option>
+                        <option>Newest</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Grid -->
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <!-- Single Product Card -->
+                    <div th:each="product : ${products}"
+                        class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+                        <img th:src="@{${product.featureImage}}" class="w-full h-56 object-cover" alt="Product">
+                        <div class="p-5">
+                            <h3 class="text-lg font-semibold text-gray-800" th:text="${product.title}">Classic Watch
+                            </h3>
+                            <p class="text-indigo-600 font-bold mt-2">Rs 2,499</p>
+                            <!-- <button
+                                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">View
+                                Details</button> -->
+                            <button
+                                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+                                <a href="products/product_detail.html">View Detail</a> </button>
+                            <!-- <a href=""
+                                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">View
+                                Details</a> -->
+                        </div>
+                    </div>
+
+                    <!-- <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+                            class="w-full h-56 object-cover" alt="Product">
+                        <div class="p-5">
+                            <h3 class="text-lg font-semibold text-gray-800">Casual Sneakers</h3>
+                            <p class="text-indigo-600 font-bold mt-2">Rs 3,200</p>
+                            <button
+                                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">View
+                                Details</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f"
+                            class="w-full h-56 object-cover" alt="Product">
+                        <div class="p-5">
+                            <h3 class="text-lg font-semibold text-gray-800">Premium Headphones</h3>
+                            <p class="text-indigo-600 font-bold mt-2">Rs 4,999</p>
+                            <button
+                                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">View
+                                Details</button>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+</div>
