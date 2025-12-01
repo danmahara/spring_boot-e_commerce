@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<!-- Breadcrumb -->
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Create Category',
+         ~{admin/components/breadcrumb-icons :: icon-pages}
+     )">
+</div>
+
+<!-- Content Section -->
+<div th:fragment="section" class="admin-content">
+
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full">
+
+        <form id="createCategoryForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Category Name -->
+            <div class="w-full">
+                <label class="block mb-1 font-medium text-gray-700">Category Name</label>
+                <input type="text" name="title" placeholder="Enter category name" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Slug -->
+            <div class="w-full">
+                <label class="block mb-1 font-medium text-gray-700">Slug (optional)</label>
+                <input type="text" name="slug" placeholder="Auto generated if empty" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Parent Category -->
+            <div class="w-full">
+                <label class="block mb-1 font-medium text-gray-700">Parent Category</label>
+                <select name="parentId" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                        focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+                    <option value="">No Parent (Top Level)</option>
+
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.title}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Sort Order -->
+            <div class="w-full">
+                <label class="block mb-1 font-medium text-gray-700">Sort Order</label>
+                <input type="number" name="sortOrder" placeholder="Enter category order" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
+                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Status -->
+            <div class="w-full flex items-center space-x-3 mt-6 md:mt-0">
+                <label class="block font-medium text-gray-700">Status</label>
+
+                <input type="checkbox" name="status" value="1" checked class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded 
+                       focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="md:col-span-2 pt-2">
+                <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
+                    Create Category
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+
+    <!-- Submit Handler Script -->
+    <script>
+        document.getElementById('createCategoryForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
+            const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+
+            const formData = new FormData(this);
+
+            fetch('/admin/categories/store', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    [csrfHeader]: csrfToken,
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    document.querySelectorAll(".input-error").forEach(el => el.remove());
+
+                    if (!data.success) {
+                        if (data.errors) {
+                            Object.keys(data.errors).forEach(fieldName => {
+                                const field = document.querySelector(`[name="${fieldName}"]`);
+                                if (field) {
+                                    const errorEl = document.createElement("p");
+                                    errorEl.className = "input-error text-red-600 text-sm mt-1";
+                                    errorEl.textContent = data.errors[fieldName];
+                                    field.insertAdjacentElement("afterend", errorEl);
+                                }
+                            });
+                        }
+                        return;
+                    }
+
+                    showFlashMessage(data.message, 'success', "Success");
+
+                    setTimeout(() => {
+                        window.location.href = '/admin/categories';
+                    }, 1200);
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error creating category.');
+                });
+        });
+    </script>
+
+</div>

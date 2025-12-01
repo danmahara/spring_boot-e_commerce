@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Pages',
+         ~{admin/components/breadcrumb-icons :: icon-pages},
+        )">
+</div>
+
+
+<div th:fragment="section" class="admin-content" data-status-route="/admin/categories">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+
+        <div>
+            <div class="flex items-center justify-between mb-4">
+
+                <!-- Create Button -->
+                <a th:href="@{/admin/categories/create}" class="primary-btn px-4 py-2 rounded-lg shadow  transition">
+                    + Create
+                </a>
+
+                <!-- Search Field -->
+                <div>
+                    <input type="text" placeholder="Search pages..."
+                        class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="data-table" id="pages-table" data-ajax-url="/admin/categories/json">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-th">S.N</th>
+                            <th class="table-th">Image</th>
+                            <th class="table-th">Title</th>
+                            <th class="table-th">Template</th>
+                            <th class="table-th">Order</th>
+                            <th class="table-th text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- AJAX will populate rows -->
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script th:src="@{/admin/js/ajax-table.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            initAjaxTable("#pages-table");
+        });
+    </script>
+</div>
