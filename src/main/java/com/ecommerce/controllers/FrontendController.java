@@ -12,16 +12,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.models.Page;
 import com.ecommerce.repository.FrontendRepository;
-import com.ecommerce.services.admin.PageService;
+import com.ecommerce.services.FrontendService;
 
 @Controller
 public class FrontendController {
 
+    private final FrontendService frontendService;
+
     @Autowired
     FrontendRepository frontendRepository;
 
-    @Autowired
-    PageService pageService;
+    FrontendController(FrontendService frontendService) {
+        this.frontendService = frontendService;
+    }
 
     @GetMapping("/")
     public String homePageHandler(Model model) {
@@ -36,7 +39,7 @@ public class FrontendController {
     }
 
     public List<Page> allPages() {
-        return frontendRepository.findByStatusTrueOrderByOrderAsc();
+        return frontendRepository.findByTemplateNameInAndStatusTrue(Page.getPageLists());
     }
 
     @GetMapping("/products/{slug}")
@@ -60,6 +63,25 @@ public class FrontendController {
         }
 
         Page page = pageOpt.get();
+        // Convert page.getTemplateName() → enum
+        PageTemplate template = PageTemplate.fromString(page.getTemplateName());
+        System.out.println("Template: " + template);
+
+        switch (template) {
+            case ABOUT_US:
+                System.out.println("About us page");
+                // You can add additional model attributes here
+                break;
+
+            case PRODUCT_LIST:
+                List<Page> p = frontendService.getAllProducts();
+                model.addAttribute("products", p);
+                break;
+
+            default:
+                break;
+        }
+
         model.addAttribute("page", page);
         model.addAttribute("PageTemplate", PageTemplate.class);
         model.addAttribute("title", page.getTitle() + " - MyShop");

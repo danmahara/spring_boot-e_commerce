@@ -69,6 +69,7 @@ public class Image {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean isActive = true;
 
+   
     // Constructors
     public Image(String filename, String path, String originalName,
             Long size, String mimeType, String imageableType, Long imageableId) {

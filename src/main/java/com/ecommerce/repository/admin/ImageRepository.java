@@ -16,6 +16,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
         Optional<Image> findByImageableIdAndType(Long imageableId, ImageType type);
 
         List<Image> findByImageableTypeAndImageableId(String type, Long id);
+        
 
         // Get all images for an entity
         List<Image> findByImageableTypeAndImageableIdOrderBySortOrder(

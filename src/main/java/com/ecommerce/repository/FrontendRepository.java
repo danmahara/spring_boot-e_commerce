@@ -16,11 +16,9 @@ public interface FrontendRepository extends JpaRepository<Page, Long> {
 
     List<Page> findByStatusTrueOrderByOrderAsc();
 
-    // List<Page> findByStatusTrueTemplateNameInAndType(List<String> templateName,
-    // String type);
+    List<Page> findByTemplateNameInAndStatusTrue(List<String> templateNames);
 
-    // List<Page> findByTemplateNameInAndStatus(List<String> templateName, byte
-    // status);
+    List<Page> findByTemplateNameAndStatusTrue(String templateName);
 
     @Query("SELECT p FROM Page p WHERE p.status = true")
     List<Page> findAllActivePages();
