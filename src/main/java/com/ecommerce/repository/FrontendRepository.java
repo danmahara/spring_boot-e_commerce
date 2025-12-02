@@ -10,7 +10,8 @@ import com.ecommerce.models.Page;
 
 public interface FrontendRepository extends JpaRepository<Page, Long> {
 
-    Optional<Page> findBySlug(String slug);
+    // Optional<Page> findBySlug(String slug);
+    Page findBySlug(String slug);
 
     List<Page> findByStatus(boolean status);
 

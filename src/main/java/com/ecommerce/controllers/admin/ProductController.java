@@ -56,7 +56,7 @@ public class ProductController {
     @GetMapping("/products/json")
     @ResponseBody
     public List<Page> getPagesJson() {
-        return productService.getAllProducts(PageType.PRODUCT.getPageName());
+        return productService.getAllProducts(PageType.PAGE.getPageName());
     }
 
     @GetMapping("/products/create")
@@ -131,7 +131,7 @@ public class ProductController {
         page.setDescription(request.getDescription());
 
         // Default
-        page.setType(PageType.PRODUCT.getPageName());
+        // page.setType(PageType.PRODUCT.getPageName());
         page.setTemplateName(PageTemplate.PRODUCT.getTemplateName());
 
         // Sort order
