@@ -1,9 +1,8 @@
 package com.ecommerce.enums;
 
 public enum PageType {
-    PAGE("page"),
-    PRODUCT("product");
-
+    PAGE("page");
+    // PRODUCT("product");
     private final String pageName;
 
     PageType(String pageName) {
