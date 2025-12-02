@@ -1,7 +1,74 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<footer th:fragment="footer" class="bg-gray-900 text-white py-8 mt-20">
-    <div class="container mx-auto text-center">
-        <p class="text-gray-400">© 2025 MyShop. All rights reserved.</p>
+<!-- Footer -->
+<footer th:fragment="footer" class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <!-- Company Info -->
+            <div class="footer-section">
+                <h3>
+                    <i class="fas fa-shopping-bag"></i> ShopHub
+                </h3>
+                <p style="color: var(--text-light); margin-top: 1rem; line-height: 1.8;">
+                    Your trusted destination for premium products. We bring quality, style, and value to your
+                    doorstep.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">About Us</a>
+                    <a href="#" class="footer-link">Contact</a>
+                    <a href="#" class="footer-link">FAQs</a>
+                    <a href="#" class="footer-link">Shipping Info</a>
+                    <a href="#" class="footer-link">Returns</a>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Electronics</a>
+                    <a href="#" class="footer-link">Fashion</a>
+                    <a href="#" class="footer-link">Accessories</a>
+                    <a href="#" class="footer-link">Home & Living</a>
+                    <a href="#" class="footer-link">Sports</a>
+                </div>
+            </div>
+
+            <!-- Customer Service -->
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Track Order</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms & Conditions</a>
+                    <a href="#" class="footer-link">Careers</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 ShopHub. All rights reserved. Designed with <i class="fas fa-heart"
+                    style="color: var(--error-color);"></i> by Your Team</p>
+        </div>
     </div>
 </footer>
