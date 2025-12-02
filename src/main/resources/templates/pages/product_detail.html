@@ -2,207 +2,210 @@
 <div lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
 
     <div th:fragment="section">
-
-        <!-- Hero / Breadcrumb -->
-        <section class="bg-gray-100 py-4">
-            <div class="max-w-7xl mx-auto px-6 text-sm text-gray-600">
-                <a href="/" class="hover:text-indigo-600">Home</a> /
-                <a href="/products" class="hover:text-indigo-600">Products</a> /
-                <span class="text-gray-800 font-semibold">Product Details</span>
-            </div>
-        </section>
-
-        <!-- Product Detail Section -->
-        <section class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
-
-            <!-- Product Images -->
-            <div>
-                <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f"
-                    class="w-full h-96 object-cover rounded-xl shadow-lg" alt="Product">
-
-                <div class="flex gap-4 mt-4">
-                    <img src="https://images.unsplash.com/photo-1503602642458-232111445657"
-                        class="w-24 h-24 object-cover rounded-lg cursor-pointer hover:ring-2 ring-indigo-500"
-                        alt="thumb">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30"
-                        class="w-24 h-24 object-cover rounded-lg cursor-pointer hover:ring-2 ring-indigo-500"
-                        alt="thumb">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30"
-                        class="w-24 h-24 object-cover rounded-lg cursor-pointer hover:ring-2 ring-indigo-500"
-                        alt="thumb">
-                </div>
-            </div>
-
-            <!-- Product Info -->
-            <div>
-                <h1 class="text-4xl font-bold text-gray-900">Premium Wireless Headphones</h1>
-
-                <!-- Rating -->
-                <div class="flex items-center mt-3">
-                    <span class="text-yellow-400 text-xl">★★★★★</span>
-                    <span class="text-sm text-gray-500 ml-2">(120 reviews)</span>
+        
+        <!-- Product Details Section -->
+        <section class="product-details-section py-4xl">
+            <div class="container">
+                <!-- Breadcrumb -->
+                <div class="breadcrumb-nav mb-2xl">
+                    <a href="index.html">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="products.html">Products</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Classic Chronograph Watch</span>
                 </div>
 
-                <!-- Price -->
-                <p class="text-3xl font-extrabold text-indigo-600 mt-6">Rs 4,999</p>
-
-                <!-- Short Description -->
-                <p class="mt-4 text-gray-600">
-                    Experience premium sound quality with noise cancellation and comfortable ear cushioning.
-                    Perfect for music lovers and professionals.
-                </p>
-
-                <!-- Color Selection -->
-                <div class="mt-6">
-                    <h3 class="font-semibold text-gray-800 mb-2">Choose Color</h3>
-                    <div class="flex gap-3">
-                        <button
-                            class="h-8 w-8 bg-black rounded-full border-2 border-gray-300 hover:ring-2 ring-indigo-500"></button>
-                        <button
-                            class="h-8 w-8 bg-blue-600 rounded-full border-2 border-gray-300 hover:ring-2 ring-indigo-500"></button>
-                        <button
-                            class="h-8 w-8 bg-red-600 rounded-full border-2 border-gray-300 hover:ring-2 ring-indigo-500"></button>
+                <div class="product-layout">
+                    <!-- Product Gallery -->
+                    <div class="product-gallery">
+                        <div class="main-image">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800" alt="Watch"
+                                id="mainImage">
+                        </div>
+                        <div class="thumbnail-gallery">
+                            <div class="thumbnail active"
+                                onclick="changeImage('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800', this)">
+                                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200"
+                                    alt="View 1">
+                            </div>
+                            <div class="thumbnail"
+                                onclick="changeImage('https://images.unsplash.com/photo-1524805444758-089113d48396?w=800', this)">
+                                <img src="https://images.unsplash.com/photo-1524805444758-089113d48396?w=200"
+                                    alt="View 2">
+                            </div>
+                            <div class="thumbnail"
+                                onclick="changeImage('https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=800', this)">
+                                <img src="https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=200"
+                                    alt="View 3">
+                            </div>
+                            <div class="thumbnail"
+                                onclick="changeImage('https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800', this)">
+                                <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=200" alt="View 4">
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Size Selection -->
-                <div class="mt-6">
-                    <h3 class="font-semibold text-gray-800 mb-2">Size</h3>
-                    <div class="grid grid-cols-4 gap-2 max-w-xs">
-                        <span
-                            class="border py-2 text-center rounded-md cursor-pointer hover:bg-indigo-600 hover:text-white">S</span>
-                        <span
-                            class="border py-2 text-center rounded-md cursor-pointer hover:bg-indigo-600 hover:text-white">M</span>
-                        <span
-                            class="border py-2 text-center rounded-md cursor-pointer hover:bg-indigo-600 hover:text-white">L</span>
-                        <span
-                            class="border py-2 text-center rounded-md cursor-pointer hover:bg-indigo-600 hover:text-white">XL</span>
-                    </div>
-                </div>
+                    <!-- Product Info -->
+                    <div class="product-info">
+                        <div class="product-badges mb-md">
+                            <span class="badge badge-new">New Arrival</span>
+                            <span class="badge badge-sale">25% Off</span>
+                        </div>
 
-                <!-- Buttons -->
-                <div class="mt-8 flex gap-4">
-                    <button class="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow">
-                        Add to Cart
-                    </button>
-                    <button class="px-8 py-3 bg-gray-800 text-white rounded-lg hover:bg-black transition shadow">
-                        Buy Now
-                    </button>
-                </div>
-            </div>
-        </section>
+                        <h1 class="product-name mb-md">Classic Chronograph Watch</h1>
 
-        <!-- Product Details / Specifications -->
-        <section class="max-w-7xl mx-auto px-6 pb-20">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6">Product Details</h2>
+                        <div class="product-rating-section mb-xl">
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-text">4.5 (189 Reviews)</span>
+                            <span class="rating-text">|</span>
+                            <span class="rating-text" style="color: var(--success-color); font-weight: 600;">In
+                                Stock</span>
+                        </div>
 
-            <div class="bg-white shadow rounded-xl p-8 space-y-4">
-                <p><span class="font-semibold">Brand:</span> SoundMax</p>
-                <p><span class="font-semibold">Model:</span> SMX-900</p>
-                <p><span class="font-semibold">Battery Life:</span> Up to 24 hours</p>
-                <p><span class="font-semibold">Connectivity:</span> Bluetooth 5.2</p>
-                <p><span class="font-semibold">Warranty:</span> 1 Year</p>
+                        <div class="price-section mb-2xl">
+                            <span class="current-price">$299</span>
+                            <span class="original-price">$399</span>
+                            <span class="discount-badge">Save $100</span>
+                        </div>
 
-                <p class="mt-6 text-gray-600">
-                    This product is designed for music enthusiasts and professionals seeking high-quality sound output.
-                    The ergonomic design ensures prolonged comfort without ear strain.
-                </p>
-            </div>
-        </section>
-
-        <!-- Similar Products -->
-        <section class="max-w-7xl mx-auto px-6 pb-20">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8">Similar Products</h2>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30"
-                        class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="font-semibold text-gray-700">Classic Watch</h3>
-                        <p class="text-indigo-600 font-bold mt-2">Rs 2,499</p>
-                    </div>
-                </div>
-
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
-                        class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="font-semibold text-gray-700">Casual Sneakers</h3>
-                        <p class="text-indigo-600 font-bold mt-2">Rs 3,200</p>
-                    </div>
-                </div>
-
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
-                        class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="font-semibold text-gray-700">Sports Earbuds</h3>
-                        <p class="text-indigo-600 font-bold mt-2">Rs 1,899</p>
-                    </div>
-                </div>
-
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff"
-                        class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="font-semibold text-gray-700">Digital Watch</h3>
-                        <p class="text-indigo-600 font-bold mt-2">Rs 2,999</p>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- Related Blogs -->
-        <section class="max-w-7xl mx-auto px-6 pb-20">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8">Related Articles</h2>
-
-            <div class="grid md:grid-cols-3 gap-8">
-
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1486276314146-1d9a27568bd3"
-                        class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-gray-800">How to Choose the Best Headphones</h3>
-                        <p class="text-gray-600 mt-3 text-sm">
-                            A quick guide to understanding noise cancelation, drivers, and comfort.
+                        <p class="product-short-desc mb-2xl">
+                            Elevate your style with this elegant chronograph watch featuring premium leather strap,
+                            sapphire crystal, and Swiss-made movement. Water-resistant up to 50 meters.
                         </p>
-                        <a href="#" class="block mt-4 text-indigo-600 font-semibold hover:underline">
-                            Read More →
-                        </a>
+
+                        <!-- Color Selection -->
+                        <div class="option-group mb-xl">
+                            <label class="option-label mb-md">Color: <span style="color: var(--primary-color);">Brown
+                                    Leather</span></label>
+                            <div class="option-values">
+                                <div class="color-option selected" style="background: #8B4513;"
+                                    onclick="selectColor(this, 'Brown Leather')"></div>
+                                <div class="color-option" style="background: #000;"
+                                    onclick="selectColor(this, 'Black Leather')"></div>
+                                <div class="color-option" style="background: #C0C0C0;"
+                                    onclick="selectColor(this, 'Silver Steel')"></div>
+                            </div>
+                        </div>
+
+                        <!-- Size Selection -->
+                        <div class="option-group mb-xl">
+                            <label class="option-label mb-md">Watch Size</label>
+                            <div class="option-values">
+                                <button class="option-btn" onclick="selectOption(this)">40mm</button>
+                                <button class="option-btn selected" onclick="selectOption(this)">42mm</button>
+                                <button class="option-btn" onclick="selectOption(this)">44mm</button>
+                            </div>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="quantity-selector mb-2xl">
+                            <span class="quantity-label">Quantity:</span>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="decrementQty()">−</button>
+                                <input type="number" class="qty-input" value="1" min="1" max="10" id="qtyInput">
+                                <button class="qty-btn" onclick="incrementQty()">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="product-actions mb-2xl">
+                            <button class="btn btn-primary btn-add-to-cart">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <button class="btn btn-outline btn-wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Meta Info -->
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <span class="meta-label"><i class="fas fa-tag"></i> SKU:</span>
+                                <span class="meta-value">WCH-42-BRN-2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label"><i class="fas fa-folder"></i> Category:</span>
+                                <span class="meta-value">Accessories, Watches</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label"><i class="fas fa-truck"></i> Shipping:</span>
+                                <span class="meta-value">Free Shipping</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1519677100203-a0e668c92439"
-                        class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-gray-800">Top Gadgets of 2025</h3>
-                        <p class="text-gray-600 mt-3 text-sm">
-                            Explore the most advanced gadgets trending in 2025.
-                        </p>
-                        <a href="#" class="block mt-4 text-indigo-600 font-semibold hover:underline">
-                            Read More →
-                        </a>
+                <!-- Tabs Section -->
+                <div class="product-tabs mt-4xl">
+                    <div class="tabs-nav mb-2xl">
+                        <button class="tab-btn active" onclick="openTab('description')">Description</button>
+                        <button class="tab-btn" onclick="openTab('specifications')">Specifications</button>
+                        <button class="tab-btn" onclick="openTab('reviews')">Reviews (189)</button>
+                    </div>
+
+                    <!-- Description Tab -->
+                    <div id="description" class="tab-content active">
+                        <div class="tab-panel">
+                            <h3 class="mb-lg">Product Description</h3>
+                            <p style="line-height: 1.8; color: var(--text-secondary);">
+                                Experience the perfect blend of timeless elegance and modern functionality with our
+                                Classic Chronograph Watch. Features Swiss-made movement, sapphire crystal, and premium
+                                leather strap.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Specifications Tab -->
+                    <div id="specifications" class="tab-content">
+                        <div class="tab-panel">
+                            <h3 class="mb-lg">Technical Specifications</h3>
+                            <div style="display: grid; gap: 1rem;">
+                                <div class="spec-row">
+                                    <span style="font-weight: 600;">Movement:</span>
+                                    <span style="color: var(--text-secondary);">Swiss Automatic</span>
+                                </div>
+                                <div class="spec-row">
+                                    <span style="font-weight: 600;">Case Material:</span>
+                                    <span style="color: var(--text-secondary);">316L Stainless Steel</span>
+                                </div>
+                                <div class="spec-row">
+                                    <span style="font-weight: 600;">Water Resistance:</span>
+                                    <span style="color: var(--text-secondary);">50m / 165ft</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div id="reviews" class="tab-content">
+                        <div class="tab-panel">
+                            <h3 class="mb-lg">Customer Reviews</h3>
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="reviewer-info">
+                                        <img src="https://i.pravatar.cc/50?img=33" alt="John" class="reviewer-avatar">
+                                        <div>
+                                            <div class="reviewer-name">John Smith</div>
+                                            <div class="review-date">December 1, 2024</div>
+                                        </div>
+                                    </div>
+                                    <div class="review-rating">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="review-text">
+                                    Absolutely stunning watch! The quality is exceptional and looks even better in
+                                    person.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
-                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"
-                        class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-gray-800">Understanding Bluetooth Technology</h3>
-                        <p class="text-gray-600 mt-3 text-sm">
-                            A deep dive into modern wireless audio technology.
-                        </p>
-                        <a href="#" class="block mt-4 text-indigo-600 font-semibold hover:underline">
-                            Read More →
-                        </a>
-                    </div>
-                </div>
-
             </div>
         </section>
 
