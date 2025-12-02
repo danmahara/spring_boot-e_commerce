@@ -11,14 +11,12 @@
 </div>
 
 
-<div th:fragment="section" class="admin-content" data-status-route="/admin/pages">
+<div th:fragment="section" class="admin-content">
     <div class="bg-white shadow-lg rounded-lg p-6">
-
         <div>
             <div class="flex items-center justify-between mb-4">
-
                 <!-- Create Button -->
-                <a th:href="@{/admin/pages/create}" class="primary-btn px-4 py-2 rounded-lg shadow  transition">
+                <a th:href="@{/admin/pages/create}" class="primary-btn px-4 py-2 rounded-lg shadow transition">
                     + Create
                 </a>
 
@@ -26,7 +24,7 @@
                 <div>
                     <input type="text" placeholder="Search pages..."
                         class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div> 
+                </div>
             </div>
 
             <div class="overflow-x-auto">
@@ -45,10 +43,8 @@
                         <!-- AJAX will populate rows -->
                     </tbody>
                 </table>
-
             </div>
         </div>
-
     </div>
 
     <script th:src="@{/admin/js/ajax-table.js}"></script>

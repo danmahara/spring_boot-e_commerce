@@ -1,5 +1,6 @@
 package com.ecommerce.controllers.admin;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +16,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ecommerce.dtos.config.TableColumn;
+import com.ecommerce.dtos.config.TableConfig;
+import com.ecommerce.dtos.config.TableResponse;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
 import com.ecommerce.models.Page;
@@ -46,8 +51,22 @@ public class PageController {
 
     @GetMapping("/pages/json")
     @ResponseBody
-    public List<Page> getPagesJson() {
-        return pageService.getAllPages();
+    public TableResponse getPagesJson() {
+        List<Page> pages = pageService.getAllPages();
+
+        List<TableColumn> columns = Arrays.asList(
+                new TableColumn("featureImage", "Image", "image"),
+                new TableColumn("title", "Title", "text"),
+                new TableColumn("templateName", "Template", "text"),
+                new TableColumn("order", "Order", "number"));
+
+        TableConfig config = new TableConfig();
+        config.setHasStatus(true);
+        config.setEditRoute("/admin/pages/edit/{id}");
+        config.setStatusRoute("/admin/pages/status/{id}");
+        config.setDeleteRoute("/admin/pages/delete/{id}");
+
+        return new TableResponse(columns, pages, config);
     }
 
     @GetMapping("/pages/create")
@@ -123,19 +142,6 @@ public class PageController {
         Page page = pageService.findById(id).orElseThrow(() -> new RuntimeException("Page not found"));
         model.addAttribute("page", page);
         return "admin/page/edit";
-    }
-
-    @PostMapping("/pages/status")
-    @ResponseBody
-    public Map<String, Object> updateStatus(@RequestParam Long id) {
-
-        pageService.toggleStatus(id);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Status Changed Successfully");
-
-        return response;
     }
 
     @PostMapping("/pages/update/{id}")
@@ -228,6 +234,18 @@ public class PageController {
             return ResponseEntity.internalServerError()
                     .body(response);
         }
+    }
+
+    @PutMapping("/pages/status/{id}")
+    @ResponseBody
+    public Map<String, Object> updateStatus(@PathVariable Long id) {
+        pageService.toggleStatus(id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Status Changed Successfully");
+
+        return response;
     }
 
     @GetMapping("/color-reference")

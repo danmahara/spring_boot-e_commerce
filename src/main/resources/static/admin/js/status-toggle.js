@@ -1,53 +1,56 @@
+// This file is now optional - status updates are handled by ajax-table.js
+// Keep this file for any legacy implementations that might use it
 
-function initStatusToggleDelegation(containerSelector = '[data-status-route]', selector = '.toggle-input') {
+function initStatusToggleDelegation(containerSelector = 'body', selector = '.toggle-input') {
     const container = document.querySelector(containerSelector);
     if (!container) return;
 
     const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
-    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content || 'X-CSRF-TOKEN';
 
-    if (!csrfToken || !csrfHeader) {
-        console.error('CSRF token or header not found');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
         return;
     }
 
     container.addEventListener('change', function (e) {
         const toggle = e.target.closest(selector);
-        if (!toggle) return; // ignore unrelated inputs
+        if (!toggle) return;
+
+        // If toggle has a data-status-route, use it; otherwise skip
+        // (ajax-table.js will handle it with config.statusRoute)
+        const statusRoute = toggle.dataset.statusRoute;
+        if (!statusRoute) return;
 
         const itemId = toggle.dataset.id;
-        const baseRoute = container.getAttribute('data-status-route') || '/admin/pages';
-        const statusUrl = `${baseRoute}/status?id=${itemId}`;
+        const statusUrl = statusRoute.replace('{id}', itemId);
 
         fetch(statusUrl, {
-            method: "POST",
+            method: "PUT",
             headers: {
-                [csrfHeader]: csrfToken,
-            }
+                "Content-Type": "application/json",
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({ status: toggle.checked })
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // showFlashMessage(data.message, 'success');
-
-                    // Shows message with type and optional custom title
-                    showFlashMessage(data.message, 'success', "Success");
-                    // Example: showFlashMessage('Status updated', 'success', 'Success');
-
+                    showFlashMessage(data.message || 'Status updated', 'success', "Success");
                 } else {
-                    showFlashMessage(data.message, 'error', 'Failed');
-                    toggle.checked = !toggle.checked; // revert on error
+                    showFlashMessage(data.message || 'Failed to update', 'error', 'Failed');
+                    toggle.checked = !toggle.checked;
                 }
             })
             .catch(err => {
                 console.error('Error updating status:', err);
-                showFlashMessage('Failed to update status', 'error');
-                toggle.checked = !toggle.checked; // revert on error
+                showFlashMessage('Failed to update status', 'error', 'Failed');
+                toggle.checked = !toggle.checked;
             });
     });
 }
 
-// Auto-init delegation
+// Auto-init for legacy implementations
 document.addEventListener("DOMContentLoaded", function () {
     initStatusToggleDelegation();
 });
