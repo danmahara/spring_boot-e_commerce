@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ecommerce.enums.PageTemplate;
+import com.ecommerce.models.Page;
 import com.ecommerce.repository.admin.DashboardRepository;
 
 @Controller
@@ -22,14 +22,9 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
 
-        // long userCount = userRepository.count(); // total users
-        long pageCount = dashboardRepository.countByTemplateNameNot(PageTemplate.PRODUCT.getTemplateName());
+        long pageCount = dashboardRepository.countByTemplateNameIn(Page.getPageLists());
 
-        long productCount = dashboardRepository.countByTemplateName(PageTemplate.PRODUCT.getTemplateName());
-
-        // model.addAttribute("userCount", userCount);
         model.addAttribute("pageCount", pageCount);
-        model.addAttribute("productCount", productCount);
         model.addAttribute("title", "Home | Dashboard");
 
         return "admin/dashboard"; // Thymeleaf template

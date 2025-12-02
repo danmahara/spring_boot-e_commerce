@@ -56,14 +56,8 @@ public class FrontendController {
     @GetMapping("/{slug}")
     public String loadPage(@PathVariable String slug, Model model) {
 
-        Optional<Page> pageOpt = frontendRepository.findBySlug(slug);
-        if (pageOpt.isEmpty()) {
-            // Return a custom 404 template
-            return "error/404";
-        }
+        Page page = frontendRepository.findBySlug(slug);
 
-        Page page = pageOpt.get();
-        // Convert page.getTemplateName() → enum
         PageTemplate template = PageTemplate.fromString(page.getTemplateName());
         System.out.println("Template: " + template);
 
