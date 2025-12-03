@@ -1,7 +1,6 @@
 package com.ecommerce.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,7 +38,7 @@ public class FrontendController {
     }
 
     public List<Page> allPages() {
-        return frontendRepository.findByTemplateNameInAndStatusTrue(Page.getPageLists());
+        return frontendRepository.findByTemplateNameInAndStatusTrueOrderByOrderAsc(Page.getPageLists());
     }
 
     @GetMapping("/products/{slug}")
@@ -56,7 +55,9 @@ public class FrontendController {
     @GetMapping("/{slug}")
     public String loadPage(@PathVariable String slug, Model model) {
 
+        System.out.println("Slug:" + slug);
         Page page = frontendRepository.findBySlug(slug);
+        System.out.println("Page: " + page);
 
         PageTemplate template = PageTemplate.fromString(page.getTemplateName());
         System.out.println("Template: " + template);

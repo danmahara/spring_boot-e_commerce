@@ -22,7 +22,7 @@ public class FrontendService {
 
     public List<Page> getAllProducts() {
         List<Page> products = frontendRepository
-                .findByTemplateNameAndStatusTrue(PageTemplate.PRODUCT.getTemplateName());
+                .findByTemplateNameAndStatusTrue(PageTemplate.PRODUCT_LIST.getTemplateName());
 
         // Load images for each page
         for (Page page : products) {
