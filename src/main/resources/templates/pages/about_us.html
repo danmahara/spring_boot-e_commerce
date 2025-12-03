@@ -3,111 +3,99 @@
 
 
 <div th:fragment="section">
+    <style>
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+            /* background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%); */
+        }
 
-    <!-- Hero Section -->
-    <section class="relative h-screen w-full bg-cover bg-center"
-        style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff');">
-        <div class="absolute inset-0 bg-black/60"></div>
+        /* Slide */
+        .hero-slide {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
 
-        <div class="relative z-10 flex items-center justify-center h-full text-center px-6">
-            <div>
-                <h1 class="text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg">
-                    About <span class="text-indigo-400">Our Store</span>
-                </h1>
-                <p class="mt-6 text-lg md:text-xl text-gray-200 max-w-3xl mx-auto">
-                    We bring quality, comfort, and trust together — delivering your favorite products with love.
-                </p>
-            </div>
-        </div>
-    </section>
+        .hero-slide.active {
+            z-index: 1;
+        }
 
-    <!-- Our Story -->
-    <section class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-4xl font-bold text-gray-800">Our Story</h2>
-            <p class="mt-4 text-gray-600 max-w-3xl mx-auto">
-                Founded with a passion for quality and customer happiness, our journey began with a simple idea:
-                make great products accessible to everyone. Today, we serve thousands of happy customers with
-                premium products and unmatched support.
-            </p>
+        /* Hero Image */
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            z-index: 1;
+        }
 
-            <div class="mt-12 grid md:grid-cols-2 gap-10">
-                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30"
-                    class="w-full rounded-2xl shadow-lg" alt="Our Story Image">
+        /* Overlay (optional) */
+        .hero-slide::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.5), rgba(139, 92, 246, 0.5));
+            z-index: 2;
+        }
 
-                <div class="flex flex-col justify-center text-left">
-                    <h3 class="text-2xl font-semibold text-gray-700">Built With Passion</h3>
-                    <p class="mt-3 text-gray-600">
-                        Every product is selected with care to ensure exceptional value. Our team works day and
-                        night
-                        to deliver fast, reliable service and a seamless shopping experience.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+        /* Content */
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-    <!-- Mission & Values -->
-    <section class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center text-gray-800">Our Mission & Values</h2>
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
 
-            <div class="mt-12 grid md:grid-cols-3 gap-10">
-                <div class="bg-white p-8 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 class="text-2xl font-semibold text-indigo-600">Quality First</h3>
-                    <p class="mt-3 text-gray-600">
-                        We ensure every product meets high standards of durability, comfort, and design.
-                    </p>
-                </div>
+        .hero-content p {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+    </style>
 
-                <div class="bg-white p-8 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 class="text-2xl font-semibold text-indigo-600">Customer Happiness</h3>
-                    <p class="mt-3 text-gray-600">
-                        Your satisfaction is our top priority — from browsing to delivery.
-                    </p>
-                </div>
+    <section class="hero-section">
+        <div class="hero-slide active">
 
-                <div class="bg-white p-8 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 class="text-2xl font-semibold text-indigo-600">Sustainable Future</h3>
-                    <p class="mt-3 text-gray-600">
-                        We promote eco-friendly packaging and responsible sourcing.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+            <!-- Image instead of background -->
+            <img src="/images/default-hero.jpg" alt="Hero Image" class="hero-image">
 
-    <!-- Team Section (Optional) -->
-    <section class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-4xl font-bold text-gray-800">Meet Our Team</h2>
-
-            <div class="mt-12 grid sm:grid-cols-2 md:grid-cols-3 gap-10">
-                <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-32 mx-auto rounded-full shadow"
-                        alt="Team Member">
-                    <h4 class="mt-4 text-xl font-semibold text-gray-700">Amit Sharma</h4>
-                    <p class="text-indigo-600 text-sm">Founder & CEO</p>
-                </div>
-
-                <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
-                    <img src="https://randomuser.me/api/portraits/women/45.jpg" class="w-32 mx-auto rounded-full shadow"
-                        alt="Team Member">
-                    <h4 class="mt-4 text-xl font-semibold text-gray-700">Priya Karki</h4>
-                    <p class="text-indigo-600 text-sm">Product Manager</p>
-                </div>
-
-                <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
-                    <img src="https://randomuser.me/api/portraits/men/76.jpg" class="w-32 mx-auto rounded-full shadow"
-                        alt="Team Member">
-                    <h4 class="mt-4 text-xl font-semibold text-gray-700">Rohan Dev</h4>
-                    <p class="text-indigo-600 text-sm">Marketing Lead</p>
-                </div>
+            <div class="hero-content ">
+                <h1>About Us</h1>
+                <p>Learn about our mission and values.</p>
             </div>
         </div>
     </section>
 
 
-    </section>
+
+
+</div>
 
 </html>
