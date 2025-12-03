@@ -2,7 +2,6 @@ package com.ecommerce.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,16 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.models.Page;
-import com.ecommerce.repository.FrontendRepository;
 import com.ecommerce.services.FrontendService;
 
 @Controller
 public class FrontendController {
 
     private final FrontendService frontendService;
-
-    @Autowired
-    FrontendRepository frontendRepository;
 
     FrontendController(FrontendService frontendService) {
         this.frontendService = frontendService;
@@ -38,7 +33,7 @@ public class FrontendController {
     }
 
     public List<Page> allPages() {
-        return frontendRepository.findByTemplateNameInAndStatusTrueOrderByOrderAsc(Page.getPageLists());
+        return frontendService.getAllActivePages();
     }
 
     @GetMapping("/products/{slug}")
@@ -55,17 +50,12 @@ public class FrontendController {
     @GetMapping("/{slug}")
     public String loadPage(@PathVariable String slug, Model model) {
 
-        System.out.println("Slug:" + slug);
-        Page page = frontendRepository.findBySlug(slug);
-        System.out.println("Page: " + page);
+        Page page = frontendService.findBySlug(slug);
 
         PageTemplate template = PageTemplate.fromString(page.getTemplateName());
-        System.out.println("Template: " + template);
 
         switch (template) {
             case ABOUT_US:
-                System.out.println("About us page");
-                // You can add additional model attributes here
                 break;
 
             case PRODUCT_LIST:
