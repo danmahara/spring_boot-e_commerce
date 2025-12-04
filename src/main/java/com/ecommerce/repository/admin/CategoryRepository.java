@@ -16,4 +16,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     // Only active categories
     List<Category> findByStatusTrueOrderBySortOrderAsc();
+
+    List<Category> findByIdNot(Long id);
+
 }
