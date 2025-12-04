@@ -6,7 +6,8 @@
 <div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
         'Update Page',
         ~{admin/components/breadcrumb-icons :: icon-pages}
-     )"></div>
+     )">
+</div>
 
 
 <div th:fragment="section" class="admin-content">
@@ -16,17 +17,13 @@
             class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- Product Name -->
-            <div>
-                <label class="block mb-1 font-medium text-gray-700">Page Name</label>
-                <input type="text" name="title" th:value="${page.title}" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
-                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            <div
+                th:replace="~{admin/components/input-field :: input-field('Page Title', 'title', 'Enter page title', 'text', true,${page.title})}">
             </div>
 
             <!-- Slug -->
-            <div>
-                <label class="block mb-1 font-medium text-gray-700">Slug</label>
-                <input type="text" name="slug" th:value="${page.slug}" class="px-3 py-2 border border-gray-300 rounded-lg w-full 
-                       focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            <div
+                th:replace="~{admin/components/input-field :: input-field('Slug', 'slug', 'Slug (Optional)', 'text', false,${page.slug})}">
             </div>
 
             <!-- Thumbnail -->
@@ -130,7 +127,9 @@
             fetch(`/admin/pages/update/${id}`, {
                 method: 'POST',
                 body: formData,
-                headers: { [csrfHeader]: csrfToken }
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
             })
                 .then(res => res.json())
                 .then(data => {
