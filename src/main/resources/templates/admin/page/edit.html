@@ -97,21 +97,6 @@
 
     <!-- JS for preview + fetch -->
     <script>
-        function updateFilePreview(input, imgId, spanId) {
-            const file = input.files[0];
-            const preview = document.getElementById(imgId);
-            const nameSpan = document.getElementById(spanId);
-
-            if (file) {
-                nameSpan.textContent = file.name;
-                nameSpan.classList.remove('hidden');
-
-                preview.src = URL.createObjectURL(file);
-            } else {
-                nameSpan.classList.add('hidden');
-                preview.src = "";
-            }
-        }
 
         document.getElementById('updateProductForm').addEventListener('submit', function (e) {
             e.preventDefault();
