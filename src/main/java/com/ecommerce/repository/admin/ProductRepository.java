@@ -1,14 +1,14 @@
 package com.ecommerce.repository.admin;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Product;
 
-public interface ProductRepository extends JpaRepository<Page, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    public List<Page> findByType(String type);
+    boolean existsBySlug(String slug);
 
+    boolean existsBySku(String sku);
 
+    Product findBySlug(String slug);
 }
