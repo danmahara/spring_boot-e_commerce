@@ -66,7 +66,9 @@ public class ProductController {
     }
 
     @GetMapping("create")
-    public String create() {
+    public String create(Model model) {
+        model.addAttribute("categories", productService.getAllActiveCategories());
+
         return "admin/product/create";
     }
 
@@ -93,6 +95,10 @@ public class ProductController {
 
             if (request.getCoverImage() == null || request.getCoverImage().isEmpty()) {
                 errors.put("coverImage", "Cover image is required");
+            }
+
+            if (request.getCategories() == null || request.getCategories().isEmpty()) {
+                errors.put("categories", "At least one category is required");
             }
 
             // Return all errors together if any exist
@@ -164,7 +170,9 @@ public class ProductController {
     public String edit(@PathVariable Long id, Model model) {
         System.out.println("Edit method");
         Product product = productService.findById(id);
+
         model.addAttribute("product", product);
+        model.addAttribute("categories", productService.getAllActiveCategories());
         return "admin/product/edit";
     }
 
@@ -174,30 +182,27 @@ public class ProductController {
             @PathVariable Long id,
             @Valid @ModelAttribute ProductRequest request,
             BindingResult bindingResult) {
-
         Map<String, Object> response = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
-
         try {
-
-            // -------------------------------
-            // 1. Collect default validation errors
-            // -------------------------------
+            // Collect default validation errors
             if (bindingResult.hasErrors()) {
                 bindingResult.getFieldErrors()
                         .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
             }
 
-            // ------------------------------------------
-            // 2. DO NOT require images again on update
-            // ------------------------------------------
-            // BUT: If user uploads one, allow it
-            if (request.getImage() != null && request.getImage().isEmpty()) {
-                // errors.put("image", "Invalid thumbnail image");
+            // Validate categories
+            if (request.getCategories() == null || request.getCategories().isEmpty()) {
+                errors.put("categories", "At least one category is required");
             }
 
+            // DO NOT require images again on update
+            // BUT: If user uploads one, allow it
+            if (request.getImage() != null && request.getImage().isEmpty()) {
+                // Skip validation
+            }
             if (request.getCoverImage() != null && request.getCoverImage().isEmpty()) {
-                // errors.put("coverImage", "Invalid cover image");
+                // Skip validation
             }
 
             if (!errors.isEmpty()) {
@@ -207,26 +212,20 @@ public class ProductController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // ------------------------------------------
-            // 3. Validate discount logic
-            // ------------------------------------------
+            // Validate discount logic
             if (request.getDiscountType() != null && !request.getDiscountType().isEmpty()) {
-
                 if ("percentage".equals(request.getDiscountType())) {
                     if (request.getDiscountPercent() == null ||
                             request.getDiscountPercent().compareTo(BigDecimal.ZERO) <= 0) {
-
                         errors.put("discountPercent", "Discount percent is required when discount type is percentage");
                         response.put("success", false);
                         response.put("errors", errors);
                         return ResponseEntity.badRequest().body(response);
                     }
                 }
-
                 if ("fixed".equals(request.getDiscountType())) {
                     if (request.getDiscountPrice() == null ||
                             request.getDiscountPrice().compareTo(BigDecimal.ZERO) <= 0) {
-
                         errors.put("discountPrice", "Discount price is required when discount type is fixed");
                         response.put("success", false);
                         response.put("errors", errors);
@@ -235,13 +234,10 @@ public class ProductController {
                 }
             }
 
-            // ------------------------------------------
-            // 4. Validate specifications JSON
-            // ------------------------------------------
+            // Validate specifications JSON
             String specs = request.getSpecifications();
-
             if (specs == null || specs.trim().isEmpty()) {
-                request.setSpecifications(null); // set empty JSON to null
+                request.setSpecifications(null);
             } else {
                 try {
                     new ObjectMapper().readTree(specs);
@@ -253,21 +249,16 @@ public class ProductController {
                 }
             }
 
-            // ------------------------------------------
-            // 5. Call Service Layer to update product
-            // ------------------------------------------
+            // Call Service Layer to update product
             productService.update(id, request);
-
             response.put("success", true);
             response.put("message", "Product updated successfully");
-
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
             response.put("success", false);
             response.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(response);
-
         } catch (Exception e) {
             response.put("success", false);
             response.put("error", "An error occurred while updating the product");
