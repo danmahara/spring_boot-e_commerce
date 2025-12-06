@@ -14,7 +14,7 @@
     <div class="bg-white shadow-lg rounded-lg p-6 w-full">
 
         <form id="updateProductForm" enctype="multipart/form-data" th:data-id="${page.id}"
-            class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            class="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- Product Name -->
             <div
@@ -63,7 +63,6 @@
 
             <!-- Hidden Template -->
             <input type="hidden" name="templateName" th:value="${page.templateName}">
-            <!-- <input type="hidden" name="type" th:value="${product.type}"> -->
 
             <!-- Description -->
             <div class="w-full md:col-span-2">
@@ -73,23 +72,52 @@
             </div>
 
             <!-- Order -->
-            <div
-                th:replace="~{admin/components/input-field :: input-field('Order', 'sortOrder', 'Order', 'number', false,${page.order})}">
+            <div class="col-span-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="w-full bg-blue-500"
+                        th:replace="~{admin/components/input-field :: input-field('Order', 'sortOrder', 'Order', 'number', false,${page.order})}">
+                    </div>
+
+                </div>
             </div>
 
-            <!-- Status -->
-            <div class="flex items-center space-x-3 mt-6 md:mt-0">
-                <label class="block font-medium text-gray-700">Status</label>
 
-                <input type="checkbox" name="status" value="1" th:checked="${page.status == true}" class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded 
+            <div class="col-span-2">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+                    <!-- Status -->
+                    <div class=" w-full flex items-center space-x-3 mt-6 md:mt-0">
+                        <label class="block font-medium text-gray-700">Status</label>
+
+                        <input type="checkbox" name="status" value="1" th:checked="${page.status == true}" class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded 
                        focus:ring-2 focus:ring-[var(--primary-bg)]">
+                    </div>
+
+                    <div class="w-full flex items-center space-x-3 mt-6 md:mt-0">
+                        <label class="block font-medium text-gray-700">Is Main Menu</label>
+                        <!-- <input type="hidden" name="isMainMenu" value="false"> -->
+
+                        <input type="checkbox" name="mainMenu" value="1" th:checked="${page.mainMenu==true}" class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded focus-outline-none focus:ring-2 focus:ring-[var(--primary-bg)]
+                  dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-[var(--primary-bg)]">
+
+                    </div>
+                    <div class="w-full flex items-center space-x-3 mt-6 md:mt-0">
+                        <label class="block font-medium text-gray-700">Is DropDown Menu</label>
+                        <!-- <input type="hidden" name="isDropdownMenu" value="false"> -->
+                        <input type="checkbox" name="dropdownMenu" value="1" th:checked="${page.dropdownMenu==true}"
+                            class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded focus:ring-2 focus:ring-[var(--primary-bg)]
+                  dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-[var(--primary-bg)]">
+                    </div>
+
+                </div>
             </div>
 
             <!-- Submit -->
-            <div class="md:col-span-2 pt-2">
-                <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
-                    Update Page
-                </button>
+            <div class="col-span-2">
+                <div class="md:col-span-2 pt-2">
+                    <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
+                        Update Page
+                    </button>
+                </div>
             </div>
         </form>
 
@@ -97,7 +125,6 @@
 
     <!-- JS for preview + fetch -->
     <script>
-
         document.getElementById('updateProductForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -108,7 +135,7 @@
             const formData = new FormData(this);
 
             fetch(`/admin/pages/update/${id}`, {
-                method: 'POST',
+                method: 'PUT',
                 body: formData,
                 headers: {
                     [csrfHeader]: csrfToken

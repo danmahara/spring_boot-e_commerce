@@ -61,10 +61,10 @@ public class Page implements Imageable {
     private Integer order = 0; // flexible ordering
 
     @Column(name = "is_main_menu", nullable = false)
-    private boolean isMainMenu = false;
+    private boolean mainMenu = false;
 
     @Column(name = "is_dropdown_menu", nullable = false)
-    private boolean isDropdownMenu = false;
+    private boolean dropdownMenu = false;
 
     @Column(nullable = false)
     private boolean status = false; // true = active
@@ -126,7 +126,7 @@ public class Page implements Imageable {
     public String toString() {
         return "Page [id=" + id + ", title=" + title + ", slug=" + slug + ", templateName=" + templateName
                 + ", description=" + description + ", type=" + type + ", order=" + order
-                + ", status=" + status + ", isMainMenu=" + isMainMenu + ", isDropdownMenu=" + isDropdownMenu
+                + ", status=" + status + ", isMainMenu=" + mainMenu + ", isDropdownMenu=" + dropdownMenu
                 + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
     }
 }

@@ -117,6 +117,8 @@ public class PageController {
             page.setStatus(request.isStatus());
             page.setOrder(request.getSortOrder());
             page.setTemplateName(request.getTemplateName());
+            page.setMainMenu(request.isMainMenu() ? request.isMainMenu() : false);
+            page.setDropdownMenu(request.isDropdownMenu() ? request.isDropdownMenu() : false);
 
             Page savedPage = pageService.savePage(page);
 
@@ -143,7 +145,7 @@ public class PageController {
         return "admin/page/edit";
     }
 
-    @PostMapping("/pages/update/{id}")
+    @PutMapping("/pages/update/{id}")
     public ResponseEntity<Map<String, Object>> updatePage(
             @PathVariable Long id,
             @Valid @ModelAttribute PageRequest request,
@@ -190,6 +192,9 @@ public class PageController {
             oldPage.setStatus(request.isStatus());
             oldPage.setOrder(request.getSortOrder());
             oldPage.setType(oldPage.getType());
+            System.out.println("IS main menu: " + request.isMainMenu());
+            oldPage.setMainMenu(request.isMainMenu());
+            oldPage.setDropdownMenu(request.isDropdownMenu());
 
             Page updatedPage = pageService.savePage(oldPage);
 

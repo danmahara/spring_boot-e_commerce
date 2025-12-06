@@ -25,8 +25,8 @@ public class PageRequest {
 
     private Integer sortOrder;
 
-    private boolean isMainMenu;
-    private boolean isDropdownMenu;
+    private boolean mainMenu;
+    private boolean dropdownMenu;
 
     // No validation annotation - will be validated manually
     private MultipartFile image;
@@ -39,7 +39,7 @@ public class PageRequest {
         return "PageRequest [title=" + title + ", slug=" + slug + ", description=" + description
                 + ", templateName=" + templateName
                 + ", status=" + status + ", sortOrder=" + sortOrder
-                + ", isMainMenu=" + isMainMenu + ", isDropdownMenu=" + isDropdownMenu
+                + ", isMainMenu=" + mainMenu + ", isDropdownMenu=" + dropdownMenu
                 + ", image=" + image + ", coverImage=" + coverImage + "]";
     }
 }

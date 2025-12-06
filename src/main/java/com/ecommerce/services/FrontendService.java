@@ -28,6 +28,10 @@ public class FrontendService {
         return frontendRepository.findByTemplateNameInAndStatusTrueOrderByOrderAsc(Page.getPageLists());
     }
 
+    public List<Page> getAllActiveAndOnMainMenuPages() {
+        return frontendRepository.findByTemplateNameInAndStatusTrueAndMainMenuTrueOrderByOrderAsc(Page.getPageLists());
+    }
+
     public Page findBySlug(String slug) {
 
         Page page = frontendRepository.findBySlug(slug);
