@@ -295,45 +295,55 @@
                 </div>
             </div>
 
-            <!-- Price -->
-            <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Price <span class="text-red-500">*</span></label>
-                <input type="number" name="price" th:value="${product.price}" step="0.01"
-                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            <div class="col-span-2">
+
+                <div class="grid  md:grid-cols-3 gap-6 ">
+
+                    <div class="w-full">
+                        <label class="block mb-1 font-medium text-gray-700">Currency <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="currency" th:value="${product.currency}" maxlength="10"
+                            class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+                    </div>
+
+                    <div class="w-full">
+                        <label class="block mb-1 font-medium text-gray-700">Price <span
+                                class="text-red-500">*</span></label>
+                        <input type="number" name="price" th:value="${product.price}" step="0.01"
+                            class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+                    </div>
+
+                    <div class="w-full">
+                        <label class="block mb-1 font-medium text-gray-700">Discount Type</label>
+                        <select name="discountType" id="discountType"
+                            class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+                            <option value="">Select Discount Type</option>
+                            <option value="percentage" th:selected="${product.discountType == 'percentage'}">Percentage
+                            </option>
+                            <option value="fixed" th:selected="${product.discountType == 'fixed'}">
+                                Fixed Amount</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <!-- Discount Type -->
-            <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Discount Type</label>
-                <select name="discountType"
-                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
-                    <option value="">Select Discount Type</option>
-                    <option value="percentage" th:selected="${product.discountType == 'percentage'}">Percentage
-                    </option>
-                    <option value="fixed" th:selected="${product.discountType == 'fixed'}">Fixed Amount</option>
-                </select>
-            </div>
 
             <!-- Discount Price -->
-            <div class="w-full">
+            <div id="fixedField" class="w-full">
                 <label class="block mb-1 font-medium text-gray-700">Discount Price</label>
-                <input type="number" name="discountPrice" th:value="${product.discountPrice}" step="0.01"
+                <input type="number" name="discountPrice" th:value="${product.discountPrice}"
+                    placeholder="(Optional) Can be 0" min="0" max="100" step="0.01"
                     class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
             </div>
 
             <!-- Discount Percent -->
-            <div class="w-full">
+            <div id="percentField" class="w-full">
                 <label class="block mb-1 font-medium text-gray-700">Discount Percent</label>
                 <input type="number" name="discountPercent" th:value="${product.discountPercent}" step="0.01"
                     class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
             </div>
 
-            <!-- Currency -->
-            <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Currency <span class="text-red-500">*</span></label>
-                <input type="text" name="currency" th:value="${product.currency}" maxlength="10"
-                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
-            </div>
+
 
             <!-- Quantity -->
             <div class="w-full">
@@ -364,10 +374,15 @@
             </div>
 
             <!-- Order -->
-            <div class="w-full">
-                <label class="block mb-1 font-medium text-gray-700">Order</label>
-                <input type="number" name="sortOrder" th:value="${product.sortOrder}"
-                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+            <div class="w-full col-span-2">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block mb-1 font-medium text-gray-700">Order</label>
+                        <input type="number" name="sortOrder" th:value="${product.sortOrder}"
+                            class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]">
+                    </div>
+
+                </div>
             </div>
 
             <!-- Status -->
@@ -636,5 +651,7 @@
             updateHiddenInput();
         });
     </script>
+
+
 
 </div>
