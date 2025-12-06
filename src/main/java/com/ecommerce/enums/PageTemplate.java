@@ -1,5 +1,9 @@
 package com.ecommerce.enums;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public enum PageTemplate {
     ABOUT_US("about_us"),
     CONTACT_US("contact_us"),
@@ -8,6 +12,7 @@ public enum PageTemplate {
     LOGIN("login"),
     REGISTER("register"),
     PRODUCT_LIST("product_list"),
+    CATEGORY_LIST("category_list"),
     PRODUCT("product");
 
     private final String templateName;
@@ -28,5 +33,14 @@ public enum PageTemplate {
             }
         }
         throw new IllegalArgumentException("Unknown template: " + templateName);
+    }
+
+    // New method: get all templates excluding some
+    public static PageTemplate[] getAllExcluding(PageTemplate... exclude) {
+        Set<PageTemplate> excludeSet = new HashSet<>(Arrays.asList(exclude));
+
+        return Arrays.stream(values())
+                .filter(t -> !excludeSet.contains(t))
+                .toArray(PageTemplate[]::new);
     }
 }

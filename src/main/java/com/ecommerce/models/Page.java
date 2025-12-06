@@ -103,22 +103,22 @@ public class Page implements Imageable {
     }
 
     // public static PageTemplate[] getPageTemplateList() {
-    // return new PageTemplate[] {
-    // PageTemplate.ABOUT_US, PageTemplate.CONTACT_US
+    // PageTemplate[] templates = new PageTemplate[] {
+    // PageTemplate.ABOUT_US,
+    // PageTemplate.CONTACT_US,
+    // PageTemplate.LOGIN,
+    // PageTemplate.REGISTER,
+    // PageTemplate.PRODUCT_LIST,
+    // PageTemplate.CATEGORY_LIST,
+    // PageTemplate.PRIVACY,
+    // PageTemplate.TERMS
+
     // };
+    // return templates;
     // }
 
     public static PageTemplate[] getPageTemplateList() {
-        PageTemplate[] templates = new PageTemplate[] {
-                PageTemplate.ABOUT_US,
-                PageTemplate.CONTACT_US,
-                PageTemplate.LOGIN,
-                PageTemplate.REGISTER,
-                PageTemplate.PRODUCT_LIST,
-                PageTemplate.PRIVACY,
-                PageTemplate.TERMS
-
-        };
+        PageTemplate[] templates = PageTemplate.getAllExcluding(PageTemplate.PRODUCT);
         return templates;
     }
 
