@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -90,4 +91,12 @@ public class Product implements Imageable {
         return "product"; // instance method
     }
 
+    @Transient
+    public String getCategoryNames() {
+        if (categories == null || categories.isEmpty())
+            return "";
+        return categories.stream()
+                .map(Category::getTitle)
+                .collect(Collectors.joining(", "));
+    }
 }

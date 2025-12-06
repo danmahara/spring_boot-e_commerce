@@ -54,10 +54,10 @@ public class Category {
     @JsonManagedReference // allows children to be serialized
     private List<Category> children = new ArrayList<>();
 
-
     @ManyToMany(mappedBy = "categories")
     @JsonBackReference
-    private List<Product> products =new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     
+
 }
