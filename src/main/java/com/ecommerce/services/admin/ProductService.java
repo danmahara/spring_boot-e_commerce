@@ -90,16 +90,15 @@ package com.ecommerce.services.admin;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ecommerce.enums.PageType;
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Category;
 import com.ecommerce.models.admin.Image;
 import com.ecommerce.models.admin.Product;
+import com.ecommerce.repository.admin.CategoryRepository;
 import com.ecommerce.repository.admin.ImageRepository;
 import com.ecommerce.repository.admin.ProductRepository;
 import com.ecommerce.requests.admin.ProductRequest;
@@ -115,6 +114,16 @@ public class ProductService {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    public List<Product> getAllActiveProducts() {
+        return productRepository.findByStatusTrueOrderBySortOrderAsc();
+    }
 
     public Product findById(Long id) {
         return productRepository.findById(id)
@@ -168,6 +177,14 @@ public class ProductService {
         // Save the product first to get the ID
         product = productRepository.save(product);
 
+        // CATEGORY ASSIGNMENT
+        if (request.getCategories() != null && !request.getCategories().isEmpty()) {
+            List<Category> categories = categoryRepository.findAllById(request.getCategories());
+
+            // product.setCategories(new HashSet<>(categories));
+            product.setCategories(categories);
+        }
+
         // Handle image uploads
         try {
             List<Image> images = new ArrayList<>();
@@ -192,18 +209,13 @@ public class ProductService {
         return product;
     }
 
-    // @Override
     public void update(Long id, ProductRequest request) {
-
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         product.setName(request.getName());
         product.setSlug(generateSlug(request.getSlug().isEmpty() ? request.getName() : request.getSlug()));
         product.setPrice(request.getPrice());
-        product.setDiscountType(request.getDiscountType());
-        product.setDiscountPrice(request.getDiscountPrice());
-        product.setDiscountPercent(request.getDiscountPercent());
         product.setCurrency(request.getCurrency());
         product.setQuantity(request.getQuantity() != null ? request.getQuantity() : 0);
         product.setSku(request.getSku());
@@ -216,7 +228,6 @@ public class ProductService {
         // Discount Logic
         // -----------------------
         product.setDiscountType(request.getDiscountType());
-
         if ("percentage".equals(request.getDiscountType())) {
             product.setDiscountPercent(request.getDiscountPercent());
             product.setDiscountPrice(null); // reset
@@ -230,27 +241,35 @@ public class ProductService {
         }
 
         // -----------------------
+        // UPDATE CATEGORIES
+        // -----------------------
+        if (request.getCategories() != null && !request.getCategories().isEmpty()) {
+            List<Category> categories = categoryRepository.findAllById(request.getCategories());
+            product.setCategories(categories);
+        } else {
+            // If no categories provided, clear all categories
+            product.setCategories(new ArrayList<>());
+        }
+
+        // -----------------------
         // Image Uploads
         // -----------------------
+        Product savedProduct = productRepository.save(product);
 
-        Product savedProdduct = productRepository.save(product);
-
-        // 1. Update thumbnail image if provided
         try {
+            // 1. Update thumbnail image if provided
             if (request.getImage() != null && !request.getImage().isEmpty()) {
-                savedProdduct.updateFeatureImage(imageService, request.getImage());
+                savedProduct.updateFeatureImage(imageService, request.getImage());
             }
 
             // 2. Update cover image if provided
             if (request.getCoverImage() != null && !request.getCoverImage().isEmpty()) {
-                savedProdduct.updateCoverImage(imageService, request.getCoverImage());
-
+                savedProduct.updateCoverImage(imageService, request.getCoverImage());
             }
         } catch (Exception e) {
-            System.out.println("Failed to update product image ");
+            System.out.println("Failed to update product image");
             System.out.println("Error: " + e.getMessage());
         }
-
     }
 
     public List<Product> findAll() {
@@ -277,5 +296,9 @@ public class ProductService {
 
     private String generateSlug(String name) {
         return name.toLowerCase().replace(" ", "-");
+    }
+
+    public List<Category> getAllActiveCategories() {
+        return categoryService.getAllCategories();
     }
 }

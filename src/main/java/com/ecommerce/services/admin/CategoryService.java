@@ -67,6 +67,9 @@ public class CategoryService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+    public List<Category> getAllActiveCategories() {
+        return categoryRepository.findByStatusTrueOrderBySortOrderAsc();
+    }
 
     public List<Category> getAllExcept(Long id) {
         return categoryRepository.findByIdNot(id);
