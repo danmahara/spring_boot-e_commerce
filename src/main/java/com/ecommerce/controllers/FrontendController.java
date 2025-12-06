@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Product;
 import com.ecommerce.services.FrontendService;
 
 @Controller
@@ -52,6 +53,10 @@ public class FrontendController {
 
         Page page = frontendService.findBySlug(slug);
 
+        if (page == null) {
+            return "error/404"; // or redirect
+        }
+
         PageTemplate template = PageTemplate.fromString(page.getTemplateName());
 
         switch (template) {
@@ -59,7 +64,7 @@ public class FrontendController {
                 break;
 
             case PRODUCT_LIST:
-                List<Page> p = frontendService.getAllProducts();
+                List<Product> p = frontendService.getAllActiveProducts();
                 model.addAttribute("products", p);
                 break;
 
@@ -72,7 +77,6 @@ public class FrontendController {
         model.addAttribute("title", page.getTitle() + " - MyShop");
         model.addAttribute("pages", allPages());
 
-        // Render the template based on templateName
         return "pages/" + page.getTemplateName();
     }
 
