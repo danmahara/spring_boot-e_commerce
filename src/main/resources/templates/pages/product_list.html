@@ -513,9 +513,6 @@
                         </div>
                     </div>
 
-                    <!-- <p th:text="${products}"></p> -->
-
-
                     <!-- Products Grid -->
                     <div class="grid grid-3">
 
@@ -541,8 +538,20 @@
                                 <p class="product-description line-clamp-2 " th:text="${product.description}"></p>
                                 <div class="product-footer">
                                     <div>
-                                        <span class="product-price">$299</span>
-                                        <span class="product-price-old">$399</span>
+                                        <!-- <span class="product-price">$299</span> -->
+                                        <div class="flex product-price">
+                                            <span th:text="${product.currency}"></span>
+                                            <!-- <span th:text="${product.price}"></span> -->
+                                            <span class="product-price" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
+                                            product.discountType == 'percentage' ? 
+                                            product.price - (product.price * product.discountPercent / 100.0) : 
+                                            product.price - product.discountPrice, 
+                                            1, 'COMMA', 2, 'POINT')}">
+                                            </span>
+                                        </div>
+                                        <!-- <span class="product-price-old">$399</span> -->
+                                        <span class="product-price-old" th:text="${product.price}"></span>
+
                                     </div>
                                     <div class="product-rating">
                                         <i class="fas fa-star"></i>
@@ -561,113 +570,9 @@
                                     </a>
                                 </div>
 
-
                             </div>
                         </div>
 
-
-
-                        <!-- Product 2 -->
-                        <!-- <div class="product-card">
-                            <div class="product-card-image">
-                                <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500"
-                                    alt="Sunglasses">
-                                <span class="product-badge" style="background: var(--error-color);">Sale</span>
-                            </div>
-                            <div class="product-card-content">
-                                <div class="product-category">Eyewear</div>
-                                <h3 class="product-title">Designer Sunglasses</h3>
-                                <p class="product-description">UV protection with polarized lenses</p>
-                                <div class="product-footer">
-                                    <div>
-                                        <span class="product-price">$159</span>
-                                        <span class="product-price-old">$229</span>
-                                    </div>
-                                    <div class="product-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <span>(5.0)</span>
-                                    </div>
-                                </div>
-                                <a href="">
-                                    <button href="product-details.html" class="btn-add-cart"
-                                        style="background: var(--secondary-color);">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </button>
-                                </a>
-                            </div>
-                        </div> -->
-
-                        <!-- Product 3 -->
-                        <!-- <div class="product-card">
-                            <div class="product-card-image">
-                                <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500"
-                                    alt="Sneakers">
-                                <span class="product-badge" style="background: var(--success-color);">Eco</span>
-                            </div>
-                            <div class="product-card-content">
-                                <div class="product-category">Footwear</div>
-                                <h3 class="product-title">Sport Running Shoes</h3>
-                                <p class="product-description">Lightweight design with breathable mesh</p>
-                                <div class="product-footer">
-                                    <div>
-                                        <span class="product-price">$129</span>
-                                    </div>
-                                    <div class="product-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <span>(4.0)</span>
-                                    </div>
-                                </div>
-                                <a href="">
-                                    <button href="product-details.html" class="btn-add-cart"
-                                        style="background: var(--secondary-color);">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </button>
-                                </a>
-                            </div>
-                        </div> -->
-
-
-                        <!-- <div class="product-card">
-                            <div class="product-card-image">
-                                <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500"
-                                    alt="Backpack">
-                            </div>
-                            <div class="product-card-content">
-                                <div class="product-category">Bags</div>
-                                <h3 class="product-title">Travel Backpack Pro</h3>
-                                <p class="product-description">Water-resistant with laptop compartment</p>
-                                <div class="product-footer">
-                                    <div>
-                                        <span class="product-price">$89</span>
-                                    </div>
-                                    <div class="product-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
-                                        <span>(4.7)</span>
-                                    </div>
-                                </div>
-                                <a href="">
-                                    <button href="product-details.html" class="btn-add-cart"
-                                        style="background: var(--secondary-color);">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </button>
-                                </a>
-                            </div>
-                        </div> -->
-
-                        <!-- Continue with more products... -->
-                        <!-- For brevity, I'll add 8 more product cards with similar structure -->
                     </div>
 
                     <!-- Pagination -->

@@ -129,6 +129,14 @@ public class ProductController {
                     response.put("success", false);
                     response.put("errors", errors);
                     return ResponseEntity.badRequest().body(response);
+                } else {
+                    if (request.getDiscountPrice().compareTo(request.getPrice()) > 0) {
+                        errors.put("discountPrice", "Discount price can not be grater than product price");
+                        response.put("success", false);
+                        response.put("errors", errors);
+                        return ResponseEntity.badRequest().body(response);
+
+                    }
                 }
             }
 
@@ -223,6 +231,7 @@ public class ProductController {
                         response.put("errors", errors);
                         return ResponseEntity.badRequest().body(response);
                     }
+
                 }
                 if ("fixed".equals(request.getDiscountType())) {
                     if (request.getDiscountPrice() == null ||
@@ -231,6 +240,14 @@ public class ProductController {
                         response.put("success", false);
                         response.put("errors", errors);
                         return ResponseEntity.badRequest().body(response);
+                    } else {
+                        if (request.getDiscountPrice().compareTo(request.getPrice()) > 0) {
+                            errors.put("discountPrice", "Discount price can not be grater than product price");
+                            response.put("success", false);
+                            response.put("errors", errors);
+                            return ResponseEntity.badRequest().body(response);
+
+                        }
                     }
                 }
             }
