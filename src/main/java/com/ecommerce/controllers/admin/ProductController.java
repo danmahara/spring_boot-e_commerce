@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -265,6 +266,18 @@ public class ProductController {
             System.out.println("Error is: " + e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable Long id) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        productService.delete(id);
+        response.put("success", true);
+        response.put("message", "Product Deleted successfully");
+
+        return ResponseEntity.ok(response);
     }
 
 }
