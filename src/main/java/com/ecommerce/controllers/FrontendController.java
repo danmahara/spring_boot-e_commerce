@@ -34,7 +34,7 @@ public class FrontendController {
     }
 
     public List<Page> allPages() {
-        return frontendService.getAllActivePages();
+        return frontendService.getAllActiveAndOnMainMenuPages();
     }
 
     @GetMapping("/products/{slug}")
