@@ -25,9 +25,13 @@ public class CategoryService {
 
         Category category = new Category();
         category.setTitle(request.getTitle());
-        category.setSlug(generateSlug(request.getTitle()));
+        if (request.getSlug() != null && !request.getSlug().isEmpty()) {
+            category.setSlug(generateSlug(request.getTitle()));
+        } else {
+            category.setSlug(generateSlug(request.getTitle()));
+        }
         category.setStatus(request.isStatus());
-        category.setSortOrder(request.getSortOrder());
+        category.setSortOrder(request.getSortOrder() != null ? request.getSortOrder() : 0);
 
         if (request.getParentId() != null) {
             Category parent = categoryRepository.findById(request.getParentId())

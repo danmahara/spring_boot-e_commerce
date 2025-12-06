@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -73,8 +74,26 @@ public class CategoryController {
     }
 
     @PostMapping("/store")
-    public ResponseEntity<?> store(CategoryRequest request) {
+    public ResponseEntity<?> store(
+            @Valid @ModelAttribute CategoryRequest request,
+            BindingResult bindingResult) {
+
         Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        // Collect field validation errors from BindingResult
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(),
+                    error.getDefaultMessage()));
+        }
+
+        // Return all errors together if any exist
+        if (!errors.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
 
         try {
             Category category = categoryService.createCategory(request);
