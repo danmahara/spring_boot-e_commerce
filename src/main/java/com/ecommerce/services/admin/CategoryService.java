@@ -65,7 +65,7 @@ public class CategoryService {
     }
 
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        return categoryRepository.findByOrderBySortOrderAsc();
     }
     public List<Category> getAllActiveCategories() {
         return categoryRepository.findByStatusTrueOrderBySortOrderAsc();

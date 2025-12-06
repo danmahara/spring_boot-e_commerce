@@ -525,13 +525,6 @@
 
                                 <img th:src="${product.featureImage}" th:alt="${product.name}">
 
-                                <!-- <div class="flex w-full bg-black-500">
-
-                                    <span class="product-badge">New</span>
-                                    <span class="product-badge" style="background: var(--error-color);">Sale</span>
-                                    <span class="product-badge" style="background: var(--success-color);">Eco</span>
-
-                                </div> -->
 
                                 <div class="product-badges">
                                     <span class="product-badge new">New</span>
@@ -542,7 +535,8 @@
 
                             </div>
                             <div class="product-card-content">
-                                <div class="product-category">Accessories</div>
+                                <div class="product-category" th:text="${product.getCategoryNames}"></div>
+
                                 <h3 class="product-title" th:text="${product.name}"></h3>
                                 <p class="product-description line-clamp-2 " th:text="${product.description}"></p>
                                 <div class="product-footer">

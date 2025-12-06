@@ -8,6 +8,8 @@ import com.ecommerce.models.admin.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    List<Category> findByOrderBySortOrderAsc();
+
     // Root categories
     List<Category> findByParentIsNullOrderBySortOrderAsc();
 
