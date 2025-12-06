@@ -554,7 +554,7 @@ ul {
     transform: scale(1.1);
 }
 
-.product-badge {
+/* .product-badge {
     position: absolute;
     top: var(--space-md);
     right: var(--space-md);
@@ -567,7 +567,7 @@ ul {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     z-index: 2;
-}
+} */
 
 .product-card-content {
     padding: var(--space-lg);
@@ -651,6 +651,71 @@ ul {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
+
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.view-button-wrapper {
+    margin-top: auto;
+}
+
+
+/* Badge Container */
+.product-badges {
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    display: flex;
+    gap: 0.4rem;
+    z-index: 5;
+}
+
+/* Base Badge Style */
+.product-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.95;
+    transition: all 0.25s ease;
+}
+
+/* Hover brightness */
+.product-badge:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Individual Badge Colors */
+.product-badge.new {
+    background: var(--primary-color);
+}
+
+.product-badge.sale {
+    background: var(--error-color);
+}
+
+.product-badge.eco {
+    background: var(--success-color);
+}
+
 
 /* ============================================
    HEADER / NAVBAR
