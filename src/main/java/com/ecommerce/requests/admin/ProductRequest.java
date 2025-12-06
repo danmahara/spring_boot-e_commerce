@@ -1,11 +1,13 @@
 package com.ecommerce.requests.admin;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -20,9 +22,7 @@ public class ProductRequest {
     @Size(max = 255, message = "Product name must not exceed 255 characters")
     private String name;
 
-    @Pattern(
-            // regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-            regexp = "^$|^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "Slug must be lowercase with hyphens only")
+    @Pattern(regexp = "^$|^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "Slug must be lowercase with hyphens only")
     @Size(max = 255, message = "Slug must not exceed 255 characters")
     private String slug;
 
@@ -60,4 +60,8 @@ public class ProductRequest {
     private Integer sortOrder = 0;
 
     private Boolean status = true;
+
+    // NEW FIELD
+    @NotEmpty(message = "Category can not be empty")
+    private List<Long> categories; // list of Category IDs
 }
