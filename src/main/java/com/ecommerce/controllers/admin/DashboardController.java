@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ecommerce.models.Page;
 import com.ecommerce.repository.admin.DashboardRepository;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/admin")
 public class DashboardController {
@@ -20,12 +22,14 @@ public class DashboardController {
     private DashboardRepository dashboardRepository;
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public String admindashboard(HttpSession httpSession, Model model) {
 
         long pageCount = dashboardRepository.countByTemplateNameIn(Page.getPageLists());
 
         model.addAttribute("pageCount", pageCount);
+        model.addAttribute("admin", httpSession.getAttribute("admin"));
         model.addAttribute("title", "Home | Dashboard");
+        System.out.println("Dashboard mapping");
 
         return "admin/dashboard"; // Thymeleaf template
     }
