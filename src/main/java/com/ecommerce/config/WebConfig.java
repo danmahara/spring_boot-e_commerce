@@ -9,29 +9,39 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.ecommerce.helpers.ImageProperties;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
+@Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    AdminInterceptor adminInterceptor;
+        @Autowired
+        AdminInterceptor adminInterceptor;
 
-    @Autowired
-    private ImageProperties imageProperties;
+        @Autowired
+        private ImageProperties imageProperties;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/login", "/admin/logout");
-    }
+        @Override
+        public void addInterceptors(InterceptorRegistry registry) {
+                log.info("Registering AdminInterceptor...");
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///" +
-                        Paths.get(imageProperties.getUploadDir())
-                                .toAbsolutePath().toString()
-                        + "/");
-    }
+                registry.addInterceptor(adminInterceptor)
+                                .addPathPatterns("/admin/**", "/api/admin/**")
+                                .excludePathPatterns(
+                                                "/admin/login",
+                                                "/admin/logout",
+                                                "/api/admin/login",
+                                                "/api/admin/register");
+
+                log.info("AdminInterceptor registered successfully");
+        }
+
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/uploads/**")
+                                .addResourceLocations("file:///" +
+                                                Paths.get(imageProperties.getUploadDir())
+                                                                .toAbsolutePath().toString()
+                                                + "/");
+        }
 }

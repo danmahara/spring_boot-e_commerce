@@ -10,19 +10,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // CSRF Protection - Enabled for forms, disabled for API
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**"))
 
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                // Authorization rules
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/").permitAll()
+
+                        // Allow all admin paths - your interceptor handles auth
+                        .requestMatchers("/admin/**").permitAll()
+                        .requestMatchers("/api/admin/**").permitAll()
+
+                        // All other requests allowed
+                        .anyRequest().permitAll());
 
         return http.build();
     }
-
-    // @Bean
-    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    // http
-    // .csrf(csrf -> csrf
-    // .ignoringRequestMatchers("/admin/pages/store") // Only for testing!
-    // );
-
-    // return http.build();
-    // }
 }
