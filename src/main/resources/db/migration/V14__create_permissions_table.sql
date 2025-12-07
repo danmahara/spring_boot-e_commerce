@@ -1,0 +1,11 @@
+-- Create permissions table
+CREATE TABLE permissions (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    resource VARCHAR(100) NOT NULL,  -- e.g., "PRODUCT", "ORDER", "USER", "ADMIN"
+    action VARCHAR(50) NOT NULL,      -- e.g., "CREATE", "READ", "UPDATE", "DELETE"
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
