@@ -535,7 +535,7 @@
                                 <div class="product-category" th:text="${product.getCategoryNames}"></div>
 
                                 <h3 class="product-title" th:text="${product.name}"></h3>
-                                <p class="product-description line-clamp-2 " th:text="${product.description}"></p>
+                                <div class="product-description line-clamp-2 " th:utext="${product.description}"></div>
                                 <div class="product-footer">
                                     <div>
                                         <!-- <span class="product-price">$299</span> -->

@@ -125,6 +125,10 @@ public class ProductService {
         return productRepository.findByStatusTrueOrderBySortOrderAsc();
     }
 
+    public Product findBySlug(String slug) {
+        return productRepository.findBySlug(slug);
+    }
+
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .map(page -> {

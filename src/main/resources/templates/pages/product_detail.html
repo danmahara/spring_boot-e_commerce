@@ -2,7 +2,7 @@
 <div lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
 
     <div th:fragment="section">
-        
+
         <!-- Product Details Section -->
         <section class="product-details-section py-4xl">
             <div class="container">
@@ -10,39 +10,47 @@
                 <div class="breadcrumb-nav mb-2xl">
                     <a href="index.html">Home</a>
                     <i class="fas fa-chevron-right"></i>
-                    <a href="products.html">Products</a>
+                    <a href="@{/products}">Products</a>
                     <i class="fas fa-chevron-right"></i>
                     <span>Classic Chronograph Watch</span>
                 </div>
+                <script>
+                    function changeImage(thumb) {
+                        const src = thumb.getAttribute('data-src'); // get image URL from data-src
+                        document.getElementById('mainImage').src = src;
+
+                        // Update active thumbnail
+                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    }
+
+                </script>
 
                 <div class="product-layout">
                     <!-- Product Gallery -->
                     <div class="product-gallery">
                         <div class="main-image">
-                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800" alt="Watch"
-                                id="mainImage">
+                            <img th:src="${product.featureImage}" alt="Watch" id="mainImage">
                         </div>
+
                         <div class="thumbnail-gallery">
-                            <div class="thumbnail active"
-                                onclick="changeImage('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800', this)">
-                                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200"
-                                    alt="View 1">
-                            </div>
-                            <div class="thumbnail"
-                                onclick="changeImage('https://images.unsplash.com/photo-1524805444758-089113d48396?w=800', this)">
-                                <img src="https://images.unsplash.com/photo-1524805444758-089113d48396?w=200"
-                                    alt="View 2">
-                            </div>
-                            <div class="thumbnail"
-                                onclick="changeImage('https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=800', this)">
-                                <img src="https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=200"
-                                    alt="View 3">
-                            </div>
-                            <div class="thumbnail"
-                                onclick="changeImage('https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800', this)">
-                                <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=200" alt="View 4">
+                            <div th:each="image,iteration : ${product.galleryImages}"
+                                class="thumbnail ${iteration.index==0?'active':''}" th:attr="data-src=${image}"
+                                onclick="changeImage(this)">
+                                <img th:src="${image}" alt="View 1">
                             </div>
                         </div>
+
+                        <!-- <div class="thumbnail-gallery">
+                            <div th:each="image,iteration : ${product.galleryImages}" class="thumbnail"
+                                th:classappend="${iteration.index == 0} ? ' active' : ''" th:attr="data-src=${image}"
+                                onclick="changeImage(this)">
+
+                                <img th:src="${image}" alt="View 1">
+                            </div>
+                        </div> -->
+
+
                     </div>
 
                     <!-- Product Info -->
@@ -52,7 +60,7 @@
                             <span class="badge badge-sale">25% Off</span>
                         </div>
 
-                        <h1 class="product-name mb-md">Classic Chronograph Watch</h1>
+                        <h1 class="product-name mb-md" th:text="${product.name}"></h1>
 
                         <div class="product-rating-section mb-xl">
                             <div class="stars">
@@ -66,15 +74,30 @@
                         </div>
 
                         <div class="price-section mb-2xl">
-                            <span class="current-price">$299</span>
-                            <span class="original-price">$399</span>
-                            <span class="discount-badge">Save $100</span>
+                            <!-- <span class="current-price">$299</span> -->
+                            <span class="current-price" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
+                                            product.discountType == 'percentage' ? 
+                                            product.price - (product.price * product.discountPercent / 100.0) : 
+                                            product.price - product.discountPrice, 
+                                            1, 'COMMA', 2, 'POINT')}">
+                            </span>
+                            <div class="original-price">
+                                <span th:text="${product.currency}"></span>
+                                <span th:text="${product.price}"></span>
+                            </div>
+                            <!-- <span class="original-price">$399</span> -->
+
+                            <!-- <span class="discount-badge">Save $100</span> -->
+
+                            <span class="discount-badge" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
+                                            product.discountType == 'percentage' ? 
+                                            product.price- (product.price - (product.price * product.discountPercent / 100.0)) : 
+                                            product.price-(product.price - product.discountPrice), 
+                                            1, 'COMMA', 2, 'POINT')}">
+
                         </div>
 
-                        <p class="product-short-desc mb-2xl">
-                            Elevate your style with this elegant chronograph watch featuring premium leather strap,
-                            sapphire crystal, and Swiss-made movement. Water-resistant up to 50 meters.
-                        </p>
+                        <div class="product-short-desc mb-2xl" th:utext="${product.description}"></div>
 
                         <!-- Color Selection -->
                         <div class="option-group mb-xl">

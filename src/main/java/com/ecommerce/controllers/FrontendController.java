@@ -2,6 +2,8 @@ package com.ecommerce.controllers;
 
 import java.util.List;
 
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Json;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.models.Page;
 import com.ecommerce.models.admin.Product;
 import com.ecommerce.services.FrontendService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class FrontendController {
@@ -38,14 +41,18 @@ public class FrontendController {
     }
 
     @GetMapping("/products/{slug}")
-    public String getProductDetailPage(Model model) {
-        // model.addAttribute("page", page);
+    public String getProductDetailPage(@PathVariable String slug, Model model) {
 
-        model.addAttribute("PageTemplate", PageTemplate.class);
-        // model.addAttribute("title", page.getTitle() + " - MyShop");
+        Product product = frontendService.findProductBySlug(slug);
 
-        model.addAttribute("pages", allPages());
+        model.addAttribute("product", product);
+        System.out.println("Product: " + product.getName());
         return "pages/product_detail";
+    }
+
+    @GetMapping("/images/{slug}")
+    public ResponseEntity<?> getMethodName(@PathVariable String slug) {
+        return ResponseEntity.ok(frontendService.findProductBySlug(slug));
     }
 
     @GetMapping("/{slug}")

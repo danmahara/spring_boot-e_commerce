@@ -55,4 +55,19 @@ public class FrontendService {
         return products;
     }
 
+    public Product findProductBySlug(String slug) {
+        try {
+            Product product = productService.findBySlug(slug);
+
+            List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("product", product.getId());
+            product.setImages(imgs);
+
+            return product;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
