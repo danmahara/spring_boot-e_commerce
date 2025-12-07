@@ -122,13 +122,21 @@
             <div class="user-profile">
                 <div class="user-avatar">
                     <span
-                        th:text="${admin != null and admin.fullName != null ? admin.fullName.substring(0,1).toUpperCase() : 'A'}">A</span>
+                        th:text="${admin != null and admin.fullName != null ? admin.fullName.substring(0,1).toUpperCase() : 'a'}"></span>
                 </div>
-                <div class="user-info">
+                <!-- <div class="user-info">
                     <p class="user-name" th:text="${admin != null ? admin.fullName : 'Admin User'}">Admin User</p>
                     <div th:if="${admin.role!=null}" class="flex space-x-2 items-center">
                         <span class="user-role">Role:</span>
                         <p class="user-role" th:text="${admin.role}">Administrator</p>
+                    </div>
+                </div> -->
+
+                <div class="user-info">
+                    <p class="user-name" th:text="${admin != null ? admin.fullName : 'Admin User'}">Admin User</p>
+                    <div th:if="${admin.roles != null and !admin.roles.isEmpty()}" class="flex space-x-2 items-center">
+                        <span class="user-role">Role:</span>
+                        <p class="user-role" th:text="${admin.roles[0].name}">Administrator</p>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<div th:fragment="breadcrumb"></div>
+
+<div th:fragment="section">
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid mb-8">
+        <!-- Total Orders -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Orders</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${ordersCount}">150</p>
+                <p class="text-xs text-green-500 mt-1">↑ 12% from last month</p>
+            </div>
+            <div class="text-5xl">📦</div>
+        </div>
+
+        <!-- Total Products -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Products</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${productCount}">320</p>
+                <p class="text-xs text-green-500 mt-1">↑ 8% from last month</p>
+            </div>
+            <div class="text-5xl">🛒</div>
+        </div>
+
+        <!-- Total Users -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Users</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${usersCount}">1200</p>
+                <p class="text-xs text-green-500 mt-1">↑ 5% from last month</p>
+            </div>
+            <div class="text-5xl">👤</div>
+        </div>
+
+        <!-- Revenue -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Revenue</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${revenue}">$12,500</p>
+                <p class="text-xs text-green-500 mt-1">↑ 18% from last month</p>
+            </div>
+            <div class="text-5xl">💰</div>
+        </div>
+
+        <!-- Total Pages -->
+        <a th:href="@{/admin/pages}" class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between 
+          hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Pages</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${pageCount}">150</p>
+            </div>
+            <i class='bx bx-file text-6xl text-blue-600'></i>
+        </a>
+    </div>
+
+    <!-- Quick Actions & Role Management Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        <!-- Quick Actions -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+            <div class="space-y-3">
+                <button onclick="openAdminModal()"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                    <i class='bx bx-user-plus text-xl'></i>
+                    <span>Manage Admins</span>
+                </button>
+                <button onclick="openPermissionModal()"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                    <i class='bx bx-lock text-xl'></i>
+                    <span>Manage Permissions</span>
+                </button>
+                <button onclick="openRoleModal()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                    <i class='bx bx-shield text-xl'></i>
+                    <span>Manage Roles</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Statistics -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Admin & Access Stats</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <i class='bx bx-user text-2xl text-indigo-600'></i>
+                        <span class="text-gray-700 font-medium">Total Admins</span>
+                    </div>
+                    <span id="totalAdmins" class="text-2xl font-bold text-gray-800">-</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <i class='bx bx-lock text-2xl text-purple-600'></i>
+                        <span class="text-gray-700 font-medium">Total Permissions</span>
+                    </div>
+                    <span id="totalPermissions" class="text-2xl font-bold text-gray-800">-</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <i class='bx bx-check-circle text-2xl text-green-600'></i>
+                        <span class="text-gray-700 font-medium">Active Admins</span>
+                    </div>
+                    <span id="activeAdmins" class="text-2xl font-bold text-gray-800">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Recent Orders</h2>
+            <a href="/admin/orders" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All →</a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead class="table-header">
+                    <tr>
+                        <th class="table-th">Order ID</th>
+                        <th class="table-th">Customer</th>
+                        <th class="table-th">Date</th>
+                        <th class="table-th">Status</th>
+                        <th class="table-th">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#001</td>
+                        <td class="table-td text-gray-700">John Doe</td>
+                        <td class="table-td text-gray-700">2025-11-24</td>
+                        <td class="table-td">
+                            <span class="status-badge status-pending">Pending</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$250</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#002</td>
+                        <td class="table-td text-gray-700">Jane Smith</td>
+                        <td class="table-td text-gray-700">2025-11-23</td>
+                        <td class="table-td">
+                            <span class="status-badge status-success">Completed</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$450</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#003</td>
+                        <td class="table-td text-gray-700">Bob Johnson</td>
+                        <td class="table-td text-gray-700">2025-11-23</td>
+                        <td class="table-td">
+                            <span class="status-badge status-processing">Processing</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$320</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Admin Management Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div class="bg-indigo-600 text-white p-6 flex justify-between items-center">
+                <h3 class="text-2xl font-bold">Admin Management</h3>
+                <button onclick="closeAdminModal()" class="text-white hover:text-gray-200 text-3xl">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Roles</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody">
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">Loading admins...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permission Management Modal -->
+    <div id="permissionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div class="bg-purple-600 text-white p-6 flex justify-between items-center">
+                <h3 class="text-2xl font-bold">Permission Management</h3>
+                <button onclick="closePermissionModal()"
+                    class="text-white hover:text-gray-200 text-3xl">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                <button onclick="showCreatePermissionForm()"
+                    class="mb-4 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition">
+                    <i class='bx bx-plus'></i> Create New Permission
+                </button>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Resource</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissionTableBody">
+                            <tr>
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-500">Loading permissions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Assignment Modal -->
+    <div id="roleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl">
+            <div class="bg-blue-600 text-white p-6 flex justify-between items-center">
+                <h3 class="text-2xl font-bold">Role Assignment</h3>
+                <button onclick="closeRoleModal()" class="text-white hover:text-gray-200 text-3xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Admin</label>
+                    <select id="roleAdminSelect"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Loading admins...</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Role</label>
+                    <select id="roleSelect"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a role</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="assignRole()"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
+                        Assign Role
+                    </button>
+                    <button onclick="removeRole()"
+                        class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition">
+                        Remove Role
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Permission Form Modal -->
+    <div id="createPermissionModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md">
+            <div class="bg-purple-600 text-white p-6 flex justify-between items-center">
+                <h3 class="text-xl font-bold">Create New Permission</h3>
+                <button onclick="closeCreatePermissionModal()"
+                    class="text-white hover:text-gray-200 text-3xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <form id="createPermissionForm" onsubmit="handleCreatePermission(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Permission Name</label>
+                        <input type="text" id="permissionName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Resource</label>
+                        <input type="text" id="permissionResource" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Action</label>
+                        <input type="text" id="permissionAction" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="permissionDescription" rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition">
+                        Create Permission
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+
+    <script>
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const [adminsRes, permissionsRes] = await Promise.all([
+                    fetch('/api/admin/admins'),
+                    fetch('/api/admin/permissions')
+                ]);
+
+                const admins = await adminsRes.json();
+                const permissions = await permissionsRes.json();
+
+                document.getElementById('totalAdmins').textContent = admins.length || 0;
+                document.getElementById('totalPermissions').textContent = permissions.length || 0;
+
+                const activeAdmins = admins.filter(a => a.status === 'ACTIVE').length;
+                document.getElementById('activeAdmins').textContent = activeAdmins || 0;
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        // Admin Modal Functions
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('adminModal').classList.add('flex');
+            loadAdmins();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+            document.getElementById('adminModal').classList.remove('flex');
+        }
+
+        async function loadAdmins() {
+            try {
+                const response = await fetch('/api/admin/admins');
+                const admins = await response.json();
+
+                const tbody = document.getElementById('adminTableBody');
+                tbody.innerHTML = admins.map(admin => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-3">${admin.id}</td>
+                        <td class="px-4 py-3">${admin.name || '-'}</td>
+                        <td class="px-4 py-3">${admin.email}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex flex-wrap gap-1">
+                                ${(admin.roles || []).map(role => `
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${role.name}</span>
+                                `).join('')}
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs rounded ${admin.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${admin.status || 'UNKNOWN'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="toggleAdminStatus(${admin.id}, '${admin.status}')" 
+                                    class="text-blue-600 hover:text-blue-800 mr-2">
+                                ${admin.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+                            </button>
+                            <button onclick="deleteAdmin(${admin.id})" class="text-red-600 hover:text-red-800">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading admins:', error);
+                document.getElementById('adminTableBody').innerHTML =
+                    '<tr><td colspan="6" class="px-4 py-8 text-center text-red-500">Error loading admins</td></tr>';
+            }
+        }
+
+        async function toggleAdminStatus(adminId, currentStatus) {
+            const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+            try {
+                const response = await fetch(`/api/admin/admins/${adminId}/status?status=${newStatus}`, {
+                    method: 'PUT'
+                });
+
+                if (response.ok) {
+                    alert('Admin status updated successfully');
+                    loadAdmins();
+                    loadDashboardStats();
+                } else {
+                    alert('Failed to update admin status');
+                }
+            } catch (error) {
+                console.error('Error updating admin status:', error);
+                alert('Error updating admin status');
+            }
+        }
+
+        async function deleteAdmin(adminId) {
+            if (!confirm('Are you sure you want to delete this admin?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/admins/${adminId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Admin deleted successfully');
+                    loadAdmins();
+                    loadDashboardStats();
+                } else {
+                    alert('Failed to delete admin');
+                }
+            } catch (error) {
+                console.error('Error deleting admin:', error);
+                alert('Error deleting admin');
+            }
+        }
+
+        // Permission Modal Functions
+        function openPermissionModal() {
+            document.getElementById('permissionModal').classList.remove('hidden');
+            document.getElementById('permissionModal').classList.add('flex');
+            loadPermissions();
+        }
+
+        function closePermissionModal() {
+            document.getElementById('permissionModal').classList.add('hidden');
+            document.getElementById('permissionModal').classList.remove('flex');
+        }
+
+        async function loadPermissions() {
+            try {
+                const response = await fetch('/api/admin/permissions');
+                const permissions = await response.json();
+
+                const tbody = document.getElementById('permissionTableBody');
+                tbody.innerHTML = permissions.map(perm => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-3">${perm.id}</td>
+                        <td class="px-4 py-3 font-medium">${perm.name}</td>
+                        <td class="px-4 py-3">${perm.resource}</td>
+                        <td class="px-4 py-3">${perm.action}</td>
+                        <td class="px-4 py-3">
+                            <button onclick="deletePermission(${perm.id})" class="text-red-600 hover:text-red-800">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+                document.getElementById('permissionTableBody').innerHTML =
+                    '<tr><td colspan="5" class="px-4 py-8 text-center text-red-500">Error loading permissions</td></tr>';
+            }
+        }
+
+        function showCreatePermissionForm() {
+            document.getElementById('createPermissionModal').classList.remove('hidden');
+            document.getElementById('createPermissionModal').classList.add('flex');
+        }
+
+        function closeCreatePermissionModal() {
+            document.getElementById('createPermissionModal').classList.add('hidden');
+            document.getElementById('createPermissionModal').classList.remove('flex');
+            document.getElementById('createPermissionForm').reset();
+        }
+
+        async function handleCreatePermission(event) {
+            event.preventDefault();
+
+            const permissionData = {
+                name: document.getElementById('permissionName').value,
+                resource: document.getElementById('permissionResource').value,
+                action: document.getElementById('permissionAction').value,
+                description: document.getElementById('permissionDescription').value
+            };
+
+            try {
+                const response = await fetch('/api/admin/permissions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(permissionData)
+                });
+
+                if (response.ok) {
+                    alert('Permission created successfully');
+                    closeCreatePermissionModal();
+                    loadPermissions();
+                    loadDashboardStats();
+                } else {
+                    alert('Failed to create permission');
+                }
+            } catch (error) {
+                console.error('Error creating permission:', error);
+                alert('Error creating permission');
+            }
+        }
+
+        async function deletePermission(permissionId) {
+            if (!confirm('Are you sure you want to delete this permission?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/permissions/${permissionId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Permission deleted successfully');
+                    loadPermissions();
+                    loadDashboardStats();
+                } else {
+                    alert('Failed to delete permission');
+                }
+            } catch (error) {
+                console.error('Error deleting permission:', error);
+                alert('Error deleting permission');
+            }
+        }
+
+        // Role Modal Functions
+        function openRoleModal() {
+            document.getElementById('roleModal').classList.remove('hidden');
+            document.getElementById('roleModal').classList.add('flex');
+            loadRoleModalData();
+        }
+
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.add('hidden');
+            document.getElementById('roleModal').classList.remove('flex');
+        }
+
+        async function loadRoleModalData() {
+            try {
+                const response = await fetch('/api/admin/admins');
+                const admins = await response.json();
+
+                const select = document.getElementById('roleAdminSelect');
+                select.innerHTML = '<option value="">Select an admin</option>' +
+                    admins.map(admin => `<option value="${admin.id}">${admin.name || admin.email} (ID: ${admin.id})</option>`).join('');
+            } catch (error) {
+                console.error('Error loading role modal data:', error);
+            }
+        }
+
+        async function assignRole() {
+            const adminId = document.getElementById('roleAdminSelect').value;
+            const roleId = document.getElementById('roleSelect').value;
+
+            if (!adminId || !roleId) {
+                alert('Please select both admin and role');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/admins/${adminId}/roles/${roleId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    alert('Role assigned successfully');
+                    closeRoleModal();
+                    loadDashboardStats();
+                } else {
+                    alert('Failed to assign role');
+                }
+            } catch (error) {
+                console.error('Error assigning role:', error);
+                alert('Error assigning role');
+            }
+        }
+
+        async function removeRole() {
+            const adminId = document.getElementById('roleAdminSelect').value;
+            const roleId = document.getElementById('roleSelect').value;
+
+            if (!adminId || !roleId) {
+                alert('Please select both admin and role');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/admins/${adminId}/roles/${roleId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Role removed successfully');
+                    closeRoleModal();
+                    loadDashboardStats();
+                } else {
+                    alert('Failed to remove role');
+                }
+            } catch (error) {
+                console.error('Error removing role:', error);
+                alert('Error removing role');
+            }
+        }
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loadDashboardStats();
+        });
+    </script>
+
+</div>
+
+</html>
