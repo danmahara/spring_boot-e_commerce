@@ -6,1035 +6,313 @@
 
 <div th:fragment="section">
 
-    <!-- Tabs Navigation -->
-    <div class="flex space-x-4 border-b border-gray-200 mb-8 overflow-x-auto">
-        <button onclick="switchTab('dashboard')"
-            class="tab-btn active px-4 py-3 border-b-2 border-blue-600 text-blue-600 font-medium whitespace-nowrap">
-            📊 Dashboard
-        </button>
-        <button onclick="switchTab('roles')"
-            class="tab-btn px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-gray-900 font-medium whitespace-nowrap">
-            🔐 Roles
-        </button>
-        <button onclick="switchTab('permissions')"
-            class="tab-btn px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-gray-900 font-medium whitespace-nowrap">
-            🛡️ Permissions
-        </button>
-        <button onclick="switchTab('admins')"
-            class="tab-btn px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-gray-900 font-medium whitespace-nowrap">
-            👥 Admin Users
-        </button>
-    </div>
+    <!-- ROLES & PERMISSIONS SECTION -->
+    <div class="mt-10">
 
-    <!-- Dashboard Tab -->
-    <div id="dashboard-tab" class="tab-content">
-        <!-- Statistics Cards -->
-        <div class="stats-grid mb-8">
-            <div
-                class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
-                <div>
-                    <p class="text-gray-500 font-medium text-sm">Total Admins</p>
-                    <p class="text-3xl font-bold text-gray-800" id="totalAdmins">-</p>
-                    <p class="text-xs text-blue-500 mt-1" id="activeAdminsText">Loading...</p>
-                </div>
-                <div class="text-5xl">👥</div>
-            </div>
+        <!-- STATS CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
+            <!-- Total Roles -->
             <div
                 class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
                 <div>
                     <p class="text-gray-500 font-medium text-sm">Total Roles</p>
-                    <p class="text-3xl font-bold text-gray-800" id="totalRoles">-</p>
-                    <p class="text-xs text-green-500 mt-1">Role Management</p>
+                    <p class="text-3xl font-bold text-gray-800" id="roleCount">Loading...</p>
                 </div>
-                <div class="text-5xl">🔐</div>
+                <i class='bx bx-shield text-6xl text-indigo-600'></i>
             </div>
 
+            <!-- Total Permissions -->
             <div
                 class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
                 <div>
                     <p class="text-gray-500 font-medium text-sm">Total Permissions</p>
-                    <p class="text-3xl font-bold text-gray-800" id="totalPermissions">-</p>
-                    <p class="text-xs text-purple-500 mt-1">Access Control</p>
+                    <p class="text-3xl font-bold text-gray-800" id="permissionCount">Loading...</p>
                 </div>
-                <div class="text-5xl">🛡️</div>
+                <i class='bx bx-lock-open text-6xl text-green-600'></i>
             </div>
 
+            <!-- Users With Roles -->
             <div
                 class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
                 <div>
-                    <p class="text-gray-500 font-medium text-sm">Your Permissions</p>
-                    <p class="text-3xl font-bold text-gray-800" id="yourPermissions">-</p>
-                    <p class="text-xs text-green-500 mt-1">✓ Full Access</p>
+                    <p class="text-gray-500 font-medium text-sm">Users Assigned Roles</p>
+                    <p class="text-3xl font-bold text-gray-800">112</p>
                 </div>
-                <div class="text-5xl">✓</div>
+                <i class='bx bx-group text-6xl text-blue-600'></i>
             </div>
+
         </div>
 
-        <!-- Quick Actions & Recent Activity -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-                <div class="space-y-3">
-                    <button onclick="switchTab('admins')"
-                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class='bx bx-user-plus text-xl'></i>
-                        <span>Manage Admin Users</span>
-                    </button>
-                    <button onclick="switchTab('roles')"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class='bx bx-shield text-xl'></i>
-                        <span>Configure Roles</span>
-                    </button>
-                    <button onclick="switchTab('permissions')"
-                        class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class='bx bx-lock text-xl'></i>
-                        <span>Manage Permissions</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">System Overview</h2>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <i class='bx bx-check-circle text-2xl text-blue-600'></i>
-                            <span class="text-gray-700 font-medium">Active Admins</span>
-                        </div>
-                        <span id="activeAdmins" class="text-2xl font-bold text-gray-800">-</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <i class='bx bx-x-circle text-2xl text-red-600'></i>
-                            <span class="text-gray-700 font-medium">Inactive Admins</span>
-                        </div>
-                        <span id="inactiveAdmins" class="text-2xl font-bold text-gray-800">-</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <i class='bx bx-shield-quarter text-2xl text-green-600'></i>
-                            <span class="text-gray-700 font-medium">System Status</span>
-                        </div>
-                        <span class="text-lg font-bold text-green-600">Secure</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div class="bg-white shadow-lg rounded-lg p-6">
+        <!-- ROLES TABLE -->
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Recent Orders</h2>
-                <a href="/admin/orders" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All →</a>
+                <h2 class="text-xl font-semibold text-gray-800">System Roles</h2>
             </div>
+
             <div class="overflow-x-auto">
-                <table class="data-table">
+                <table class="data-table w-full">
                     <thead class="table-header">
                         <tr>
-                            <th class="table-th">Order ID</th>
-                            <th class="table-th">Customer</th>
-                            <th class="table-th">Date</th>
-                            <th class="table-th">Status</th>
-                            <th class="table-th">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="table-row">
-                            <td class="table-td font-medium text-gray-900">#001</td>
-                            <td class="table-td text-gray-700">John Doe</td>
-                            <td class="table-td text-gray-700">2025-11-24</td>
-                            <td class="table-td">
-                                <span class="status-badge status-pending">Pending</span>
-                            </td>
-                            <td class="table-td font-semibold text-gray-900">$250</td>
-                        </tr>
-                        <tr class="table-row">
-                            <td class="table-td font-medium text-gray-900">#002</td>
-                            <td class="table-td text-gray-700">Jane Smith</td>
-                            <td class="table-td text-gray-700">2025-11-23</td>
-                            <td class="table-td">
-                                <span class="status-badge status-success">Completed</span>
-                            </td>
-                            <td class="table-td font-semibold text-gray-900">$450</td>
-                        </tr>
-                        <tr class="table-row">
-                            <td class="table-td font-medium text-gray-900">#003</td>
-                            <td class="table-td text-gray-700">Bob Johnson</td>
-                            <td class="table-td text-gray-700">2025-11-23</td>
-                            <td class="table-td">
-                                <span class="status-badge status-processing">Processing</span>
-                            </td>
-                            <td class="table-td font-semibold text-gray-900">$320</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Roles Tab -->
-    <div id="roles-tab" class="tab-content hidden">
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">Role Management</h2>
-                <button onclick="showCreateRoleModal()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition flex items-center gap-2">
-                    <i class='bx bx-plus'></i>
-                    <span>Create New Role</span>
-                </button>
-            </div>
-
-            <div class="mb-4">
-                <input type="text" id="roleSearchInput" onkeyup="searchRoles()" placeholder="Search roles..."
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Role Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Permissions</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Users</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            <th class="table-th">Role Name</th>
+                            <th class="table-th">Description</th>
+                            <th class="table-th">Assigned Users</th>
+                            <th class="table-th">Permissions</th>
                         </tr>
                     </thead>
                     <tbody id="rolesTableBody">
-                        <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Loading roles...</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
 
-    <!-- Permissions Tab -->
-    <div id="permissions-tab" class="tab-content hidden">
+        <!-- PERMISSIONS TABLE -->
         <div class="bg-white shadow-lg rounded-lg p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">Permission Management</h2>
-                <button onclick="showCreatePermissionModal()"
-                    class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition flex items-center gap-2">
-                    <i class='bx bx-plus'></i>
-                    <span>Create New Permission</span>
-                </button>
-            </div>
-
-            <div class="mb-4 flex gap-4">
-                <input type="text" id="permissionSearchInput" onkeyup="searchPermissions()"
-                    placeholder="Search permissions..."
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                <select id="resourceFilter" onchange="filterPermissions()"
-                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                    <option value="">All Resources</option>
-                </select>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Permissions List</h2>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-100">
+                <table class="data-table w-full">
+                    <thead class="table-header">
                         <tr>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Permission Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Resource</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            <th class="table-th">Permission</th>
+                            <th class="table-th">Description</th>
+                            <th class="table-th">Assigned to Roles</th>
                         </tr>
                     </thead>
                     <tbody id="permissionsTableBody">
-                        <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Loading permissions...</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
-    <!-- Admin Users Tab -->
-    <div id="admins-tab" class="tab-content hidden">
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">Admin User Management</h2>
-                <div class="flex gap-2">
-                    <button onclick="showAssignRoleModal()"
-                        class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition flex items-center gap-2">
-                        <i class='bx bx-shield'></i>
-                        <span>Assign Role</span>
-                    </button>
-                </div>
-            </div>
 
-            <div class="mb-4 flex gap-4">
-                <input type="text" id="adminSearchInput" onkeyup="searchAdmins()" placeholder="Search admins..."
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                <select id="statusFilter" onchange="filterAdmins()"
-                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                    <option value="">All Status</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                </select>
+    <!-- EXISTING DASHBOARD STATS - KEEP AS IS -->
+    <div class="stats-grid mb-8 mt-8">
+        <!-- Total Orders -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Orders</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${ordersCount}">150</p>
+                <p class="text-xs text-green-500 mt-1">↑ 12% from last month</p>
             </div>
+            <div class="text-5xl">📦</div>
+        </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Roles</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Last Login</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminsTableBody">
-                        <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Loading admin users...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Total Products -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Products</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${productCount}">320</p>
+                <p class="text-xs text-green-500 mt-1">↑ 8% from last month</p>
             </div>
+            <div class="text-5xl">🛒</div>
+        </div>
+
+        <!-- Total Users -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Users</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${usersCount}">1200</p>
+                <p class="text-xs text-green-500 mt-1">↑ 5% from last month</p>
+            </div>
+            <div class="text-5xl">👤</div>
+        </div>
+
+        <!-- Revenue -->
+        <div
+            class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Revenue</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${revenue}">$12,500</p>
+                <p class="text-xs text-green-500 mt-1">↑ 18% from last month</p>
+            </div>
+            <div class="text-5xl">💰</div>
+        </div>
+
+        <!-- Total Pages -->
+        <a th:href="@{/admin/pages}" class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between 
+          hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer">
+            <div>
+                <p class="text-gray-500 font-medium text-sm">Total Pages</p>
+                <p class="text-3xl font-bold text-gray-800" th:text="${pageCount}">150</p>
+            </div>
+            <i class='bx bx-file text-6xl text-blue-600'></i>
+        </a>
+    </div>
+
+    <!-- EXISTING RECENT ORDERS - KEEP AS IS -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Recent Orders</h2>
+            <a href="/admin/orders" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All →</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead class="table-header">
+                    <tr>
+                        <th class="table-th">Order ID</th>
+                        <th class="table-th">Customer</th>
+                        <th class="table-th">Date</th>
+                        <th class="table-th">Status</th>
+                        <th class="table-th">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#001</td>
+                        <td class="table-td text-gray-700">John Doe</td>
+                        <td class="table-td text-gray-700">2025-11-24</td>
+                        <td class="table-td">
+                            <span class="status-badge status-pending">Pending</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$250</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#002</td>
+                        <td class="table-td text-gray-700">Jane Smith</td>
+                        <td class="table-td text-gray-700">2025-11-23</td>
+                        <td class="table-td">
+                            <span class="status-badge status-success">Completed</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$450</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-td font-medium text-gray-900">#003</td>
+                        <td class="table-td text-gray-700">Bob Johnson</td>
+                        <td class="table-td text-gray-700">2025-11-23</td>
+                        <td class="table-td">
+                            <span class="status-badge status-processing">Processing</span>
+                        </td>
+                        <td class="table-td font-semibold text-gray-900">$320</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Create/Edit Permission Modal -->
-    <div id="permissionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md">
-            <div class="bg-purple-600 text-white p-6 flex justify-between items-center">
-                <h3 class="text-xl font-bold" id="permissionModalTitle">Create New Permission</h3>
-                <button onclick="closePermissionModal()"
-                    class="text-white hover:text-gray-200 text-3xl">&times;</button>
-            </div>
-            <div class="p-6">
-                <form id="permissionForm" onsubmit="handlePermissionSubmit(event)">
-                    <input type="hidden" id="permissionId">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Permission Name *</label>
-                        <input type="text" id="permissionName" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Resource *</label>
-                        <input type="text" id="permissionResource" required placeholder="e.g., USER, PRODUCT, ORDER"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Action *</label>
-                        <input type="text" id="permissionAction" required
-                            placeholder="e.g., CREATE, READ, UPDATE, DELETE"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea id="permissionDescription" rows="3"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"></textarea>
-                    </div>
-                    <button type="submit"
-                        class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition">
-                        Save Permission
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- to fetch roles -->
+    <script>
+        function fetchRoles() {
+            const tableBody = document.getElementById("rolesTableBody");
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="table-td font-medium">Loading...</td>
+                </tr>
+            `;
 
-    <!-- Assign Role Modal -->
-    <div id="assignRoleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md">
-            <div class="bg-blue-600 text-white p-6 flex justify-between items-center">
-                <h3 class="text-xl font-bold">Assign Role to Admin</h3>
-                <button onclick="closeAssignRoleModal()"
-                    class="text-white hover:text-gray-200 text-3xl">&times;</button>
-            </div>
-            <div class="p-6">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Admin *</label>
-                    <select id="assignAdminSelect"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Loading admins...</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Role *</label>
-                    <select id="assignRoleSelect"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select a role</option>
-                    </select>
-                </div>
-                <div class="flex gap-3">
-                    <button onclick="handleAssignRole()"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
-                        Assign Role
-                    </button>
-                    <button onclick="handleRemoveRole()"
-                        class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition">
-                        Remove Role
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+            fetch("/api/admin/roles")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Api data: ", data);
+                    populateRolesTable(data);
+                })
+                .error(error => {
+                    console.log("API Error: ", error);
 
-    <style>
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+                })
+
         }
 
-        .tab-btn.active {
-            border-bottom-color: #2563eb;
-            color: #2563eb;
+        function populateRolesTable(roles) {
+            const tableBody = document.getElementById("rolesTableBody");
+            tableBody.innerHTML = ""; // clear loading
+
+            roles.forEach(item => {
+                const row = `
+                    <tr class="table-row">
+                        <td class="table-td font-medium">${item.name}</td>
+                        <td class="table-td text-gray-600">${item.description}</td>
+                        <td class="table-td">12</td>
+                        <td class="table-td">
+                            <span class="status-badge status-success">
+                                ${item.permissions.length} Permissions
+                            </span>
+                        </td>
+                    </tr>
+                `;
+
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
         }
 
-        .tab-content {
-            animation: fadeIn 0.3s ease-in;
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchRoles()
+        })
+    </script>
+
+    <script>
+        function fetchPermissions() {
+            fetch("/api/admin/permissions/with_roles")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("API permissions data: ", data);
+                    populatePermissionsTable(data)
+                })
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        function populatePermissionsTable(permissions) {
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            const permissionBody = document.getElementById("permissionsTableBody")
+            permissionBody.innerHTML = ""
+
+            permissions.forEach(permission => {
+
+                const rolesArr = permission.roles ? permission.roles.map(role => role.name) : [];
+
+                const row = `
+                     <tr class="table-row">
+                            <td class="table-td font-medium">${permission.name}</td>
+                            <td class="table-td text-gray-600">${permission.description}</td>
+                <td class="table-td">${rolesArr.join(", ")}</td>
+
+                     </tr>
+                `;
+                permissionBody.insertAdjacentHTML("beforeend", row)
+
+            })
+
         }
-    </style>
+
+        document.addEventListener("DOMContentLoaded", fetchPermissions)
+    </script>
 
 
     <script>
-        let allAdmins = [];
-        let allPermissions = [];
-        let allRoles = [];
-
-        // Tab Switching
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-blue-600', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-gray-600');
-            });
-
-            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
-            event.target.classList.add('active', 'border-blue-600', 'text-blue-600');
-            event.target.classList.remove('border-transparent', 'text-gray-600');
-
-            if (tabName === 'roles') loadRoles();
-            if (tabName === 'permissions') loadPermissions();
-            if (tabName === 'admins') loadAdmins();
-        }
-
-        // Load Dashboard Statistics
-        async function loadDashboardStats() {
-            try {
-                const [adminsRes, permissionsRes] = await Promise.all([
-                    fetch('/api/admin/admins'),
-                    fetch('/api/admin/permissions')
-                ]);
-
-                allAdmins = await adminsRes.json();
-                allPermissions = await permissionsRes.json();
-
-                document.getElementById('totalAdmins').textContent = allAdmins.length || 0;
-                document.getElementById('totalPermissions').textContent = allPermissions.length || 0;
-
-                const activeAdmins = allAdmins.filter(a => a.status === 'ACTIVE').length;
-                const inactiveAdmins = allAdmins.length - activeAdmins;
-
-                document.getElementById('activeAdmins').textContent = activeAdmins;
-                document.getElementById('inactiveAdmins').textContent = inactiveAdmins;
-                document.getElementById('activeAdminsText').textContent = `${activeAdmins} active`;
-
-                // Count unique roles
-                const rolesSet = new Set();
-                allAdmins.forEach(admin => {
-                    if (admin.roles) {
-                        admin.roles.forEach(role => rolesSet.add(role.id));
-                    }
-                });
-                document.getElementById('totalRoles').textContent = rolesSet.size;
-                document.getElementById('yourPermissions').textContent = allPermissions.length;
-            } catch (error) {
-                console.error('Error loading dashboard stats:', error);
-                showNotification('Error loading dashboard statistics', 'error');
-            }
-        }
-
-        // ============ ROLES MANAGEMENT ============
-
-        async function loadRoles() {
-            try {
-                const response = await fetch('/api/admin/admins');
-                allAdmins = await response.json();
-
-                // Extract unique roles from admins
-                const rolesMap = new Map();
-                allAdmins.forEach(admin => {
-                    if (admin.roles) {
-                        admin.roles.forEach(role => {
-                            if (!rolesMap.has(role.id)) {
-                                rolesMap.set(role.id, {
-                                    ...role,
-                                    userCount: 0
-                                });
-                            }
-                            rolesMap.get(role.id).userCount++;
-                        });
-                    }
-                });
-
-                allRoles = Array.from(rolesMap.values());
-                displayRoles(allRoles);
-            } catch (error) {
-                console.error('Error loading roles:', error);
-                showNotification('Error loading roles', 'error');
-            }
-        }
-
-        function displayRoles(roles) {
-            const tbody = document.getElementById('rolesTableBody');
-
-            if (roles.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No roles found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = roles.map(role => `
-        <tr class="border-b hover:bg-gray-50">
-            <td class="px-4 py-3">${role.id}</td>
-            <td class="px-4 py-3 font-medium">${role.name}</td>
-            <td class="px-4 py-3 text-gray-600">${role.description || '-'}</td>
-            <td class="px-4 py-3">
-                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                    ${role.permissions ? role.permissions.length : 0} permissions
-                </span>
-            </td>
-            <td class="px-4 py-3">
-                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                    ${role.userCount || 0} users
-                </span>
-            </td>
-            <td class="px-4 py-3">
-                <button onclick="viewRoleDetails(${role.id})" 
-                    class="text-blue-600 hover:text-blue-800 mr-2">
-                    <i class='bx bx-show'></i> View
-                </button>
-            </td>
-        </tr>
-    `).join('');
-        }
-
-        function searchRoles() {
-            const searchTerm = document.getElementById('roleSearchInput').value.toLowerCase();
-            const filtered = allRoles.filter(role =>
-                role.name.toLowerCase().includes(searchTerm) ||
-                (role.description && role.description.toLowerCase().includes(searchTerm))
-            );
-            displayRoles(filtered);
-        }
-
-        function viewRoleDetails(roleId) {
-            const role = allRoles.find(r => r.id === roleId);
-            if (!role) return;
-
-            const permissions = role.permissions || [];
-            const permissionsList = permissions.map(p => `<li class="py-1">• ${p.name}</li>`).join('');
-
-            const adminsWithRole = allAdmins.filter(admin =>
-                admin.roles && admin.roles.some(r => r.id === roleId)
-            );
-            const adminsList = adminsWithRole.map(a => `<li class="py-1">• ${a.name} (${a.email})</li>`).join('');
-
-            const modalContent = `
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="this.remove()">
-            <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl" onclick="event.stopPropagation()">
-                <div class="bg-blue-600 text-white p-6 flex justify-between items-center">
-                    <h3 class="text-xl font-bold">Role Details: ${role.name}</h3>
-                    <button onclick="this.closest('.fixed').remove()" 
-                        class="text-white hover:text-gray-200 text-3xl">&times;</button>
-                </div>
-                <div class="p-6 max-h-96 overflow-y-auto">
-                    <div class="mb-4">
-                        <h4 class="font-semibold text-gray-700 mb-2">Description:</h4>
-                        <p class="text-gray-600">${role.description || 'No description'}</p>
-                    </div>
-                    <div class="mb-4">
-                        <h4 class="font-semibold text-gray-700 mb-2">Permissions (${permissions.length}):</h4>
-                        <ul class="text-gray-600 ml-4">${permissionsList || '<li>No permissions</li>'}</ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Users with this role (${adminsWithRole.length}):</h4>
-                        <ul class="text-gray-600 ml-4">${adminsList || '<li>No users</li>'}</ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-            document.body.insertAdjacentHTML('beforeend', modalContent);
-        }
-
-        function showCreateRoleModal() {
-            showNotification('Role creation feature coming soon', 'info');
-        }
-
-        // ============ PERMISSIONS MANAGEMENT ============
-
-        async function loadPermissions() {
-            try {
-                const response = await fetch('/api/admin/permissions');
-                allPermissions = await response.json();
-                displayPermissions(allPermissions);
-                populateResourceFilter();
-            } catch (error) {
-                console.error('Error loading permissions:', error);
-                showNotification('Error loading permissions', 'error');
-            }
-        }
-
-        function displayPermissions(permissions) {
-            const tbody = document.getElementById('permissionsTableBody');
-
-            if (permissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No permissions found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = permissions.map(perm => `
-        <tr class="border-b hover:bg-gray-50">
-            <td class="px-4 py-3">${perm.id}</td>
-            <td class="px-4 py-3 font-medium">${perm.name}</td>
-            <td class="px-4 py-3">
-                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                    ${perm.resource}
-                </span>
-            </td>
-            <td class="px-4 py-3">
-                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                    ${perm.action}
-                </span>
-            </td>
-            <td class="px-4 py-3 text-gray-600">${perm.description || '-'}</td>
-            <td class="px-4 py-3">
-                <button onclick="editPermission(${perm.id})" 
-                    class="text-blue-600 hover:text-blue-800 mr-2">
-                    <i class='bx bx-edit'></i>
-                </button>
-                <button onclick="deletePermission(${perm.id})" 
-                    class="text-red-600 hover:text-red-800">
-                    <i class='bx bx-trash'></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
-        }
-
-        function searchPermissions() {
-            const searchTerm = document.getElementById('permissionSearchInput').value.toLowerCase();
-            const filtered = allPermissions.filter(perm =>
-                perm.name.toLowerCase().includes(searchTerm) ||
-                perm.resource.toLowerCase().includes(searchTerm) ||
-                perm.action.toLowerCase().includes(searchTerm) ||
-                (perm.description && perm.description.toLowerCase().includes(searchTerm))
-            );
-            displayPermissions(filtered);
-        }
-
-        function filterPermissions() {
-            const resource = document.getElementById('resourceFilter').value;
-            const searchTerm = document.getElementById('permissionSearchInput').value.toLowerCase();
-
-            let filtered = allPermissions;
-
-            if (resource) {
-                filtered = filtered.filter(perm => perm.resource === resource);
-            }
-
-            if (searchTerm) {
-                filtered = filtered.filter(perm =>
-                    perm.name.toLowerCase().includes(searchTerm) ||
-                    perm.resource.toLowerCase().includes(searchTerm) ||
-                    perm.action.toLowerCase().includes(searchTerm) ||
-                    (perm.description && perm.description.toLowerCase().includes(searchTerm))
-                );
-            }
-
-            displayPermissions(filtered);
-        }
-
-        function populateResourceFilter() {
-            const resources = [...new Set(allPermissions.map(p => p.resource))];
-            const select = document.getElementById('resourceFilter');
-
-            select.innerHTML = '<option value="">All Resources</option>' +
-                resources.map(r => `<option value="${r}">${r}</option>`).join('');
-        }
-
-        function showCreatePermissionModal() {
-            document.getElementById('permissionModalTitle').textContent = 'Create New Permission';
-            document.getElementById('permissionForm').reset();
-            document.getElementById('permissionId').value = '';
-            document.getElementById('permissionModal').classList.remove('hidden');
-            document.getElementById('permissionModal').classList.add('flex');
-        }
-
-        function closePermissionModal() {
-            document.getElementById('permissionModal').classList.add('hidden');
-            document.getElementById('permissionModal').classList.remove('flex');
-        }
-
-        async function handlePermissionSubmit(event) {
-            event.preventDefault();
-
-            const id = document.getElementById('permissionId').value;
-            const permissionData = {
-                name: document.getElementById('permissionName').value,
-                resource: document.getElementById('permissionResource').value.toUpperCase(),
-                action: document.getElementById('permissionAction').value.toUpperCase(),
-                description: document.getElementById('permissionDescription').value
-            };
-
-            try {
-                const url = id ? `/api/admin/permissions/${id}` : '/api/admin/permissions';
-                const method = id ? 'PUT' : 'POST';
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(permissionData)
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showNotification(result.message, 'success');
-                    closePermissionModal();
-                    loadPermissions();
-                } else {
-                    showNotification(result.message || 'Operation failed', 'error');
-                }
-            } catch (error) {
-                console.error('Error saving permission:', error);
-                showNotification('Error saving permission', 'error');
-            }
-        }
-
-        async function editPermission(id) {
-            try {
-                const response = await fetch(`/api/admin/permissions/${id}`);
-                const permission = await response.json();
-
-                document.getElementById('permissionModalTitle').textContent = 'Edit Permission';
-                document.getElementById('permissionId').value = permission.id;
-                document.getElementById('permissionName').value = permission.name;
-                document.getElementById('permissionResource').value = permission.resource;
-                document.getElementById('permissionAction').value = permission.action;
-                document.getElementById('permissionDescription').value = permission.description || '';
-
-                document.getElementById('permissionModal').classList.remove('hidden');
-                document.getElementById('permissionModal').classList.add('flex');
-            } catch (error) {
-                console.error('Error loading permission:', error);
-                showNotification('Error loading permission', 'error');
-            }
-        }
-
-        async function deletePermission(id) {
-            if (!confirm('Are you sure you want to delete this permission?')) return;
-
-            try {
-                const response = await fetch(`/api/admin/permissions/${id}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showNotification(result.message, 'success');
-                    loadPermissions();
-                } else {
-                    showNotification(result.message || 'Delete failed', 'error');
-                }
-            } catch (error) {
-                console.error('Error deleting permission:', error);
-                showNotification('Error deleting permission', 'error');
-            }
-        }
-
-        // ============ ADMIN USERS MANAGEMENT ============
-
-        async function loadAdmins() {
-            try {
-                const response = await fetch('/api/admin/admins');
-                allAdmins = await response.json();
-                displayAdmins(allAdmins);
-                populateAdminSelect();
-            } catch (error) {
-                console.error('Error loading admins:', error);
-                showNotification('Error loading admin users', 'error');
-            }
-        }
-
-        function displayAdmins(admins) {
-            const tbody = document.getElementById('adminsTableBody');
-
-            if (admins.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">No admin users found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = admins.map(admin => `
-        <tr class="border-b hover:bg-gray-50">
-            <td class="px-4 py-3">${admin.id}</td>
-            <td class="px-4 py-3 font-medium">${admin.fullName}</td>
-            <td class="px-4 py-3 text-gray-600">${admin.email}</td>
-            <td class="px-4 py-3">
-                ${admin.roles && admin.roles.length > 0
-                    ? admin.roles.map(role => `
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1">
-                            ${role.name}
-                        </span>
-                    `).join('')
-                    : '<span class="text-gray-400">No roles</span>'
-                }
-            </td>
-            <td class="px-4 py-3">
-                <span class="status-badge ${admin.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} text-xs px-2 py-1 rounded">
-                    ${admin.status}
-                </span>
-            </td>
-            <td class="px-4 py-3 text-gray-600">${admin.lastLogin || 'Never'}</td>
-            <td class="px-4 py-3">
-                <button onclick="toggleAdminStatus(${admin.id}, '${admin.status}')" 
-                    class="text-blue-600 hover:text-blue-800 mr-2" title="Toggle Status">
-                    <i class='bx bx-toggle-${admin.status === 'ACTIVE' ? 'right' : 'left'}'></i>
-                </button>
-                <button onclick="deleteAdmin(${admin.id})" 
-                    class="text-red-600 hover:text-red-800" title="Delete">
-                    <i class='bx bx-trash'></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
-        }
-
-        function searchAdmins() {
-            const searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
-            const filtered = allAdmins.filter(admin =>
-                admin.fullName.toLowerCase().includes(searchTerm) ||
-                admin.email.toLowerCase().includes(searchTerm) ||
-                (admin.roles && admin.roles.some(role => role.name.toLowerCase().includes(searchTerm)))
-            );
-            displayAdmins(filtered);
-        }
-
-        function filterAdmins() {
-            const status = document.getElementById('statusFilter').value;
-            const searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
-
-            let filtered = allAdmins;
-
-            if (status) {
-                filtered = filtered.filter(admin => admin.status === status);
-            }
-
-            if (searchTerm) {
-                filtered = filtered.filter(admin =>
-                    admin.fullName.toLowerCase().includes(searchTerm) ||
-                    admin.email.toLowerCase().includes(searchTerm) ||
-                    (admin.roles && admin.roles.some(role => role.name.toLowerCase().includes(searchTerm)))
-                );
-            }
-
-            displayAdmins(filtered);
-        }
-
-        function showAssignRoleModal() {
-            populateAdminSelect();
-            populateRoleSelect();
-            document.getElementById('assignRoleModal').classList.remove('hidden');
-            document.getElementById('assignRoleModal').classList.add('flex');
-        }
-
-        function closeAssignRoleModal() {
-            document.getElementById('assignRoleModal').classList.add('hidden');
-            document.getElementById('assignRoleModal').classList.remove('flex');
-        }
-
-        function populateAdminSelect() {
-            const select = document.getElementById('assignAdminSelect');
-            select.innerHTML = '<option value="">Select an admin</option>' +
-                allAdmins.map(admin => `<option value="${admin.id}">${admin.fullName} - ${admin.email}</option>`).join('');
-        }
-
-        async function populateRoleSelect() {
-            const select = document.getElementById('assignRoleSelect');
-
-            // Get unique roles from all admins
-            const rolesSet = new Map();
-            allAdmins.forEach(admin => {
-                if (admin.roles) {
-                    admin.roles.forEach(role => {
-                        if (!rolesSet.has(role.id)) {
-                            rolesSet.set(role.id, role);
-                        }
-                    });
-                }
-            });
-
-            const roles = Array.from(rolesSet.values());
-            select.innerHTML = '<option value="">Select a role</option>' +
-                roles.map(role => `<option value="${role.id}">${role.name}</option>`).join('');
-        }
-
-        async function handleAssignRole() {
-            const adminId = document.getElementById('assignAdminSelect').value;
-            const roleId = document.getElementById('assignRoleSelect').value;
-
-            if (!adminId || !roleId) {
-                showNotification('Please select both admin and role', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/admin/admins/${adminId}/roles/${roleId}`, {
-                    method: 'POST'
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showNotification(result.message, 'success');
-                    closeAssignRoleModal();
-                    loadAdmins();
-                    loadDashboardStats();
-                } else {
-                    showNotification(result.message || 'Failed to assign role', 'error');
-                }
-            } catch (error) {
-                console.error('Error assigning role:', error);
-                showNotification('Error assigning role', 'error');
-            }
-        }
-
-        async function handleRemoveRole() {
-            const adminId = document.getElementById('assignAdminSelect').value;
-            const roleId = document.getElementById('assignRoleSelect').value;
-
-            if (!adminId || !roleId) {
-                showNotification('Please select both admin and role', 'error');
-                return;
-            }
-
-            if (!confirm('Are you sure you want to remove this role from the admin?')) return;
-
-            try {
-                const response = await fetch(`/api/admin/admins/${adminId}/roles/${roleId}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showNotification(result.message, 'success');
-                    closeAssignRoleModal();
-                    loadAdmins();
-                    loadDashboardStats();
-                } else {
-                    showNotification(result.message || 'Failed to remove role', 'error');
-                }
-            } catch (error) {
-                console.error('Error removing role:', error);
-                showNotification('Error removing role', 'error');
-            }
-        }
-
-        async function toggleAdminStatus(adminId, currentStatus) {
-            const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-
-            try {
-                const response = await fetch(`/api/admin/admins/${adminId}/status?status=${newStatus}`, {
-                    method: 'PUT'
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showNotification(result.message, 'success');
-                    loadAdmins();
-                    loadDashboardStats();
-                } else {
-                    showNotification(result.message || 'Failed to update status', 'error');
-                }
-            } catch (error) {
-                console.error('Error updating admin status:', error);
-                showNotification('Error updating admin status', 'error');
-            }
-        }
-
-        async function deleteAdmin(id) {
-            if (!confirm('Are you sure you want to delete this admin user? This action cannot be undone.')) return;
-
-            try {
-                const response = await fetch(`/api/admin/admins/${id}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showNotification(result.message, 'success');
-                    loadAdmins();
-                    loadDashboardStats();
-                } else {
-                    showNotification(result.message || 'Delete failed', 'error');
-                }
-            } catch (error) {
-                console.error('Error deleting admin:', error);
-                showNotification('Error deleting admin', 'error');
-            }
-        }
-
-        // ============ UTILITY FUNCTIONS ============
-
-        function showNotification(message, type = 'info') {
-            const bgColor = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                info: 'bg-blue-500',
-                warning: 'bg-yellow-500'
-            }[type] || 'bg-blue-500';
-
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in`;
-            notification.textContent = message;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            loadDashboardStats();
-        });
+        fetch("/api/admin/roles/role_counts")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById("roleCount").innerHTML = data.data
+
+            })
+            .error(error => {
+                console.log("role count error: ", error);
+
+            })
     </script>
+    <script>
+        fetch("/api/admin/permissions/permission_counts")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById("permissionCount").innerHTML = data.data
+
+            })
+            .error(error => {
+                console.log("Permission count error: ", error);
+
+            })
+    </script>
+
 </div>
 
 </html>
