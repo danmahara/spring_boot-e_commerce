@@ -60,6 +60,10 @@ public class RoleService {
         roleRepository.deleteById(id);
     }
 
+    public Long countRoles() {
+        return roleRepository.count();
+    }
+
     public void assignPermissionToRole(Long roleId, Long permissionId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -86,6 +90,15 @@ public class RoleService {
     public Role findByName(String name) {
         return roleRepository.findByName(name)
                 .orElseThrow(() -> new RuntimeException("Role not found: " + name));
+    }
+
+    public Role findById(Long id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found: " + id));
+    }
+
+    public Role save(Role role) {
+        return roleRepository.save(role);
     }
 
     private RoleDTO convertToDTO(Role role) {

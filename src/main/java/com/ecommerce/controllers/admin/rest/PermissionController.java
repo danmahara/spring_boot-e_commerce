@@ -3,6 +3,7 @@ package com.ecommerce.controllers.admin.rest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import com.ecommerce.dtos.PermissionDTO;
 import com.ecommerce.services.admin.PermissionService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/admin/permissions")
@@ -33,13 +35,21 @@ public class PermissionController {
             return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
         }
     }
-    @GetMapping( "/with_roles")
+
+    @GetMapping("/with_roles")
     public ResponseEntity<?> getAllPermissionsWithRoles() {
         try {
             return ResponseEntity.ok(permissionService.getAllPermissionsWithRoles());
         } catch (Exception e) {
             return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
         }
+    }
+
+    @GetMapping("/permission_counts")
+    public ResponseEntity<?> countPermissions() {
+
+        return ResponseEntity
+                .ok(createSuccessResponse("Successfully count permissions", permissionService.countPermissions()));
     }
 
     @GetMapping("/{id}")

@@ -82,6 +82,10 @@ public class PermissionService {
                 .orElseThrow(() -> new RuntimeException("Permission not found"));
     }
 
+    public Long countPermissions() {
+        return permissionRepository.count();
+    }
+
     private PermissionDTO convertToDTO(Permission permission) {
         return PermissionDTO.builder()
                 .id(permission.getId())
