@@ -3,6 +3,10 @@ package com.ecommerce.models.admin;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Getter
@@ -62,4 +66,9 @@ public class Permission {
             return false;
         return id != null && id.equals(((Permission) obj).id);
     }
+
+    @ManyToMany(mappedBy = "permissions")
+    @Builder.Default
+    @JsonIgnore
+    public Set<Role> roles = new HashSet<>();
 }

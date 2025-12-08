@@ -1,5 +1,7 @@
 package com.ecommerce.dtos;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +20,6 @@ public class PermissionDTO {
     private String resource;
     private String action;
     private Boolean isActive;
+
+    private Set<RoleDTO> roles;
 }
