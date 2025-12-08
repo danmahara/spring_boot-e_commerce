@@ -1,4 +1,4 @@
-package com.ecommerce.controllers.admin;
+package com.ecommerce.controllers.admin.rest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +25,18 @@ public class PermissionController {
 
     private final PermissionService permissionService;
 
-    @GetMapping
+    @GetMapping({ "", "/" })
     public ResponseEntity<?> getAllPermissions() {
         try {
             return ResponseEntity.ok(permissionService.getAllPermissions());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
+        }
+    }
+    @GetMapping( "/with_roles")
+    public ResponseEntity<?> getAllPermissionsWithRoles() {
+        try {
+            return ResponseEntity.ok(permissionService.getAllPermissionsWithRoles());
         } catch (Exception e) {
             return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
         }

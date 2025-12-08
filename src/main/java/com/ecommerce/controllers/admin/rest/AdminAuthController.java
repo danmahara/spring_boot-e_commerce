@@ -1,4 +1,4 @@
-package com.ecommerce.controllers.admin;
+package com.ecommerce.controllers.admin.rest;
 
 import java.util.HashMap;
 import java.util.Map;

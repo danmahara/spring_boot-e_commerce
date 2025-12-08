@@ -1,4 +1,4 @@
-package com.ecommerce.controllers.admin;
+package com.ecommerce.controllers.admin.rest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,23 +20,23 @@ import com.ecommerce.services.admin.RoleService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/admins")
+@RequestMapping("/api/admin/roles")
 @RequiredArgsConstructor
 public class RoleController {
 
     private final AdminService adminService;
     private final RoleService roleService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllAdmins() {
-        try {
-            return ResponseEntity.ok(adminService.getAllAdmins());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
-        }
-    }
+    // @GetMapping("/admins")
+    // public ResponseEntity<?> getAllAdmins() {
+    // try {
+    // return ResponseEntity.ok(adminService.getAllAdmins());
+    // } catch (Exception e) {
+    // return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
+    // }
+    // }
 
-    @GetMapping("/roles")
+    @GetMapping({ "/", "" })
     public ResponseEntity<?> getAllRoles() {
         try {
             return ResponseEntity.ok(roleService.getAllRoles());
