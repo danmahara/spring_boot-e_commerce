@@ -24,7 +24,22 @@
                     <a href="/admin/profile" class="block px-4 py-2 hover:bg-gray-100 transition">Profile</a>
                     <a href="/admin/settings" class="block px-4 py-2 hover:bg-gray-100 transition">Settings</a>
                     <div class="border-t border-gray-200"></div>
-                    <a href="/admin/logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 transition">Logout</a>
+
+
+                    <a href="#" class="block px-4 py-2 hover:bg-red-50 text-red-600 transition"
+                        onclick="document.getElementById('logoutForm').submit(); return false;">
+                        <svg class="logout-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span class="logout-text">Logout</span>
+                    </a>
+
+                    <form id="logoutForm" action="/admin/logout" method="POST" style="display:none;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    </form>
+
+
                 </div>
             </div>
         </nav>
