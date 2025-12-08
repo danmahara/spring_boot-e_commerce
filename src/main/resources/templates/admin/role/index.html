@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="admin/layouts/admin_base :: layout(~{::section})"> -->
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Roles',
+         ~{admin/components/breadcrumb-icons :: icon-users}
+     )">
+</div>
+
+<!-- <div th:fragment="section" class="admin-content"> -->
+<div th:fragment="section" class="admin-content" data-status-route="/admin/roles">
+
+    <div class="bg-white shadow-lg rounded-lg p-6">
+
+        <div>
+            <div class="flex items-center justify-between mb-4">
+
+                <!-- Create Button -->
+                <a th:href="@{/admin/roles/create}" class="primary-btn px-4 py-2 rounded-lg shadow  transition">
+                    + Create
+                </a>
+
+                <!-- Search Field -->
+                <div>
+                    <input type="text" placeholder="Search pages..."
+                        class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="data-table" id="pages-table" data-ajax-url="/admin/products/json">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-th">S.N</th>
+                            <!-- <th class="table-th">Image</th> -->
+
+                            <th class="table-th">Title</th>
+                            <th class="table-th">Description</th>
+                            <th class="table-th">Total Permissions</th>
+                            <!-- <th class="table-th">Order</th> -->
+                            <th class="table-th text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- <tr class="table-row">
+                            <td class="table-td"></td>
+                            <td class="table-td"></td>
+                            <td class="table-td"></td>
+                            <td class="table-td"></td>
+                            <td class="table-td"></td>
+                            <td class="table-td"></td>
+                        </tr> -->
+                        <!-- AJAX will populate rows -->
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function fetchRoles() {
+            fetch("/api/admin/roles")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Roles API data: ", data);
+                    populateRolesTable(data)
+                })
+        }
+
+        function populateRolesTable(roles) {
+            const tableBody = document.getElementById("tableBody")
+            tableBody.innerHTML = ""
+            roles.forEach((role, index) => {
+                const row = `
+                <tr class="table-row">
+                            <td class="table-td">${++index}</td>
+                            <td class="table-td">${role.name}</td>
+                            <td class="table-td">${role.description}</td>
+                            <td class="table-td">${role.permissions.length}</td>
+                            <td class="table-td">
+                                <div class="action-group">
+                                    <label class="toggle-switch">
+                                    <input type="checkbox" class="toggle-input" data-id="${role.id}" ${role.isActive == true ? "checked" : ""}>
+                                        <div class="toggle-slider">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                    </label>
+                                    <a href="" class="btn btn-warning btn-sm">Edit</a>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="${role.id}">Delete</button>
+                                </div>
+                            </td>
+
+                        </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforebegin", row)
+            });
+
+            // Attach event listeners to checkboxes AFTER table is rendered
+            document.querySelectorAll(".toggle-input").forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    const roleId = this.getAttribute("data-id");
+                    toggleStatus(roleId, this); // pass the checkbox element
+                });
+            });
+
+        }
+        
+        document.addEventListener("DOMContentLoaded", fetchRoles)
+
+        function toggleStatus(roleId, checkbox) {
+            fetch(`/api/admin/roles/status/${roleId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to toggle status");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Status changed successfully:", data);
+                    showFlashMessage('Status changed successfully', 'success', 'Success');
+                    // Optionally, show a toast notification or update UI
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    // Revert the checkbox if API failed
+                    checkbox.checked = !checkbox.checked;
+                    showFlashMessage('Failed to change status!', 'error', 'Failed');
+
+                });
+        }
+
+    </script>
+
+</div>
