@@ -21,16 +21,16 @@ public class DashboardController {
     @Autowired
     private DashboardRepository dashboardRepository;
 
-    @GetMapping("/dashboard")
-    public String admindashboard(HttpSession httpSession, Model model) {
+    // @GetMapping("/dashboard")
+    // public String admindashboard(HttpSession httpSession, Model model) {
 
-        long pageCount = dashboardRepository.countByTemplateNameIn(Page.getPageLists());
+    //     long pageCount = dashboardRepository.countByTemplateNameIn(Page.getPageLists());
 
-        model.addAttribute("pageCount", pageCount);
-        model.addAttribute("admin", httpSession.getAttribute("admin"));
-        model.addAttribute("title", "Home | Dashboard");
-        System.out.println("Dashboard mapping");
+    //     model.addAttribute("pageCount", pageCount);
+    //     model.addAttribute("admin", httpSession.getAttribute("admin"));
+    //     model.addAttribute("title", "Home | Dashboard");
+    //     System.out.println("Dashboard mapping");
 
-        return "admin/dashboard"; // Thymeleaf template
-    }
+    //     return "admin/dashboard"; // Thymeleaf template
+    // }
 }
