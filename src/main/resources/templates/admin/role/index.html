@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<!-- <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="admin/layouts/admin_base :: layout(~{::section})"> -->
-
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
     th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
 
@@ -10,111 +8,184 @@
      )">
 </div>
 
-<!-- <div th:fragment="section" class="admin-content"> -->
 <div th:fragment="section" class="admin-content" data-status-route="/admin/roles">
-
     <div class="bg-white shadow-lg rounded-lg p-6">
-
         <div>
             <div class="flex items-center justify-between mb-4">
-
                 <!-- Create Button -->
-                <a th:href="@{/admin/roles/create}" class="primary-btn px-4 py-2 rounded-lg shadow  transition">
+                <a th:if="${admin.hasPermission('CREATE_ROLES')}" th:href="@{/admin/roles/create}"
+                    class="primary-btn px-4 py-2 rounded-lg shadow transition">
                     + Create
                 </a>
-
                 <!-- Search Field -->
                 <div>
                     <input type="text" placeholder="Search pages..."
                         class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
-
             <div class="overflow-x-auto">
-                <table class="data-table" id="pages-table" data-ajax-url="/admin/products/json">
+                <table class="data-table" id="pages-table" data-ajax-url="/api/admin/roles">
                     <thead class="table-header">
                         <tr>
                             <th class="table-th">S.N</th>
-                            <!-- <th class="table-th">Image</th> -->
-
                             <th class="table-th">Title</th>
                             <th class="table-th">Description</th>
                             <th class="table-th">Total Permissions</th>
-                            <!-- <th class="table-th">Order</th> -->
+                            <th class="table-th text-center">Status</th>
                             <th class="table-th text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- <tr class="table-row">
-                            <td class="table-td"></td>
-                            <td class="table-td"></td>
-                            <td class="table-td"></td>
-                            <td class="table-td"></td>
-                            <td class="table-td"></td>
-                            <td class="table-td"></td>
-                        </tr> -->
                         <!-- AJAX will populate rows -->
                     </tbody>
                 </table>
-
             </div>
         </div>
-
     </div>
 
-
     <script>
-
+        /**
+         * Fetch roles from API and populate table
+         * API returns: { success: true, message: "...", data: [...] }
+         */
         function fetchRoles() {
+            console.log("Fetching roles...");
+
             fetch("/api/admin/roles")
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Roles API data: ", data);
-                    populateRolesTable(data)
+                .then(response => {
+                    console.log("Response received:", response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
                 })
+                .then(apiResponse => {
+                    console.log("API Response:", apiResponse);
+
+                    // Check if response has success flag
+                    if (!apiResponse.success) {
+                        throw new Error(apiResponse.message || "Unknown error");
+                    }
+
+                    // Extract data array from nested response
+                    // API returns { success: true, message: "...", data: [roles...] }
+                    const roles = apiResponse.data;
+
+                    if (!Array.isArray(roles)) {
+                        throw new Error("Roles data is not an array");
+                    }
+
+                    console.log(`Successfully fetched ${roles.length} roles`);
+                    populateRolesTable(roles);
+                })
+                .catch(error => {
+                    console.error("ROLES API ERROR:", error);
+                    showFlashMessage(error.message || "Failed to fetch roles", "error", "Error");
+                });
         }
 
+        /**
+         * Populate table with roles data
+         * @param {Array} roles - Array of role objects
+         */
         function populateRolesTable(roles) {
-            const tableBody = document.getElementById("tableBody")
-            tableBody.innerHTML = ""
-            roles.forEach((role, index) => {
-                const row = `
-                <tr class="table-row">
-                            <td class="table-td">${++index}</td>
-                            <td class="table-td">${role.name}</td>
-                            <td class="table-td">${role.description}</td>
-                            <td class="table-td">${role.permissions.length}</td>
-                            <td class="table-td">
-                                <div class="action-group">
-                                    <label class="toggle-switch">
-                                    <input type="checkbox" class="toggle-input" data-id="${role.id}" ${role.isActive == true ? "checked" : ""}>
-                                        <div class="toggle-slider">
-                                            <div class="toggle-thumb"></div>
-                                        </div>
-                                    </label>
-                                    <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                    <button class="btn btn-danger btn-sm delete-btn" data-id="${role.id}">Delete</button>
-                                </div>
-                            </td>
+            const tableBody = document.getElementById("tableBody");
 
-                        </tr>
+            if (!tableBody) {
+                console.error("Table body element not found!");
+                return;
+            }
+
+            // Clear existing rows
+            tableBody.innerHTML = "";
+
+            if (!roles || roles.length === 0) {
+                tableBody.innerHTML = `
+                    <tr class="table-row">
+                        <td colspan="6" class="table-td text-center py-4">
+                            No roles found
+                        </td>
+                    </tr>
                 `;
-                tableBody.insertAdjacentHTML("beforebegin", row)
+                return;
+            }
+
+            // Populate rows
+            roles.forEach((role, index) => {
+                const permissionCount = (role.permissions && role.permissions.length) ? role.permissions.length : 0;
+                const isActive = role.isActive === true || role.isActive === 'true';
+
+                const row = `
+                    <tr class="table-row">
+                        <td class="table-td">${index + 1}</td>
+                        <td class="table-td font-semibold">${escapeHtml(role.name)}</td>
+                        <td class="table-td">${escapeHtml(role.description || '-')}</td>
+                        <td class="table-td text-center">
+                            <span class="badge badge-info">${permissionCount}</span>
+                        </td>
+                        <td class="table-td text-center">
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                       class="toggle-input" 
+                                       data-id="${role.id}" 
+                                       data-role-name="${escapeHtml(role.name)}"
+                                       ${isActive ? "checked" : ""}>
+                                <div class="toggle-slider">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                            </label>
+                        </td>
+                        <td class="table-td text-center">
+                            <div class="action-group">
+                                <a href="/admin/roles/edit/${role.id}" class="btn btn-warning btn-sm">Edit</a>
+                                <button class="btn btn-danger btn-sm delete-btn" 
+                                        data-id="${role.id}" 
+                                        data-role-name="${escapeHtml(role.name)}">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforeend", row);
             });
 
-            // Attach event listeners to checkboxes AFTER table is rendered
+            // Attach event listeners AFTER table is rendered
+            attachEventListeners();
+        }
+
+        /**
+         * Attach event listeners to checkboxes and delete buttons
+         */
+        function attachEventListeners() {
+            // Toggle status on checkbox change
             document.querySelectorAll(".toggle-input").forEach(checkbox => {
                 checkbox.addEventListener("change", function () {
                     const roleId = this.getAttribute("data-id");
-                    toggleStatus(roleId, this); // pass the checkbox element
+                    const roleName = this.getAttribute("data-role-name");
+                    toggleStatus(roleId, roleName, this);
                 });
             });
 
+            // Delete role on button click
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const roleId = this.getAttribute("data-id");
+                    const roleName = this.getAttribute("data-role-name");
+                    deleteRole(roleId, roleName);
+                });
+            });
         }
-        
-        document.addEventListener("DOMContentLoaded", fetchRoles)
 
-        function toggleStatus(roleId, checkbox) {
+        /**
+         * Toggle role status (active/inactive)
+         * @param {number} roleId - Role ID
+         * @param {string} roleName - Role name
+         * @param {HTMLElement} checkbox - Checkbox element
+         */
+        function toggleStatus(roleId, roleName, checkbox) {
+            console.log(`Toggling status for role ${roleId} (${roleName})`);
+
             fetch(`/api/admin/roles/status/${roleId}`, {
                 method: "PUT",
                 headers: {
@@ -122,23 +193,121 @@
                 }
             })
                 .then(response => {
-                    if (!response.ok) throw new Error("Failed to toggle status");
+                    if (!response.ok) {
+                        throw new Error("Failed to toggle status");
+                    }
                     return response.json();
                 })
                 .then(data => {
                     console.log("Status changed successfully:", data);
-                    showFlashMessage('Status changed successfully', 'success', 'Success');
-                    // Optionally, show a toast notification or update UI
+                    showFlashMessage(
+                        `${roleName} status updated successfully`,
+                        "success",
+                        "Success"
+                    );
                 })
                 .catch(error => {
-                    console.error("Error:", error);
+                    console.error("Error toggling status:", error);
                     // Revert the checkbox if API failed
                     checkbox.checked = !checkbox.checked;
-                    showFlashMessage('Failed to change status!', 'error', 'Failed');
-
+                    showFlashMessage(
+                        `Failed to change status for ${roleName}`,
+                        "error",
+                        "Failed"
+                    );
                 });
         }
 
-    </script>
+        /**
+         * Delete role with confirmation
+         * @param {number} roleId - Role ID
+         * @param {string} roleName - Role name
+         */
+        function deleteRole(roleId, roleName) {
+            const confirmed = confirm(
+                `Are you sure you want to delete the role "${roleName}"? This action cannot be undone.`
+            );
 
+            if (!confirmed) {
+                console.log("Delete cancelled");
+                return;
+            }
+
+            console.log(`Deleting role ${roleId} (${roleName})`);
+
+            fetch(`/api/admin/roles/${roleId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Delete response:", data);
+
+                    if (data.success) {
+                        showFlashMessage(
+                            `${roleName} deleted successfully`,
+                            "success",
+                            "Success"
+                        );
+                        // Refresh table
+                        fetchRoles();
+                    } else {
+                        throw new Error(data.message || "Unknown error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting role:", error);
+                    showFlashMessage(
+                        `Failed to delete ${roleName}: ${error.message}`,
+                        "error",
+                        "Failed"
+                    );
+                });
+        }
+
+        /**
+         * Escape HTML special characters to prevent XSS
+         * @param {string} text - Text to escape
+         * @returns {string} Escaped text
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        /**
+         * Show flash message (assumes function exists globally)
+         * @param {string} message - Message text
+         * @param {string} type - Message type (success, error, warning, info)
+         * @param {string} title - Message title
+         */
+        function showFlashMessage(message, type, title) {
+            // Check if showFlashMessage function exists globally
+            if (typeof window.showFlashMessage === 'function') {
+                window.showFlashMessage(message, type, title);
+            } else {
+                // Fallback: use console and alert
+                console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
+                // alert(`${title}: ${message}`);
+            }
+        }
+
+        /**
+         * Initialize: Fetch roles when page loads
+         */
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM loaded, fetching roles...");
+            fetchRoles();
+        });
+    </script>
 </div>
+
+</html>
