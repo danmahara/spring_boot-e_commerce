@@ -4,20 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ecommerce.dtos.AdminResponseDTO;
-import com.ecommerce.models.admin.Role;
-import com.ecommerce.services.admin.AdminService;
+import com.ecommerce.annotations.RequirePermission;
+import com.ecommerce.dtos.RoleDTO;
 import com.ecommerce.services.admin.RoleService;
 
 import jakarta.validation.Valid;
@@ -28,129 +25,100 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RoleRestController {
 
-    private final AdminService adminService;
     private final RoleService roleService;
 
-    // @GetMapping("/admins")
-    // public ResponseEntity<?> getAllAdmins() {
-    // try {
-    // return ResponseEntity.ok(adminService.getAllAdmins());
-    // } catch (Exception e) {
-    // return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
-    // }
-    // }
-
     @GetMapping({ "/", "" })
+    @RequirePermission("READ_ROLES")
     public ResponseEntity<?> getAllRoles() {
+        System.out.println("READING ROLES");
         try {
-            return ResponseEntity.ok(roleService.getAllRoles());
+            return ResponseEntity.ok(createSuccessResponse("Roles retrieved successfully", roleService.getAllRoles()));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAdminById(@PathVariable Long id) {
+    @RequirePermission("READ_ROLES")
+    public ResponseEntity<?> getRoleById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(adminService.getAdminById(id));
+            return ResponseEntity.ok(createSuccessResponse("Role retrieved successfully", roleService.getRoleById(id)));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(createErrorResponse(e.getMessage()));
         }
     }
 
-    @PostMapping("/{adminId}/roles/{roleId}")
-    public ResponseEntity<?> assignRoleToAdmin(
-            @PathVariable Long adminId,
-            @PathVariable Long roleId) {
+    @PostMapping
+    @RequirePermission("CREATE_ROLES")
+    public ResponseEntity<?> createRole(@Valid @RequestBody RoleDTO roleDTO) {
         try {
-            adminService.assignRoleToAdmin(adminId, roleId);
-            AdminResponseDTO admin = adminService.getAdminById(adminId);
-            return ResponseEntity.ok(createSuccessResponse("Role assigned to admin", admin));
+            RoleDTO createdRole = roleService.createRole(roleDTO);
+            return ResponseEntity.status(201)
+                    .body(createSuccessResponse("Role created successfully", createdRole));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
         }
     }
 
-    @DeleteMapping("/{adminId}/roles/{roleId}")
-    public ResponseEntity<?> removeRoleFromAdmin(
-            @PathVariable Long adminId,
-            @PathVariable Long roleId) {
+    @PutMapping("/{id}")
+    @RequirePermission("UPDATE_ROLES")
+    public ResponseEntity<?> updateRole(@PathVariable Long id, @Valid @RequestBody RoleDTO roleDTO) {
         try {
-            adminService.removeRoleFromAdmin(adminId, roleId);
-            AdminResponseDTO admin = adminService.getAdminById(adminId);
-            return ResponseEntity.ok(createSuccessResponse("Role removed from admin", admin));
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
-        }
-    }
-
-    @PutMapping("/{adminId}/status")
-    public ResponseEntity<?> updateAdminStatus(
-            @PathVariable Long adminId,
-            @RequestParam String status) {
-        try {
-            adminService.updateAdminStatus(adminId, status);
-            AdminResponseDTO admin = adminService.getAdminById(adminId);
-            return ResponseEntity.ok(createSuccessResponse("Admin status updated", admin));
+            RoleDTO updatedRole = roleService.updateRole(id, roleDTO);
+            return ResponseEntity.ok(createSuccessResponse("Role updated successfully", updatedRole));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAdmin(@PathVariable Long id) {
+    @RequirePermission("DELETE_ROLES")
+    public ResponseEntity<?> deleteRole(@PathVariable Long id) {
         try {
-            adminService.deleteAdmin(id);
-            return ResponseEntity.ok(createSuccessResponse("Admin deleted successfully", null));
+            roleService.deleteRole(id);
+            return ResponseEntity.ok(createSuccessResponse("Role deleted successfully", null));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
         }
     }
 
-    @GetMapping("/role_counts")
-    public ResponseEntity<?> roleCounts() {
-        return ResponseEntity.ok(createSuccessResponse("Successfully count roles", roleService.countRoles()));
-    }
-
-    @PutMapping("status/{id}")
-    public ResponseEntity<?> toogleStatus(@PathVariable Long id) {
+    @PostMapping("/{roleId}/permissions/{permissionId}")
+    @RequirePermission("UPDATE_ROLES")
+    public ResponseEntity<?> assignPermissionToRole(
+            @PathVariable Long roleId,
+            @PathVariable Long permissionId) {
         try {
-
-            Role role = roleService.findById(id);
-            role.setIsActive(!role.getIsActive());
-            roleService.save(role);
-            return ResponseEntity.ok(createSuccessResponse("Status Changes Successfully", role));
+            roleService.assignPermissionToRole(roleId, permissionId);
+            RoleDTO role = roleService.getRoleById(roleId);
+            return ResponseEntity.ok(createSuccessResponse("Permission assigned to role", role));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
         }
     }
 
-    @PostMapping("/store")
-    public ResponseEntity<?> storeRole(@Valid @ModelAttribute Role role, BindingResult bindingResult) {
-        // Check for validation errors
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-
-            // Return error response with validation errors
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "Validation failed!");
-            response.put("errors", errors);
-            return ResponseEntity.ok(response);
-        }
-
+    @DeleteMapping("/{roleId}/permissions/{permissionId}")
+    @RequirePermission("UPDATE_ROLES")
+    public ResponseEntity<?> removePermissionFromRole(
+            @PathVariable Long roleId,
+            @PathVariable Long permissionId) {
         try {
-            Role savedRole = roleService.save(role);
-            return ResponseEntity.ok(createSuccessResponse("Role created Successfully", savedRole));
+            roleService.removePermissionFromRole(roleId, permissionId);
+            RoleDTO role = roleService.getRoleById(roleId);
+            return ResponseEntity.ok(createSuccessResponse("Permission removed from role", role));
         } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "Failed to create Role: " + e.getMessage());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
         }
     }
-    
+
+    @GetMapping("/count")
+    // @RequirePermission("READ_ROLES")
+    public ResponseEntity<?> countRoles() {
+        try {
+            return ResponseEntity.ok(createSuccessResponse("Role count retrieved", roleService.countRoles()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
+        }
+    }
 
     private Map<String, Object> createSuccessResponse(String message, Object data) {
         Map<String, Object> response = new HashMap<>();
