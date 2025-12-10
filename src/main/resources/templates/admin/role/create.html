@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Create Page',
+         ~{admin/components/breadcrumb-icons :: icon-pages}
+        )">
+</div>
+<div th:fragment="section" class="admin-content">
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full">
+        <form id="createPageForm" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div
+                th:replace="~{admin/components/input-field :: input-field('Role Name', 'name', 'e.g: PRODUCT_MANAGER', 'text', true,'')}">
+            </div>
+
+            <!-- Content (Full Width) -->
+            <div class="w-full md:col-span-2">
+                <label class="block mb-1 font-medium text-gray-700">Description <span
+                        class="text-red-500">*</span></label>
+                <textarea name="description" rows="6" id="description" placeholder=""
+                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]"></textarea>
+            </div>
+
+
+            <div class="w-full flex justify-between items-center">
+
+                <div class="w-full flex items-center space-x-3 mt-6 md:mt-0">
+                    <label class="block font-medium text-gray-700">Status</label>
+                    <input type="hidden" name="isActive" value="false">
+                    <input type="checkbox" name="isActive" value="true" style="color: var(--primary-bg) !important;"
+                        class="w-5 h-5 text-blue-600 bg-gray-200  border-gray-300 rounded focus:ring-2 focus:ring-[var(--primary-bg)]
+                  dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-[var(--primary-bg)]">
+                </div>
+
+
+            </div>
+
+            <div class="md:col-span-2 pt-2">
+                <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
+                    Create Page
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('createPageForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
+            const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+            if (!csrfToken || !csrfHeader) {
+                console.error('CSRF token or header not found');
+                return;
+            }
+            const formData = new FormData(this);
+            fetch('/api/admin/roles/store', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    [csrfHeader]: csrfToken,
+                }
+            })
+                .then(res => {
+                    const contentType = res.headers.get('content-type');
+                    if (res.redirected) {
+                        showFlashMessage('Role created successfully', 'success', 'Success');
+                        setTimeout(() => {
+                            window.location.href = res.url;
+                        }, 2000);
+                        return;
+                    }
+                    if (contentType && contentType.includes('application/json')) {
+                        return res.json();
+                    } else {
+                        throw new Error('Unexpected response format');
+                    }
+                })
+                .then(data => {
+                    if (!data) return;
+                    document.querySelectorAll(".input-error").forEach(el => el.remove());
+                    if (!data.success) {
+                        if (data.errors && typeof data.errors === 'object') {
+                            Object.keys(data.errors).forEach(fieldName => {
+                                // FIX: Changed from template literal to proper querySelector syntax
+                                const field = document.querySelector(`[name="${fieldName}"]`);
+                                if (field) {
+                                    const errorEl = document.createElement("p");
+                                    errorEl.className = "input-error text-red-600 text-sm mt-1";
+                                    errorEl.textContent = data.errors[fieldName];
+                                    if (field.type === 'file') {
+                                        const parentWrapper = field.parentElement;
+                                        if (parentWrapper && parentWrapper.hasAttribute('role') &&
+                                            parentWrapper.getAttribute('role') === 'button') {
+                                            parentWrapper.insertAdjacentElement("afterend", errorEl);
+                                        } else {
+                                            field.insertAdjacentElement("afterend", errorEl);
+                                        }
+                                    } else {
+                                        field.insertAdjacentElement("afterend", errorEl);
+                                    }
+                                }
+                            });
+                        }
+                        showFlashMessage(data.message || 'Validation failed', 'error', 'Error');
+                        return;
+                    }
+                    showFlashMessage(data.message, 'success', "Success");
+                    setTimeout(() => {
+                        window.location.href = '/admin/roles';
+                    }, 1700);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showFlashMessage('An error occurred while creating the role. Please try again.', 'error',
+                        'Error');
+                });
+        });
+    </script>
+
+
+</div>
+
+</html>

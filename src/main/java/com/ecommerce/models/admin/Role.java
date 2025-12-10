@@ -17,6 +17,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,8 +39,11 @@ public class Role {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Name is required")
+    @Pattern(regexp = "^[A-Z_]+$", message = "Name must contain only uppercase letters and underscores (e.g., PRODUCT_MANAGER)")
     private String name;
 
+    @NotBlank(message = "Description is required")
     private String description;
 
     @Column(nullable = false)

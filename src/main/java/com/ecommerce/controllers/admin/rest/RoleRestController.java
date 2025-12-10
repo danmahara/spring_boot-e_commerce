@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +20,7 @@ import com.ecommerce.models.admin.Role;
 import com.ecommerce.services.admin.AdminService;
 import com.ecommerce.services.admin.RoleService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -121,6 +124,33 @@ public class RoleRestController {
             return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
         }
     }
+
+    @PostMapping("/store")
+    public ResponseEntity<?> storeRole(@Valid @ModelAttribute Role role, BindingResult bindingResult) {
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+
+            // Return error response with validation errors
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Validation failed!");
+            response.put("errors", errors);
+            return ResponseEntity.ok(response);
+        }
+
+        try {
+            Role savedRole = roleService.save(role);
+            return ResponseEntity.ok(createSuccessResponse("Role created Successfully", savedRole));
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to create Role: " + e.getMessage());
+            return ResponseEntity.ok(response);
+        }
+    }
+    
 
     private Map<String, Object> createSuccessResponse(String message, Object data) {
         Map<String, Object> response = new HashMap<>();
