@@ -1,24 +1,10 @@
 package com.ecommerce.models.admin;
 
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -39,36 +25,129 @@ public class Admin {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String fullName;
+
+    @Column(nullable = false)
     private String status;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // IMPORTANT: Use EAGER fetch to load roles immediately
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "admin_roles", joinColumns = @JoinColumn(name = "admin_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Check if admin has specific permission
+    public boolean hasPermission(String permissionName) {
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+
+        return roles.stream()
+                .filter(role -> role != null && (role.getIsActive() == null || role.getIsActive()))
+                .flatMap(role -> {
+                    Set<Permission> perms = role.getPermissions();
+                    return perms != null ? perms.stream() : java.util.stream.Stream.empty();
+                })
+                .filter(permission -> permission != null
+                        && (permission.getIsActive() == null || permission.getIsActive()))
+                .anyMatch(permission -> permission.getName() != null && permission.getName().equals(permissionName));
+    }
+
+    // Check if admin has specific role
+    public boolean hasRole(String roleName) {
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+
+        return roles.stream()
+                .filter(role -> role != null && (role.getIsActive() == null || role.getIsActive()))
+                .anyMatch(role -> role.getName() != null && role.getName().equals(roleName));
+    }
+
+    // Check if admin has any of the given roles
+    public boolean hasAnyRole(String... roleNames) {
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+
+        Set<String> names = Set.of(roleNames);
+        return roles.stream()
+                .filter(role -> role != null && (role.getIsActive() == null || role.getIsActive()))
+                .map(Role::getName)
+                .anyMatch(names::contains);
+    }
+
+    // Check if admin has all given permissions
+    public boolean hasAllPermissions(String... permissionNames) {
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+
+        Set<String> required = Set.of(permissionNames);
+        Set<String> userPerms = getAllPermissions().stream()
+                .map(Permission::getName)
+                .collect(java.util.stream.Collectors.toSet());
+
+        return userPerms.containsAll(required);
+    }
+
+    // Get all permissions for this admin
+    public Set<Permission> getAllPermissions() {
+        if (roles == null || roles.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        return roles.stream()
+                .filter(role -> role != null && (role.getIsActive() == null || role.getIsActive()))
+                .flatMap(role -> {
+                    Set<Permission> perms = role.getPermissions();
+                    return perms != null ? perms.stream() : java.util.stream.Stream.empty();
+                })
+                .filter(permission -> permission != null
+                        && (permission.getIsActive() == null || permission.getIsActive()))
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
+    // Get permission names
+    public Set<String> getPermissionNames() {
+        return getAllPermissions().stream()
+                .map(Permission::getName)
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
     public void addRole(Role role) {
-        this.roles.add(role);
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        if (role != null) {
+            roles.add(role);
+        }
     }
 
     public void removeRole(Role role) {
-        this.roles.remove(role);
-    }
-
-    public boolean hasRole(String roleName) {
-        return roles.stream().anyMatch(r -> r.getName().equals(roleName));
-    }
-
-    public boolean hasPermission(String permissionName) {
-        return roles.stream()
-                .flatMap(role -> role.getPermissions().stream())
-                .anyMatch(perm -> perm.getName().equals(permissionName));
-    }
-
-    public Set<String> getPermissionNames() {
-        return roles.stream()
-                .flatMap(role -> role.getPermissions().stream())
-                .map(Permission::getName)
-                .collect(java.util.stream.Collectors.toSet());
+        if (roles != null && role != null) {
+            roles.remove(role);
+        }
     }
 }
