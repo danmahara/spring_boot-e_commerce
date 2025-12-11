@@ -60,6 +60,12 @@ public class RoleService {
         roleRepository.deleteById(id);
     }
 
+    public void toogleStatus(Long id) {
+        Role role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role not found"));
+        role.setIsActive(!role.getIsActive());
+        roleRepository.save(role);
+    }
+
     public Long countRoles() {
         return roleRepository.count();
     }
