@@ -8,7 +8,7 @@
 </div>
 <div th:fragment="section" class="admin-content">
     <div class="bg-white shadow-lg rounded-lg p-6 w-full">
-        <form id="createPageForm" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form id="createPageForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <div
                 th:replace="~{admin/components/input-field :: input-field('Role Name', 'name', 'e.g: PRODUCT_MANAGER', 'text', true,'')}">
@@ -53,13 +53,21 @@
                 console.error('CSRF token or header not found');
                 return;
             }
-            const formData = new FormData(this);
-            fetch('/api/admin/roles/store', {
+
+            // Create JSON object instead of FormData
+            const formData = {
+                name: document.querySelector('[name="name"]').value,
+                description: document.querySelector('[name="description"]').value,
+                isActive: document.querySelector('[name="isActive"]:checked')?.value === 'true'
+            };
+
+            fetch('/api/admin/roles', {
                 method: 'POST',
-                body: formData,
                 headers: {
+                    'Content-Type': 'application/json',
                     [csrfHeader]: csrfToken,
-                }
+                },
+                body: JSON.stringify(formData)
             })
                 .then(res => {
                     const contentType = res.headers.get('content-type');
@@ -82,7 +90,6 @@
                     if (!data.success) {
                         if (data.errors && typeof data.errors === 'object') {
                             Object.keys(data.errors).forEach(fieldName => {
-                                // FIX: Changed from template literal to proper querySelector syntax
                                 const field = document.querySelector(`[name="${fieldName}"]`);
                                 if (field) {
                                     const errorEl = document.createElement("p");
@@ -102,7 +109,8 @@
                                 }
                             });
                         }
-                        showFlashMessage(data.message || 'Validation failed', 'error', 'Error');
+                        console.log("Failed to store role: " + data.message);
+                        showFlashMessage("Validation failed" || 'Validation failed', 'error', 'Failed');
                         return;
                     }
                     showFlashMessage(data.message, 'success', "Success");
