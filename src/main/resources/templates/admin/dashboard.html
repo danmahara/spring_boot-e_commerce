@@ -211,13 +211,22 @@
 
             fetch("/api/admin/roles")
                 .then(response => response.json())
-                .then(data => {
-                    console.log("Api data: ", data);
-                    populateRolesTable(data);
+                .then(responseData => {
+                    console.log("Api data: ", responseData.data);
+
+                    if (responseData.success) {
+                        const roles = responseData.data
+                        if (Array.isArray(roles)) {
+                            populateRolesTable(responseData.data);
+                        } else {
+                            showFlashMessage("Data is not in array", "error", "Failed")
+                        }
+
+                    }
                 })
                 .error(error => {
                     console.log("API Error: ", error);
-
+                    showFlashMessage(error, "error", "Error")
                 })
 
         }
