@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,9 +49,29 @@ public class RoleRestController {
         }
     }
 
+    // @PostMapping
+    // @RequirePermission("CREATE_ROLES")
+    // public ResponseEntity<?> createRole(@Valid @RequestBody RoleDTO roleDTO) {
+    // try {
+    // RoleDTO createdRole = roleService.createRole(roleDTO);
+    // return ResponseEntity.status(201)
+    // .body(createSuccessResponse("Role created successfully", createdRole));
+    // } catch (Exception e) {
+    // return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
+    // }
+    // }
+
     @PostMapping
     @RequirePermission("CREATE_ROLES")
-    public ResponseEntity<?> createRole(@Valid @RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<?> createRole(@Valid @RequestBody RoleDTO roleDTO, BindingResult bindingResult) {
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.status(400)
+                    .body(createErrorResponse("Validation failed", errors));
+        }
+
         try {
             RoleDTO createdRole = roleService.createRole(roleDTO);
             return ResponseEntity.status(201)
@@ -110,8 +131,20 @@ public class RoleRestController {
         }
     }
 
-    @GetMapping("/count")
-    // @RequirePermission("READ_ROLES")
+    @PutMapping("status/{id}")
+    @RequirePermission("UPDATE_ROLES")
+    public ResponseEntity<?> toogleStatus(@PathVariable Long id) {
+
+        try {
+
+            return ResponseEntity.ok(createSuccessResponse("Status changes successfully", "Role status Changed"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(createErrorResponse(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/role_counts")
+    @RequirePermission("READ_ROLES")
     public ResponseEntity<?> countRoles() {
         try {
             return ResponseEntity.ok(createSuccessResponse("Role count retrieved", roleService.countRoles()));
@@ -132,6 +165,14 @@ public class RoleRestController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);
         response.put("message", message);
+        return response;
+    }
+
+    private Map<String, Object> createErrorResponse(String message, Map<String, String> errors) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", message);
+        response.put("errors", errors);
         return response;
     }
 }
