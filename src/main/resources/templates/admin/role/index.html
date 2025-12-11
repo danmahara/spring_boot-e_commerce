@@ -289,16 +289,7 @@
          * @param {string} type - Message type (success, error, warning, info)
          * @param {string} title - Message title
          */
-        function showFlashMessage(message, type, title) {
-            // Check if showFlashMessage function exists globally
-            if (typeof window.showFlashMessage === 'function') {
-                window.showFlashMessage(message, type, title);
-            } else {
-                // Fallback: use console and alert
-                console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
-                // alert(`${title}: ${message}`);
-            }
-        }
+
 
         /**
          * Initialize: Fetch roles when page loads
