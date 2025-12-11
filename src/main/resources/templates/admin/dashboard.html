@@ -13,7 +13,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
             <!-- Total Roles -->
-            <div
+            <div th:if="${admin.hasPermission('READ_ROLES')}"
                 class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
                 <div>
                     <p class="text-gray-500 font-medium text-sm">Total Roles</p>
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Total Permissions -->
-            <div
+            <div th:if="${admin.hasPermission('READ_PERMISSIONS')}"
                 class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition transform hover:-translate-y-1">
                 <div>
                     <p class="text-gray-500 font-medium text-sm">Total Permissions</p>
@@ -45,7 +45,7 @@
         </div>
 
         <!-- ROLES TABLE -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
+        <div th:if="${admin.hasPermission('READ_ROLES')}" class="bg-white shadow-lg rounded-lg p-6 mb-10">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold text-gray-800">System Roles</h2>
             </div>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- PERMISSIONS TABLE -->
-        <div class="bg-white shadow-lg rounded-lg p-6">
+        <div th:if="${admin.hasPermission('READ_PERMISSIONS')}" class="bg-white shadow-lg rounded-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold text-gray-800">Permissions List</h2>
             </div>
@@ -263,8 +263,18 @@
             fetch("/api/admin/permissions/with_roles")
                 .then(response => response.json())
                 .then(data => {
-                    console.log("API permissions data: ", data);
-                    populatePermissionsTable(data)
+                    if (data.success) {
+                        const permissions = data.data;
+                        if (Array.isArray(permissions)) {
+                            console.log("API permissions data: ", data.data);
+                            populatePermissionsTable(data.data)
+                        } else {
+                            console.log("Api data is not in array");
+                        }
+                    } else {
+                        console.log("Failed: ", data.message);
+
+                    }
                 })
         }
 
