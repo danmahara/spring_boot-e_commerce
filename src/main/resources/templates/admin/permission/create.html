@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Create Permission',
+         ~{admin/components/breadcrumb-icons :: icon-pages}
+        )">
+</div>
+<div th:fragment="section" class="admin-content">
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full">
+        <form id="createPageForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Permission Name -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">
+                    Permission Name <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="name" placeholder="e.g: CREATE_PRODUCT"
+                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]"
+                    pattern="[A-Z_]+" minlength="3" maxlength="100"
+                    title="Only uppercase letters and underscores allowed">
+                <p class="text-xs text-gray-500 mt-1">Use uppercase letters and underscores only</p>
+            </div>
+
+            <!-- Resource -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">
+                    Resource <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="resource" placeholder="e.g: PRODUCT"
+                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-[var(--primary-bg)]"
+                    pattern="[A-Z_]+" minlength="2" maxlength="50"
+                    title="Only uppercase letters and underscores allowed">
+                <p class="text-xs text-gray-500 mt-1">Use uppercase letters and underscores only</p>
+            </div>
+
+            <!-- Action -->
+            <div>
+                <label class="block mb-1 font-medium text-gray-700">
+                    Action <span class="text-red-500">*</span>
+                </label>
+                <select name="action"
+                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-[var(--primary-bg)]">
+                    <option value="">Select action</option>
+                    <option value="CREATE">CREATE</option>
+                    <option value="READ">READ</option>
+                    <option value="UPDATE">UPDATE</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+
+            <!-- Status -->
+            <div class="flex items-center space-x-3">
+                <label class="block font-medium text-gray-700">Status</label>
+                <input type="hidden" name="isActive" value="false">
+                <input type="checkbox" name="isActive" value="true" checked style="color: var(--primary-bg) !important;"
+                    class="w-5 h-5 text-blue-600 bg-gray-200 border-gray-300 rounded focus:ring-2 focus:ring-[var(--primary-bg)]">
+            </div>
+
+            <!-- Description (Full Width) -->
+            <div class="w-full md:col-span-2">
+                <label class="block mb-1 font-medium text-gray-700">
+                    Description <span class="text-red-500">*</span>
+                </label>
+                <textarea name="description" rows="6" placeholder="Describe what this permission allows..."
+                    class="px-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[var(--primary-bg)]"
+                    minlength="10" maxlength="500"></textarea>
+                <p class="text-xs text-gray-500 mt-1">Minimum 10 characters, maximum 500 characters</p>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="md:col-span-2 pt-2">
+                <button type="submit" class="primary-btn px-6 py-2 rounded-lg">
+                    Create Permission
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Auto-uppercase for name and resource fields
+        document.querySelector('[name="name"]').addEventListener('input', function (e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        document.querySelector('[name="resource"]').addEventListener('input', function (e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        document.getElementById('createPageForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
+            const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+
+            if (!csrfToken || !csrfHeader) {
+                console.error('CSRF token or header not found');
+                showFlashMessage('Security token not found', 'error', 'Error');
+                return;
+            }
+
+            // Clear previous errors
+            document.querySelectorAll(".input-error").forEach(el => el.remove());
+            document.querySelectorAll("input, select, textarea").forEach(el => {
+                el.classList.remove("border-red-500");
+            });
+
+            // Create JSON object
+            const formData = {
+                name: document.querySelector('[name="name"]').value.trim(),
+                description: document.querySelector('[name="description"]').value.trim(),
+                resource: document.querySelector('[name="resource"]').value.trim(),
+                action: document.querySelector('[name="action"]').value,
+                isActive: document.querySelector('[name="isActive"]:checked')?.value === 'true'
+            };
+
+            // Disable submit button
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating...';
+
+            fetch('/api/admin/permissions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken,
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(res => {
+                    const contentType = res.headers.get('content-type');
+
+                    if (res.redirected) {
+                        showFlashMessage('Permission created successfully', 'success', 'Success');
+                        setTimeout(() => {
+                            window.location.href = res.url;
+                        }, 2000);
+                        return;
+                    }
+
+                    if (contentType && contentType.includes('application/json')) {
+                        return res.json();
+                    } else {
+                        throw new Error('Unexpected response format');
+                    }
+                })
+                .then(data => {
+                    if (!data) return;
+
+                    if (!data.success) {
+                        // Handle validation errors
+                        if (data.errors && typeof data.errors === 'object') {
+                            Object.keys(data.errors).forEach(fieldName => {
+                                const field = document.querySelector(`[name="${fieldName}"]`);
+                                if (field) {
+                                    // Add red border to field
+                                    field.classList.add("border-red-500");
+
+                                    // Create error message
+                                    const errorEl = document.createElement("p");
+                                    errorEl.className = "input-error text-red-600 text-sm mt-1";
+                                    errorEl.textContent = data.errors[fieldName];
+
+                                    // Insert error message after field
+                                    field.insertAdjacentElement("afterend", errorEl);
+                                }
+                            });
+
+                            showFlashMessage(data.message || 'Validation failed', 'error', 'Failed');
+                        } else {
+                            showFlashMessage(data.message || 'Failed to create permission', 'error', 'Error');
+                        }
+
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Create Permission';
+                        return;
+                    }
+
+                    // Success
+                    showFlashMessage(data.message || 'Permission created successfully', 'success', "Success");
+                    setTimeout(() => {
+                        window.location.href = '/admin/permissions';
+                    }, 1700);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showFlashMessage('An error occurred while creating the permission. Please try again.', 'error', 'Error');
+
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Permission';
+                });
+        });
+    </script>
+</div>
+
+</html>
