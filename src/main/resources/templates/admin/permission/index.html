@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:replace="admin/layouts/admin_base :: layout(~{::breadcrumb}, ~{::section})">
+
+<div th:fragment="breadcrumb" th:replace="admin/components/breadcrumb :: breadcrumb-component(
+         'Permissions',
+         ~{admin/components/breadcrumb-icons :: icon-users}
+     )">
+</div>
+
+<div th:fragment="section" class="admin-content" data-status-route="/admin/roles">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <!-- Create Button -->
+                <a th:if="${admin.hasPermission('CREATE_ROLES')}" th:href="@{/admin/roles/create}"
+                    class="primary-btn px-4 py-2 rounded-lg shadow transition">
+                    + Create
+                </a>
+                <!-- Search Field -->
+                <div>
+                    <input type="text" placeholder="Search pages..."
+                        class="px-3 py-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table" id="pages-table" data-ajax-url="/api/admin/roles">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-th">S.N</th>
+                            <th class="table-th">Title</th>
+                            <th class="table-th">Description</th>
+                            <th class="table-th">Assigned Roles</th>
+                            <th class="table-th text-center">Status</th>
+                            <th class="table-th text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- AJAX will populate rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function fetchPermission() {
+            console.log("Fetching roles...");
+
+            fetch("/api/admin/permissions/with_roles")
+                .then(response => {
+                    // console.log("Response received:", response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(apiResponse => {
+                    console.log("API Response:", apiResponse);
+
+                    // Check if response has success flag
+                    if (!apiResponse.success) {
+                        throw new Error(apiResponse.message || "Unknown error");
+                    }
+
+                    // Extract data array from nested response
+                    // API returns { success: true, message: "...", data: [roles...] }
+                    const roles = apiResponse.data;
+
+                    if (!Array.isArray(roles)) {
+                        throw new Error("Roles data is not an array");
+                    }
+
+                    // console.log(`Successfully fetched ${roles.length} roles`);
+                    populatePermissionsTable(roles);
+                })
+                .catch(error => {
+                    console.error("ROLES API ERROR:", error);
+                    showFlashMessage(error.message || "Failed to fetch roles", "error", "Error");
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchPermission)
+
+
+        function populatePermissionsTable(permissions) {
+            const tableBody = document.getElementById("tableBody")
+            tableBody.innerHTML = ""
+
+            permissions.forEach((permission, index) => {
+
+                const rolesArr = permission.roles ? permission.roles.map(role => role.name) : [];
+
+                const row = `
+                <tr class="table-row">
+                        <td class="table-td">${index + 1}</td>
+                        <td class="table-td font-semibold">${permission.name}</td>
+                        <td class="table-td">${permission.description || '-'}</td>
+                        <td class="table-td">${rolesArr.join(", ") || '-'}</td>
+                        
+                        <td class="table-td text-center">
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                       class="toggle-input" 
+                                       data-id="${permission.id}" 
+                                       data-role-name="${permission.name}"
+                                       ${permission.isActive ? "checked" : ""}>
+                                <div class="toggle-slider">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                            </label>
+                        </td>
+                        <td class="table-td text-center">
+                            <div class="action-group">
+                                <a href="/admin/roles/edit/${permission.id}" class="btn btn-warning btn-sm">Edit</a>
+                                <button class="btn btn-danger btn-sm delete-btn" 
+                                        data-id="${permission.id}" 
+                                        data-role-name="${permission.name}">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforeend", row)
+            })
+
+
+            attachEventListeners()
+        }
+
+
+        function attachEventListeners() {
+            document.querySelectorAll(".toggle-input").forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    const roleId = this.dataset.id;
+                    const roleName = this.dataset.roleName;
+                    toggleStatus(roleId, roleName, this);
+                });
+            });
+        }
+
+
+        function toggleStatus(roleId, roleName, checkbox) {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+            fetch(`/api/admin/permissions/status/${roleId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [csrfHeader]: csrfToken
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Forbidden or failed");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showFlashMessage(data.message, "success", "Success");
+                })
+                .catch(error => {
+                    checkbox.checked = !checkbox.checked;
+                    showFlashMessage("Status update failed", "error", "Error");
+                });
+        }
+
+    </script>
+
+
+
+</div>
+
+</html>
