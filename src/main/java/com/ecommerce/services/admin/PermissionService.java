@@ -86,6 +86,13 @@ public class PermissionService {
         return permissionRepository.count();
     }
 
+    public Permission toggleStatus(Long id) {
+        Permission permission = permissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Permission not found"));
+        permission.setIsActive(!permission.getIsActive());
+       return permissionRepository.save(permission);
+    }
+
     private PermissionDTO convertToDTO(Permission permission) {
         return PermissionDTO.builder()
                 .id(permission.getId())
