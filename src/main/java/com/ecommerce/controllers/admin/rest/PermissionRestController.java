@@ -5,9 +5,14 @@ import com.ecommerce.dtos.PermissionDTO;
 import com.ecommerce.services.admin.PermissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -61,15 +66,57 @@ public class PermissionRestController {
         }
     }
 
+    // @PostMapping
+    // @RequirePermission("CREATE_PERMISSIONS")
+    // public ResponseEntity<?> createPermission(@Valid @RequestBody PermissionDTO
+    // dto) {
+    // try {
+    // PermissionDTO createdPermission = permissionService.createPermission(dto);
+    // return ResponseEntity.status(201)
+    // .body(createSuccessResponse("Permission created successfully",
+    // createdPermission));
+    // } catch (Exception e) {
+    // return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
+    // }
+    // }
+
     @PostMapping
     @RequirePermission("CREATE_PERMISSIONS")
-    public ResponseEntity<?> createPermission(@Valid @RequestBody PermissionDTO dto) {
+    public ResponseEntity<Map<String, Object>> createPermission(
+            @Valid @RequestBody PermissionDTO permissionDTO,
+            BindingResult bindingResult) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
+
         try {
-            PermissionDTO createdPermission = permissionService.createPermission(dto);
-            return ResponseEntity.status(201)
-                    .body(createSuccessResponse("Permission created successfully", createdPermission));
+            PermissionDTO createdPermission = permissionService.createPermission(permissionDTO);
+
+            response.put("success", true);
+            response.put("message", "Permission created successfully");
+            response.put("data", createdPermission);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(createErrorResponse(e.getMessage()));
+            response.put("success", false);
+            response.put("message", "Failed to create permission: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -116,6 +163,20 @@ public class PermissionRestController {
             return ResponseEntity.ok(createErrorResponse(e.getMessage()));
 
         }
+    }
+
+    @PostMapping("{permissionId}/assign-roles")
+    @RequirePermission("UPDATE_PERMISSIONS")
+    public ResponseEntity<?> assignPermissionToRole(
+            @PathVariable Long permissionId,
+            @RequestBody Map<String, List<Long>> payload) {
+
+        List<Long> roleIds = payload.get("roleIds");
+        // Your logic to assign roles to permission
+        permissionService.assignRolesEfficient(permissionId, roleIds);
+        System.out.println("Roles: " + roleIds);
+
+        return ResponseEntity.ok(Map.of("success", true, "message", "Roles assigned successfully"));
     }
 
     private Map<String, Object> createSuccessResponse(String message, Object data) {
