@@ -12,4 +12,15 @@ public class PermissionController {
     public String index() {
         return "admin/permission/index";
     }
+
+    @GetMapping("/create")
+    public String create() {
+        return "admin/permission/create";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String edit() {
+        return "admin/permission/edit";
+    }
+
 }
