@@ -13,7 +13,7 @@
         <div>
             <div class="flex items-center justify-between mb-4">
                 <!-- Create Button -->
-                <a th:if="${admin.hasPermission('CREATE_ROLES')}" th:href="@{/admin/roles/create}"
+                <a th:if="${admin.hasPermission('CREATE_ROLES')}" th:href="@{/admin/permissions/create}"
                     class="primary-btn px-4 py-2 rounded-lg shadow transition">
                     + Create
                 </a>
@@ -43,14 +43,56 @@
         </div>
     </div>
 
+    <!-- Assignment Modal -->
+    <div id="assignmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-xl font-semibold">Assign Permission to Roles</h3>
+                <button onclick="closeAssignmentModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Permission: <span id="modalPermissionName"
+                            class="font-semibold"></span></p>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Roles:</label>
+                    <div id="rolesCheckboxList"
+                        class="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded p-3">
+                        <!-- Checkboxes will be populated here -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeAssignmentModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button onclick="saveRoleAssignments()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Save Assignments
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let currentPermissionId = null;
+        let allRoles = [];
 
         function fetchPermission() {
             console.log("Fetching roles...");
 
             fetch("/api/admin/permissions/with_roles")
                 .then(response => {
-                    // console.log("Response received:", response);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -59,20 +101,16 @@
                 .then(apiResponse => {
                     console.log("API Response:", apiResponse);
 
-                    // Check if response has success flag
                     if (!apiResponse.success) {
                         throw new Error(apiResponse.message || "Unknown error");
                     }
 
-                    // Extract data array from nested response
-                    // API returns { success: true, message: "...", data: [roles...] }
                     const roles = apiResponse.data;
 
                     if (!Array.isArray(roles)) {
                         throw new Error("Roles data is not an array");
                     }
 
-                    // console.log(`Successfully fetched ${roles.length} roles`);
                     populatePermissionsTable(roles);
                 })
                 .catch(error => {
@@ -81,55 +119,74 @@
                 });
         }
 
-        document.addEventListener("DOMContentLoaded", fetchPermission)
+        // Fetch all available roles for the assignment modal
+        function fetchAllRoles() {
+            fetch("/api/admin/roles")
+                .then(response => response.json())
+                .then(apiResponse => {
+                    console.log("roles response: ", apiResponse);
 
+                    if (apiResponse.success) {
+                        allRoles = apiResponse.data;
+                    }
+                })
+                .catch(error => {
+                    console.error("Failed to fetch roles:", error);
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchPermission();
+            fetchAllRoles();
+        });
 
         function populatePermissionsTable(permissions) {
-            const tableBody = document.getElementById("tableBody")
-            tableBody.innerHTML = ""
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = "";
 
             permissions.forEach((permission, index) => {
-
                 const rolesArr = permission.roles ? permission.roles.map(role => role.name) : [];
 
                 const row = `
                 <tr class="table-row">
-                        <td class="table-td">${index + 1}</td>
-                        <td class="table-td font-semibold">${permission.name}</td>
-                        <td class="table-td">${permission.description || '-'}</td>
-                        <td class="table-td">${rolesArr.join(", ") || '-'}</td>
-                        
-                        <td class="table-td text-center">
-                            <label class="toggle-switch">
-                                <input type="checkbox" 
-                                       class="toggle-input" 
-                                       data-id="${permission.id}" 
-                                       data-role-name="${permission.name}"
-                                       ${permission.isActive ? "checked" : ""}>
-                                <div class="toggle-slider">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                            </label>
-                        </td>
-                        <td class="table-td text-center">
-                            <div class="action-group">
-                                <a href="/admin/roles/edit/${permission.id}" class="btn btn-warning btn-sm">Edit</a>
-                                <button class="btn btn-danger btn-sm delete-btn" 
-                                        data-id="${permission.id}" 
-                                        data-role-name="${permission.name}">
-                                    Delete
-                                </button>
+                    <td class="table-td">${index + 1}</td>
+                    <td class="table-td font-semibold">${permission.name}</td>
+                    <td class="table-td">${permission.description || '-'}</td>
+                    <td class="table-td">${rolesArr.join(", ") || '-'}</td>
+                    
+                    <td class="table-td text-center">
+                        <label class="toggle-switch">
+                            <input type="checkbox" 
+                                   class="toggle-input" 
+                                   data-id="${permission.id}" 
+                                   data-role-name="${permission.name}"
+                                   ${permission.isActive ? "checked" : ""}>
+                            <div class="toggle-slider">
+                                <div class="toggle-thumb"></div>
                             </div>
-                        </td>
-                    </tr>
+                        </label>
+                    </td>
+                    <td class="table-td text-center">
+                        <div class="action-group flex justify-center space-x-2">
+                            <button onclick="openAssignmentModal(${permission.id}, '${permission.name}', ${JSON.stringify(rolesArr).replace(/"/g, '&quot;')})" 
+                                    class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                Assign
+                            </button>
+                            <a href="/admin/permissions/edit/${permission.id}" class="btn btn-warning btn-sm">Edit</a>
+                            <button class="btn btn-danger btn-sm delete-btn" 
+                                    data-id="${permission.id}" 
+                                    data-role-name="${permission.name}">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
                 `;
-                tableBody.insertAdjacentHTML("beforeend", row)
-            })
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
 
-
-            attachEventListeners()
+            attachEventListeners();
         }
-
 
         function attachEventListeners() {
             document.querySelectorAll(".toggle-input").forEach(checkbox => {
@@ -140,7 +197,6 @@
                 });
             });
         }
-
 
         function toggleStatus(roleId, roleName, checkbox) {
             const csrfToken = document.querySelector('meta[name="_csrf"]').content;
@@ -168,10 +224,79 @@
                 });
         }
 
+        function openAssignmentModal(permissionId, permissionName, assignedRoleNames) {
+            currentPermissionId = permissionId;
+
+            // console.log("assignedrole names", assignedRoleNames);
+            console.log("All roles:", allRoles);
+
+
+            document.getElementById("modalPermissionName").textContent = permissionName;
+
+            const rolesContainer = document.getElementById("rolesCheckboxList");
+            rolesContainer.innerHTML = "";
+
+            allRoles.forEach(role => {
+                const isChecked = assignedRoleNames.includes(role.name);
+                const checkboxHtml = `
+                    <label class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                        <input type="checkbox" 
+                               value="${role.id}" 
+                               ${isChecked ? "checked" : ""}
+                               class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                        <span class="text-sm">${role.name}</span>
+                    </label>
+                `;
+                rolesContainer.insertAdjacentHTML("beforeend", checkboxHtml);
+            });
+
+            document.getElementById("assignmentModal").classList.remove("hidden");
+            document.getElementById("assignmentModal").classList.add("flex");
+        }
+
+        function closeAssignmentModal() {
+            document.getElementById("assignmentModal").classList.add("hidden");
+            document.getElementById("assignmentModal").classList.remove("flex");
+            currentPermissionId = null;
+        }
+
+        function saveRoleAssignments() {
+            const selectedRoleIds = Array.from(
+                document.querySelectorAll("#rolesCheckboxList input[type='checkbox']:checked")
+            ).map(cb => parseInt(cb.value));
+
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+
+
+            fetch(`/api/admin/permissions/${currentPermissionId}/assign-roles`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({ roleIds: selectedRoleIds })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to assign roles");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showFlashMessage(data.message || "Roles assigned successfully", "success", "Success");
+                    closeAssignmentModal();
+                    fetchPermission(); // Refresh the table
+                })
+                .catch(error => {
+                    console.error("Assignment error:", error);
+                    showFlashMessage("Failed to assign roles", "error", "Error");
+                });
+
+
+        }
     </script>
-
-
-
 </div>
 
 </html>
