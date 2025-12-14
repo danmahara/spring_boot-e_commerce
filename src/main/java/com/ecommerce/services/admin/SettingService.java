@@ -59,4 +59,31 @@ public class SettingService {
 
     }
 
+    public SiteSetting update(Long id, SettingRequest request) {
+        SiteSetting setting = settingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Setting not found"));
+
+        setting.setTitle(request.getTitle());
+        setting.setEmail(request.getEmail());
+        setting.setFbLink(request.getFbLink());
+        setting.setInstaLink(request.getInstaLink());
+        setting.setLinkedinLink(request.getLinkedinLink());
+        setting.setPhone(request.getPhone());
+
+        SiteSetting savedSetting = settingRepository.save(setting);
+        try {
+
+            if (!request.getImage().isEmpty() && request.getImage() != null) {
+                savedSetting.updateFeatureImage(imageService, request.getImage());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to update site setting image: " + e.getMessage());
+            e.printStackTrace();
+
+        }
+        return savedSetting;
+
+    }
+
 }

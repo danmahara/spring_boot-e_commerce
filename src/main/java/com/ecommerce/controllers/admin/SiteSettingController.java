@@ -11,7 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ecommerce.requests.admin.SettingRequest;
@@ -85,6 +87,46 @@ public class SiteSettingController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Failed to create page: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@Valid @ModelAttribute SettingRequest request, @PathVariable Long id,
+            BindingResult bindingResult) {
+
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        // Collect field validation errors from BindingResult
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(),
+                    error.getDefaultMessage()));
+        }
+
+        // Add manual validation for file uploads
+        // if (request.getImage() == null || request.getImage().isEmpty()) {
+        // errors.put("image", "Thumbnail image is required");
+        // }
+
+        // Return all errors together if any exist
+        if (!errors.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Validation failed");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        try {
+
+            settingService.update(id, request);
+            response.put("success", true);
+            response.put("message", "Setting Updated successfully");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to update setting: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
