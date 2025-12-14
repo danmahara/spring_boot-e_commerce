@@ -1,6 +1,7 @@
 package com.ecommerce.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -64,8 +65,8 @@ public class FrontendController {
                 break;
 
             case PRODUCT_LIST:
-                List<Product> p = frontendService.getAllActiveProducts();
-                model.addAttribute("products", p);
+                Map<String, Object> data = frontendService.getProductListData();
+                model.addAttribute("data", data);
                 break;
 
             default:
