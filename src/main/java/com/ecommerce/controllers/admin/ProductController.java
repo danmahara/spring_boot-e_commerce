@@ -112,30 +112,31 @@ public class ProductController {
 
             // Validate discount logic
             if (request.getDiscountType() != null && !request.getDiscountType().isEmpty()) {
-                if ("percentage".equals(request.getDiscountType()) &&
-                        (request.getDiscountPercent() == null
-                                || request.getDiscountPercent().compareTo(BigDecimal.ZERO) <= 0)) {
-                    // Map<String, String> errors = new HashMap<>();
-                    errors.put("discountPercent", "Discount percent is required when discount type is percentage");
-                    response.put("success", false);
-                    response.put("errors", errors);
-                    return ResponseEntity.badRequest().body(response);
-                }
-
-                if ("fixed".equals(request.getDiscountType()) &&
-                        (request.getDiscountPrice() == null
-                                || request.getDiscountPrice().compareTo(BigDecimal.ZERO) <= 0)) {
-                    errors.put("discountPrice", "Discount price is required when discount type is fixed");
-                    response.put("success", false);
-                    response.put("errors", errors);
-                    return ResponseEntity.badRequest().body(response);
-                } else {
-                    if (request.getDiscountPrice().compareTo(request.getPrice()) > 0) {
-                        errors.put("discountPrice", "Discount price can not be grater than product price");
+                if ("percentage".equals(request.getDiscountType())) {
+                    if (request.getDiscountPercent() == null ||
+                            request.getDiscountPercent().compareTo(BigDecimal.ZERO) <= 0) {
+                        errors.put("discountPercent", "Discount percent is required when discount type is percentage");
                         response.put("success", false);
                         response.put("errors", errors);
                         return ResponseEntity.badRequest().body(response);
+                    }
 
+                }
+                if ("fixed".equals(request.getDiscountType())) {
+                    if (request.getDiscountPrice() == null ||
+                            request.getDiscountPrice().compareTo(BigDecimal.ZERO) <= 0) {
+                        errors.put("discountPrice", "Discount price is required when discount type is fixed");
+                        response.put("success", false);
+                        response.put("errors", errors);
+                        return ResponseEntity.badRequest().body(response);
+                    } else {
+                        if (request.getDiscountPrice().compareTo(request.getPrice()) > 0) {
+                            errors.put("discountPrice", "Discount price can not be grater than product price");
+                            response.put("success", false);
+                            response.put("errors", errors);
+                            return ResponseEntity.badRequest().body(response);
+
+                        }
                     }
                 }
             }
@@ -168,7 +169,7 @@ public class ProductController {
             return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
             response.put("success", false);
-            response.put("error", "An error occurred while creating the product");
+            response.put("error", "An error occurred while creating the product: " + e.getMessage());
             System.out.println("Error is: " + e.getMessage());
 
             return ResponseEntity.internalServerError().body(response);
