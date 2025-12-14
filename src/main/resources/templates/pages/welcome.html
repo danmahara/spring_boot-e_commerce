@@ -515,20 +515,6 @@
                             <h3 class="product-title" th:text="${product.name}"></h3>
                             <div class="product-description line-clamp-2 " th:utext="${product.description}"></div>
                             <div class="product-footer">
-                                <!-- <div>
-                                    <div class="flex product-price">
-                                        <span th:text="${product.currency}"></span>
-                                        <span class="product-price" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
-                                            product.discountType == 'percentage' ? 
-                                            product.price - (product.price * product.discountPercent / 100.0) : 
-                                            product.price - product.discountPrice, 
-                                            1, 'COMMA', 2, 'POINT')}">
-                                        </span>
-                                    </div>
-                                    <span class="product-price-old" th:text="${product.price}"></span>
-
-                                </div> -->
-
                                 <div>
                                     <div class="flex product-price">
                                         <span th:text="${product.currency}"></span>

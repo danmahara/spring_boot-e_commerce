@@ -421,14 +421,15 @@
             }
             const formData = new FormData(this);
             // Log FormData contents for debugging
-            console.log('FormData contents:');
-            for (let [key, value] of formData.entries()) {
-                if (value instanceof File) {
-                    console.log(key, ':', value.name, '(', value.size, 'bytes)');
-                } else {
-                    console.log(key, ':', value);
-                }
-            }
+            // console.log('FormData contents:');
+            // for (let [key, value] of formData.entries()) {
+            //     if (value instanceof File) {
+            //         console.log(key, ':', value.name, '(', value.size, 'bytes)');
+            //     } else {
+            //         console.log(key, ':', value);
+            //     }
+            // }
+
             fetch('/admin/products/store', {
                 method: 'POST',
                 body: formData,
