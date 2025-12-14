@@ -97,6 +97,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ecommerce.dtos.CategoryCountDTO;
 import com.ecommerce.models.admin.Category;
 import com.ecommerce.models.admin.Image;
 import com.ecommerce.models.admin.Product;
@@ -138,6 +139,14 @@ public class ProductService {
                     page.setImages(imgs);
                     return page;
                 }).getContent();
+    }
+
+    public List<CategoryCountDTO> getCategoryProductCounts() {
+        return productRepository.countProductsByCategory();
+    }
+
+    public long getTotalActiveProductCount() {
+        return productRepository.countByStatusTrue();
     }
 
     public Product findBySlug(String slug) {

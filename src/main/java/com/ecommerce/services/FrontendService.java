@@ -1,15 +1,20 @@
 package com.ecommerce.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ecommerce.dtos.CategoryCountDTO;
 import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Category;
 import com.ecommerce.models.admin.Image;
 import com.ecommerce.models.admin.Product;
 import com.ecommerce.repository.FrontendRepository;
 import com.ecommerce.repository.admin.ImageRepository;
+import com.ecommerce.services.admin.CategoryService;
 import com.ecommerce.services.admin.ProductService;
 
 @Service
@@ -23,6 +28,9 @@ public class FrontendService {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    CategoryService categoryService;
 
     public List<Page> getAllActivePages() {
         return frontendRepository.findByTemplateNameInAndStatusTrueOrderByOrderAsc(Page.getPageLists());
@@ -53,6 +61,25 @@ public class FrontendService {
             page.setImages(imgs);
         }
         return products;
+    }
+
+    public Map<String, Object> getProductListData() {
+
+        Map<String, Object> detail = new HashMap<>();
+
+        List<Product> products = this.getAllActiveProducts();
+        detail.put("products", products);
+
+        List<Category> categories = categoryService.getAllActiveCategories();
+        detail.put("categories", categories);
+
+        List<CategoryCountDTO> categoryCount = productService.getCategoryProductCounts();
+        detail.put("categoryCounts", categoryCount);
+
+        long totalProductCount = productService.getTotalActiveProductCount();
+        detail.put("totalProductCount", totalProductCount);
+
+        return detail;
     }
 
     public Product findProductBySlug(String slug) {
