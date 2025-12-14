@@ -70,4 +70,8 @@ public class FrontendService {
         }
     }
 
+    public List<Product> getHomeProducts() {
+        return productService.getActiveProductsLimit(8);
+    }
+
 }

@@ -28,6 +28,7 @@ public class FrontendController {
         model.addAttribute("title", "Home - MyShop");
         model.addAttribute("content", "pages/welcome :: content");
         model.addAttribute("PageTemplate", PageTemplate.class);
+        model.addAttribute("products", frontendService.getHomeProducts());
 
         return "pages/welcome";
     }
