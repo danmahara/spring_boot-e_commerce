@@ -4,9 +4,37 @@
 <header th:fragment="navbar" class="header">
     <div class="container">
         <nav class="navbar">
-            <a href="/" class="logo">
-                <i class="fas fa-shopping-bag"></i> ShopHub
+
+            <a href="/" class="logo flex">
+                <!-- <i class="fas fa-shopping-bag"></i> -->
+                <img th:src="${setting.featureImage}" th:alt="${setting.title}" class="logo-icon">
+                <span class="logo-title" th:text="${setting?.title}"></span>
             </a>
+            <style>
+                .logo {
+
+                    align-items: center;
+                    /* vertically center image and text */
+                    gap: 8px;
+                    /* space between image and text */
+                    text-decoration: none;
+                }
+
+                .logo-icon {
+                    height: 40px;
+                    /* small icon size */
+                    width: auto;
+                    /* maintain aspect ratio */
+                }
+
+                .logo-title {
+                    font-size: 1.5rem;
+                    /* adjust as needed */
+                    font-weight: 600;
+                    color: var(--primary-color);
+                }
+            </style>
+
 
             <ul class="nav-menu">
                 <li><a href="/" class="nav-link">Home</a></li>
@@ -21,6 +49,7 @@
                     </div>
                 </li>
             </ul>
+
 
             <button class="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>

@@ -2,7 +2,6 @@ package com.ecommerce.controllers;
 
 import java.util.List;
 
-import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Json;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +12,6 @@ import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.models.Page;
 import com.ecommerce.models.admin.Product;
 import com.ecommerce.services.FrontendService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class FrontendController {
@@ -29,15 +27,9 @@ public class FrontendController {
 
         model.addAttribute("title", "Home - MyShop");
         model.addAttribute("content", "pages/welcome :: content");
-        model.addAttribute("pages", allPages());
-
         model.addAttribute("PageTemplate", PageTemplate.class);
 
         return "pages/welcome";
-    }
-
-    public List<Page> allPages() {
-        return frontendService.getAllActiveAndOnMainMenuPages();
     }
 
     @GetMapping("/products/{slug}")
@@ -82,15 +74,8 @@ public class FrontendController {
         model.addAttribute("page", page);
         model.addAttribute("PageTemplate", PageTemplate.class);
         model.addAttribute("title", page.getTitle() + " - MyShop");
-        model.addAttribute("pages", allPages());
 
         return "pages/" + page.getTemplateName();
     }
-
-    // @GetMapping("/pages/json")
-    // @ResponseBody
-    // public List<Page> getPagesJson() {
-    // return pageService.getAllPages();
-    // }
 
 }
