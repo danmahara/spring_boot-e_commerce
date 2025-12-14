@@ -74,20 +74,28 @@
                         </div>
 
                         <div class="price-section mb-2xl">
-                            <!-- <span class="current-price">$299</span> -->
-                            <span class="current-price" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
+
+                            <div class="current-price">
+
+                                <span th:text="${product.currency}"></span>
+                                <!-- original price if no discount -->
+                                <span th:if="${product.discountType == null}" th:text="${#numbers.formatDecimal(
+                                            product.price, 1, 'COMMA', 2, 'POINT')}">
+                                </span>
+
+                                <span th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
                                             product.discountType == 'percentage' ? 
                                             product.price - (product.price * product.discountPercent / 100.0) : 
                                             product.price - product.discountPrice, 
                                             1, 'COMMA', 2, 'POINT')}">
-                            </span>
-                            <div class="original-price">
+                                </span>
+                            </div>
+
+                            <div class="original-price" th:if="${product.discountType!=null}">
                                 <span th:text="${product.currency}"></span>
                                 <span th:text="${product.price}"></span>
                             </div>
-                            <!-- <span class="original-price">$399</span> -->
 
-                            <!-- <span class="discount-badge">Save $100</span> -->
 
                             <span class="discount-badge" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
                                             product.discountType == 'percentage' ? 
