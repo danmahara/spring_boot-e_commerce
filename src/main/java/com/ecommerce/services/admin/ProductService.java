@@ -92,6 +92,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,6 +125,19 @@ public class ProductService {
 
     public List<Product> getAllActiveProducts() {
         return productRepository.findByStatusTrueOrderBySortOrderAsc();
+    }
+
+    public List<Product> getActiveProductsLimit(int limit) {
+
+        Pageable pageable = PageRequest.of(0, limit);
+
+        return productRepository
+                .findByStatusTrueOrderBySortOrderAsc(pageable).map(page -> {
+                    List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("product",
+                            page.getId());
+                    page.setImages(imgs);
+                    return page;
+                }).getContent();
     }
 
     public Product findBySlug(String slug) {
