@@ -1,6 +1,5 @@
 package com.ecommerce.controllers;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -77,7 +76,21 @@ public class FrontendController {
         model.addAttribute("PageTemplate", PageTemplate.class);
         model.addAttribute("title", page.getTitle() + " - MyShop");
 
-        return "pages/" + page.getTemplateName();
+        // redirect to pages/customer/login /register
+        if (page.getTemplateName().equalsIgnoreCase(PageTemplate.LOGIN.getTemplateName())
+                || page.getTemplateName().equalsIgnoreCase(PageTemplate.REGISTER.getTemplateName())) {
+            System.out.println("Loading customer login page template");
+            return "pages/customer/" + page.getTemplateName();
+
+        } else {
+            return "pages/" + page.getTemplateName();
+        }
+
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "pages/forgot_password";
     }
 
 }
