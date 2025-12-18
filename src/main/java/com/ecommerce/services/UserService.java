@@ -54,7 +54,7 @@ public class UserService {
     /**
      * Find user by email (for login)
      */
-    public User findUserByEmail(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
