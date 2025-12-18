@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ecommerce.enums.PageTemplate;
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Page;
 import com.ecommerce.models.admin.Product;
 import com.ecommerce.services.FrontendService;
 

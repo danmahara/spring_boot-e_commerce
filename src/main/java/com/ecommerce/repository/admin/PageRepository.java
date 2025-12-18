@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Page;
 
 public interface PageRepository extends JpaRepository<Page, Long> {
 

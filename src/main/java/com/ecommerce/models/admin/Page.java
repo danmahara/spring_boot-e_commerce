@@ -1,4 +1,4 @@
-package com.ecommerce.models;
+package com.ecommerce.models.admin;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,7 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.ecommerce.enums.ImageType;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
-import com.ecommerce.models.admin.Image;
 import com.ecommerce.traits.Imageable;
 
 import jakarta.persistence.Column;
