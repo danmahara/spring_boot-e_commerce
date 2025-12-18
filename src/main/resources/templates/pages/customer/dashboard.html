@@ -1,1 +1,435 @@
-<h1>Customer Dashboard</h1>
+<!DOCTYPE html>
+<div lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
+    <div th:fragment="section">
+
+        <style>
+            .dashboard-container {
+                min-height: 100vh;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                padding: 2rem 0;
+            }
+
+            .dashboard-header {
+                background: white;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            }
+
+            .welcome-section {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .welcome-text h1 {
+                font-size: 2rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 0.5rem;
+            }
+
+            .welcome-text p {
+                color: #6b7280;
+                font-size: 1rem;
+            }
+
+            .logout-btn {
+                padding: 0.75rem 1.5rem;
+                border-radius: 12px;
+                border: none;
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .logout-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .stat-card {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+                transition: all 0.3s ease;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .stat-icon.orders {
+                background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+                color: white;
+            }
+
+            .stat-icon.spent {
+                background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+                color: white;
+            }
+
+            .stat-icon.pending {
+                background: linear-gradient(135deg, #f59e0b, #fbbf24);
+                color: white;
+            }
+
+            .stat-icon.saved {
+                background: linear-gradient(135deg, #10b981, #34d399);
+                color: white;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #111827;
+                margin-bottom: 0.25rem;
+            }
+
+            .stat-label {
+                color: #6b7280;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            .dashboard-content {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 2rem;
+            }
+
+            .recent-orders {
+                background: white;
+                padding: 2rem;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 1.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .order-item {
+                padding: 1rem;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                margin-bottom: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .order-item:hover {
+                border-color: #0ea5e9;
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
+            }
+
+            .order-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.75rem;
+            }
+
+            .order-id {
+                font-weight: 600;
+                color: #111827;
+            }
+
+            .order-status {
+                padding: 0.4rem 0.8rem;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+
+            .order-status.completed {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .order-status.pending {
+                background: #fed7aa;
+                color: #92400e;
+            }
+
+            .order-status.processing {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .order-details {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.9rem;
+                color: #6b7280;
+            }
+
+            .quick-actions {
+                background: white;
+                padding: 2rem;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            }
+
+            .action-btn {
+                width: 100%;
+                padding: 1rem;
+                border-radius: 12px;
+                border: 2px solid #e5e7eb;
+                background: white;
+                color: #374151;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .action-btn:hover {
+                border-color: #0ea5e9;
+                background: #f0f9ff;
+                transform: translateX(5px);
+            }
+
+            .action-btn i {
+                font-size: 1.25rem;
+                color: #0ea5e9;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 3rem;
+                color: #9ca3af;
+            }
+
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+
+            @media (max-width: 1024px) {
+                .dashboard-content {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .welcome-section {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .order-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.5rem;
+                }
+            }
+        </style>
+
+        <section class="dashboard-container">
+            <div class="container">
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <div class="welcome-section">
+                        <div class="welcome-text">
+                            <h1>Welcome back, <span th:text="${user.fullName ?: 'Customer'}">John Doe</span>!</h1>
+                            <p>Here's what's happening with your orders today</p>
+                        </div>
+                        <button class="logout-btn" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon orders">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-value" th:text="${totalOrders ?: '0'}">12</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon spent">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-value" th:text="${'$' + (totalSpent ?: '0.00')}">$2,450</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value" th:text="${pendingOrders ?: '0'}">3</div>
+                        <div class="stat-label">Pending Orders</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon saved">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-value" th:text="${savedItems ?: '0'}">8</div>
+                        <div class="stat-label">Saved Items</div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="dashboard-content">
+                    <!-- Recent Orders -->
+                    <div class="recent-orders">
+                        <h2 class="section-title">
+                            <i class="fas fa-box"></i>
+                            Recent Orders
+                        </h2>
+
+                        <div th:if="${orders != null and !#lists.isEmpty(orders)}">
+                            <div class="order-item" th:each="order : ${orders}">
+                                <div class="order-header">
+                                    <span class="order-id">Order #<span th:text="${order.id}">12345</span></span>
+                                    <span class="order-status"
+                                        th:classappend="${order.status == 'COMPLETED' ? 'completed' : (order.status == 'PENDING' ? 'pending' : 'processing')}"
+                                        th:text="${order.status}">Completed</span>
+                                </div>
+                                <div class="order-details">
+                                    <span th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy')}">Dec 15,
+                                        2024</span>
+                                    <span th:text="${'$' + order.totalAmount}">$125.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${orders == null or #lists.isEmpty(orders)}" class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>No orders yet. Start shopping!</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h2 class="section-title">
+                            <i class="fas fa-bolt"></i>
+                            Quick Actions
+                        </h2>
+
+                        <button class="action-btn" onclick="location.href='/'">
+                            <i class="fas fa-shopping-bag"></i>
+                            Continue Shopping
+                        </button>
+
+                        <button class="action-btn" onclick="location.href='/user/orders'">
+                            <i class="fas fa-list"></i>
+                            View All Orders
+                        </button>
+
+                        <button class="action-btn" onclick="location.href='/user/profile'">
+                            <i class="fas fa-user"></i>
+                            Edit Profile
+                        </button>
+
+                        <button class="action-btn" onclick="location.href='/user/wishlist'">
+                            <i class="fas fa-heart"></i>
+                            My Wishlist
+                        </button>
+
+                        <button class="action-btn" onclick="location.href='/user/addresses'">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Manage Addresses
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            // Logout handler
+            async function handleLogout() {
+                try {
+                    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content ||
+                        document.querySelector('input[name="_csrf"]')?.value;
+
+                    const response = await fetch('/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = '/login';
+                }
+            }
+
+            // Optional: Add animation on load
+            document.addEventListener('DOMContentLoaded', function () {
+                const cards = document.querySelectorAll('.stat-card, .order-item');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.animation = 'fadeInUp 0.5s ease forwards';
+                    }, index * 100);
+                });
+            });
+        </script>
+
+        <style>
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+    </div>
+</div>
