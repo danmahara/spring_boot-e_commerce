@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Page;
 import com.ecommerce.models.admin.SiteSetting;
 import com.ecommerce.services.FrontendService;
 import com.ecommerce.services.admin.SettingService;

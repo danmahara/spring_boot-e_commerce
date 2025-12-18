@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Page;
 import com.ecommerce.repository.admin.DashboardRepository;
 
 import jakarta.servlet.http.HttpSession;

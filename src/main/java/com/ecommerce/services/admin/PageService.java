@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.enums.PageType;
-import com.ecommerce.models.Page;
 import com.ecommerce.models.admin.Image;
+import com.ecommerce.models.admin.Page;
 import com.ecommerce.repository.admin.ImageRepository;
 import com.ecommerce.repository.admin.PageRepository;
 

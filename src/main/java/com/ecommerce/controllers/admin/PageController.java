@@ -25,7 +25,7 @@ import com.ecommerce.dtos.config.TableConfig;
 import com.ecommerce.dtos.config.TableResponse;
 import com.ecommerce.enums.PageTemplate;
 import com.ecommerce.enums.PageType;
-import com.ecommerce.models.Page;
+import com.ecommerce.models.admin.Page;
 import com.ecommerce.requests.admin.PageRequest;
 import com.ecommerce.services.admin.ImageService;
 import com.ecommerce.services.admin.PageService;
