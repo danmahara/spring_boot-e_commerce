@@ -21,6 +21,9 @@ public class WebConfig implements WebMvcConfigurer {
         @Autowired
         private ImageProperties imageProperties;
 
+        @Autowired
+        CustomerInterceptor customerInterceptor;
+
         @Override
         public void addInterceptors(InterceptorRegistry registry) {
                 log.info("Registering AdminInterceptor...");
@@ -32,6 +35,10 @@ public class WebConfig implements WebMvcConfigurer {
                                                 "/admin/logout",
                                                 "/api/admin/login",
                                                 "/api/admin/register");
+
+                registry.addInterceptor(customerInterceptor)
+                                .addPathPatterns("/dashboard/**", "/orders/**", "/profile/**")
+                                .excludePathPatterns("/login", "/register", "/forgot-password", "/");
 
                 log.info("AdminInterceptor registered successfully");
         }
