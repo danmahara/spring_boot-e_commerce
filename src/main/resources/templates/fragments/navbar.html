@@ -1,59 +1,252 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- Header / Navigation -->
 <header th:fragment="navbar" class="header">
     <div class="container">
         <nav class="navbar">
-
             <a href="/" class="logo flex">
-                <!-- <i class="fas fa-shopping-bag"></i> -->
                 <img th:src="${setting.featureImage}" th:alt="${setting.title}" class="logo-icon">
                 <span class="logo-title" th:text="${setting?.title}"></span>
             </a>
-            <style>
-                .logo {
-
-                    align-items: center;
-                    /* vertically center image and text */
-                    gap: 8px;
-                    /* space between image and text */
-                    text-decoration: none;
-                }
-
-                .logo-icon {
-                    height: 40px;
-                    /* small icon size */
-                    width: auto;
-                    /* maintain aspect ratio */
-                }
-
-                .logo-title {
-                    font-size: 1.5rem;
-                    /* adjust as needed */
-                    font-weight: 600;
-                    color: var(--primary-color);
-                }
-            </style>
-
 
             <ul class="nav-menu">
                 <li><a href="/" class="nav-link">Home</a></li>
 
-                <li th:if="${ pages!=null and !#lists.isEmpty(pages) }" th:each="page : ${pages}">
-                    <a th:text="${page.title}" th:href="@{${page.slug}}" class="nav-link">Products</a>
+                <!-- Regular Nav Pages (excluding login/register) -->
+                <li th:each="page : ${navPages}">
+                    <!-- <a th:text="${page.title}" th:href="@{${page.slug}}" class="nav-link"></a> -->
+                    <a th:text="${page.title}" th:href="@{'/' + ${page.slug}}" class="nav-link"></a>
                 </li>
+
+                <!-- Cart Icon -->
                 <li>
                     <div class="cart-icon">
                         <i class="fas fa-shopping-cart" style="font-size: 1.5rem; color: var(--primary-color);"></i>
                         <span class="cart-count">0</span>
                     </div>
                 </li>
-            </ul>
 
+                <!-- User Profile Dropdown - Only visible when logged in -->
+                <li sec:authorize="isAuthenticated()" class="user-profile-wrapper">
+                    <div class="user-profile" onclick="toggleProfileDropdown()">
+                        <div class="profile-circle">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <span sec:authentication="name">User</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="/user/dashboard" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                        <a href="/user/orders" class="dropdown-item">
+                            <i class="fas fa-shopping-bag"></i>
+                            My Orders
+                        </a>
+                        <a href="/user/profile" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" class="dropdown-item logout-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </li>
+
+                <!-- Login Button - Only when NOT authenticated AND login page exists -->
+                <li sec:authorize="!isAuthenticated()" th:if="${loginPage != null}">
+                    <a th:href="@{'/'+ ${loginPage.slug}}" class="nav-link login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span th:text="${loginPage.title}">Login</span>
+                    </a>
+                </li>
+
+                <!-- Register Button - Only when NOT authenticated AND register page exists -->
+                <li sec:authorize="!isAuthenticated()" th:if="${registerPage != null}">
+                    <a th:href="@{'/'+ ${registerPage.slug}}" class="nav-link register-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span th:text="${registerPage.title}">Register</span>
+                    </a>
+                </li>
+            </ul>
 
             <button class="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>
             </button>
         </nav>
     </div>
+
+    <style>
+        .logo {
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* User Profile Styles */
+        .user-profile-wrapper {
+            position: relative;
+        }
+
+        .user-profile {
+            cursor: pointer;
+        }
+
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .profile-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            border-color: var(--primary-color);
+        }
+
+        /* Dropdown Styles */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .profile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #374151;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        .dropdown-item i {
+            width: 18px;
+            color: #6b7280;
+        }
+
+        .dropdown-item.logout-item {
+            color: #ef4444;
+        }
+
+        .dropdown-item.logout-item i {
+            color: #ef4444;
+        }
+
+        .dropdown-item.logout-item:hover {
+            background: #fef2f2;
+        }
+
+        /* Login Button */
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white !important;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: #4f46e5;
+        }
+
+        /* Register Button */
+        .nav-menu .register-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color) !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-menu .register-btn:hover {
+            background: var(--primary-color);
+            color: white !important;
+        }
+    </style>
+
+    <script>
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileWrapper = document.querySelector('.user-profile-wrapper');
+
+            if (dropdown && profileWrapper && !profileWrapper.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
 </header>
