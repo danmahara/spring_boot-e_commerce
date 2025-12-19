@@ -14,6 +14,9 @@
     <link rel="stylesheet" th:href="@{/web/css/footer.css}">
     <link rel="stylesheet" th:href="@{/web/css/product-details.css}">
 
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -28,7 +31,7 @@
             background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
         }
 
-      
+
 
         .carousel-slide {
             position: absolute;
@@ -66,7 +69,7 @@
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        
+
 
         .carousel-content p {
             font-size: clamp(1.125rem, 2vw, 1.5rem);
