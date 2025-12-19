@@ -94,60 +94,6 @@ public class UserAuthController {
 
     // ============ LOGIN METHOD ============
 
-    // @PostMapping("/login")
-    // public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String,
-    // String> request,
-    // HttpSession session) {
-    // Map<String, Object> response = new HashMap<>();
-
-    // try {
-    // String email = request.get("email");
-    // String password = request.get("password");
-
-    // // Validate inputs
-    // if (email == null || email.trim().isEmpty()) {
-    // response.put("success", false);
-    // response.put("message", "Email is required");
-    // return ResponseEntity.badRequest().body(response);
-    // }
-
-    // if (password == null || password.trim().isEmpty()) {
-    // response.put("success", false);
-    // response.put("message", "Password is required");
-    // return ResponseEntity.badRequest().body(response);
-    // }
-
-    // // Find user
-    // User user = userService.findByEmail(email);
-
-    // if (user == null || !user.isStatus()) {
-    // response.put("success", false);
-    // response.put("message", "Invalid email or account inactive");
-    // return ResponseEntity.badRequest().body(response);
-    // }
-
-    // // Check password
-    // if (!passwordEncoder.matches(password, user.getPassword())) {
-    // response.put("success", false);
-    // response.put("message", "Incorrect password");
-    // return ResponseEntity.badRequest().body(response);
-    // }
-
-    // // Successful login -> store in session
-    // session.setAttribute("customer", user);
-
-    // response.put("success", true);
-    // response.put("message", "Login successful");
-    // response.put("redirectUrl", "/user/dashboard");
-    // return ResponseEntity.ok(response);
-
-    // } catch (Exception e) {
-    // response.put("success", false);
-    // response.put("message", "Login failed: " + e.getMessage());
-    // return
-    // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    // }
-    // }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> request,
@@ -209,18 +155,7 @@ public class UserAuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-    // ============ DASHBOARD ============
-
-    // @GetMapping("/user/dashboard")
-    // public String dashboard(HttpSession session) {
-    // User customer = (User) session.getAttribute("customer");
-    // if (customer == null) {
-    // return "redirect:/login";
-    // }
-    // return "pages/customer/dashboard";
-    // }
-
+    
     // ============ LOGOUT METHOD ============
 
     @GetMapping("/logout")
