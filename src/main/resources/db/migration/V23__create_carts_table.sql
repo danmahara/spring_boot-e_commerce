@@ -1,0 +1,22 @@
+-- MySQL Schema for carts table
+CREATE TABLE carts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT NOT NULL,
+
+    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    -- ACTIVE, CHECKED_OUT, ABANDONED
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_carts_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_cart_user UNIQUE (user_id)
+);
