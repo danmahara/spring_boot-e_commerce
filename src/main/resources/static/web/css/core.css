@@ -788,8 +788,8 @@ ul {
 
 .cart-count {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -8px;
+    right: -8px;
     background: var(--accent-color);
     color: white;
     font-size: 0.75rem;

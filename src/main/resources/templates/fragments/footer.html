@@ -76,5 +76,13 @@
             </p>
         </div>
 
+        <!-- ✅ SAFE - Uses model attributes from GlobalControllerAdvice -->
+        <script th:inline="javascript">
+            var isAuthenticated = [[${ isAuthenticated }]];
+            var currentUserId = [[${ currentUserId }]];
+        </script>
+
+        <!-- Include cart JavaScript -->
+        <script th:src="@{/web/js/cart.js}"></script>
     </div>
 </footer>
