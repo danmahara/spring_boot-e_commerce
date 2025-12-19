@@ -5,10 +5,12 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +35,9 @@ public class User {
     private String address;
     private String role = "CUSTOMER";
     private boolean status = true;
+
+    @OneToOne(mappedBy = "user" , cascade = CascadeType.ALL)
+    private Cart cart;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
