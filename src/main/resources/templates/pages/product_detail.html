@@ -10,23 +10,26 @@
                 <div class="breadcrumb-nav mb-2xl">
                     <a href="index.html">Home</a>
                     <i class="fas fa-chevron-right"></i>
-                    <a href="@{/products}">Products</a>
+                    <a th:href="@{/products}">Products</a>
                     <i class="fas fa-chevron-right"></i>
-                    <span>Classic Chronograph Watch</span>
+                    <span th:text="${product.name}">Classic Chronograph Watch</span>
                 </div>
                 <script>
                     function changeImage(thumb) {
-                        const src = thumb.getAttribute('data-src'); // get image URL from data-src
+                        const src = thumb.getAttribute('data-src');
                         document.getElementById('mainImage').src = src;
 
-                        // Update active thumbnail
                         document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                         thumb.classList.add('active');
                     }
-
                 </script>
 
-                <div class="product-layout">
+                <!-- ADD data-product-id HERE -->
+                <div class="product-layout" th:data-product-id="${product.id}">
+
+                    <!-- Hidden input for product ID (backup method) -->
+                    <input type="hidden" id="productId" th:value="${product.id}" />
+
                     <!-- Product Gallery -->
                     <div class="product-gallery">
                         <div class="main-image">
@@ -35,29 +38,22 @@
 
                         <div class="thumbnail-gallery">
                             <div th:each="image,iteration : ${product.galleryImages}"
-                                class="thumbnail ${iteration.index==0?'active':''}" th:attr="data-src=${image}"
-                                onclick="changeImage(this)">
-                                <img th:src="${image}" alt="View 1">
+                                th:class="${iteration.index == 0 ? 'thumbnail active' : 'thumbnail'}"
+                                th:attr="data-src=${image}" onclick="changeImage(this)">
+                                <img th:src="${image}" alt="View">
                             </div>
                         </div>
-
-                        <!-- <div class="thumbnail-gallery">
-                            <div th:each="image,iteration : ${product.galleryImages}" class="thumbnail"
-                                th:classappend="${iteration.index == 0} ? ' active' : ''" th:attr="data-src=${image}"
-                                onclick="changeImage(this)">
-
-                                <img th:src="${image}" alt="View 1">
-                            </div>
-                        </div> -->
-
-
                     </div>
 
                     <!-- Product Info -->
                     <div class="product-info">
                         <div class="product-badges mb-md">
-                            <span class="badge badge-new">New Arrival</span>
-                            <span class="badge badge-sale">25% Off</span>
+                            <!-- <span class="badge badge-new" th:if="${product.isNew}">New Arrival</span>
+                            <span class="badge badge-sale" th:if="${product.discountType != null}">
+                                <span th:if="${product.discountType == 'percentage'}" 
+                                      th:text="${product.discountPercent + '% Off'}"></span>
+                                <span th:if="${product.discountType != 'percentage'}">Sale</span>
+                            </span> -->
                         </div>
 
                         <h1 class="product-name mb-md" th:text="${product.name}"></h1>
@@ -69,48 +65,51 @@
                             </div>
                             <span class="rating-text">4.5 (189 Reviews)</span>
                             <span class="rating-text">|</span>
-                            <span class="rating-text" style="color: var(--success-color); font-weight: 600;">In
-                                Stock</span>
+                            <span class="rating-text stock-status"
+                                th:classappend="${product.quantity > 0 ? 'in-stock' : 'out-of-stock'}"
+                                th:text="${product.quantity > 0 ? 'In Stock' : 'Out of Stock'}">
+                            </span>
                         </div>
 
                         <div class="price-section mb-2xl">
-
                             <div class="current-price">
-
                                 <span th:text="${product.currency}"></span>
-                                <!-- original price if no discount -->
-                                <span th:if="${product.discountType == null}" th:text="${#numbers.formatDecimal(
-                                            product.price, 1, 'COMMA', 2, 'POINT')}">
+                                <!-- Original price if no discount -->
+                                <span th:if="${product.discountType == null}"
+                                    th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">
                                 </span>
-
+                                <!-- Discounted price -->
                                 <span th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
-                                            product.discountType == 'percentage' ? 
-                                            product.price - (product.price * product.discountPercent / 100.0) : 
-                                            product.price - product.discountPrice, 
-                                            1, 'COMMA', 2, 'POINT')}">
+                                          product.discountType == 'percentage' ? 
+                                          product.price - (product.price * product.discountPercent / 100.0) : 
+                                          product.price - product.discountPrice, 
+                                          1, 'COMMA', 2, 'POINT')}">
                                 </span>
                             </div>
 
-                            <div class="original-price" th:if="${product.discountType!=null}">
+                            <div class="original-price" th:if="${product.discountType != null}">
                                 <span th:text="${product.currency}"></span>
-                                <span th:text="${product.price}"></span>
+                                <span th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}"></span>
                             </div>
 
-
-                            <span class="discount-badge" th:if="${product.discountType != null}" th:text="${#numbers.formatDecimal(
-                                            product.discountType == 'percentage' ? 
-                                            product.price- (product.price - (product.price * product.discountPercent / 100.0)) : 
-                                            product.price-(product.price - product.discountPrice), 
-                                            1, 'COMMA', 2, 'POINT')}">
-
+                            <span class="discount-badge" th:if="${product.discountType != null}">
+                                Save <span th:text="${product.currency}"></span>
+                                <span th:text="${#numbers.formatDecimal(
+                                    product.discountType == 'percentage' ? 
+                                    (product.price * product.discountPercent / 100.0) : 
+                                    product.discountPrice, 
+                                    1, 'COMMA', 2, 'POINT')}">
+                                </span>
+                            </span>
                         </div>
 
                         <div class="product-short-desc mb-2xl" th:utext="${product.description}"></div>
 
                         <!-- Color Selection -->
                         <div class="option-group mb-xl">
-                            <label class="option-label mb-md">Color: <span style="color: var(--primary-color);">Brown
-                                    Leather</span></label>
+                            <label class="option-label mb-md">Color:
+                                <span style="color: var(--primary-color);">Brown Leather</span>
+                            </label>
                             <div class="option-values">
                                 <div class="color-option selected" style="background: #8B4513;"
                                     onclick="selectColor(this, 'Brown Leather')"></div>
@@ -135,18 +134,23 @@
                         <div class="quantity-selector mb-2xl">
                             <span class="quantity-label">Quantity:</span>
                             <div class="quantity-control">
-                                <button class="qty-btn" onclick="decrementQty()">−</button>
-                                <input type="number" class="qty-input" value="1" min="1" max="10" id="qtyInput">
-                                <button class="qty-btn" onclick="incrementQty()">+</button>
+                                <button type="button" class="qty-btn" onclick="decrementQty()">−</button>
+                                <input type="number" class="qty-input" value="1" min="1" th:max="${product.quantity}"
+                                    id="qtyInput">
+                                <button type="button" class="qty-btn" onclick="incrementQty()">+</button>
                             </div>
+                            <span class="stock-info" th:text="'(' + ${product.quantity} + ' available)'"></span>
                         </div>
 
                         <!-- Actions -->
                         <div class="product-actions mb-2xl">
-                            <button class="btn btn-primary btn-add-to-cart">
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            <button type="button" class="btn btn-primary btn-add-to-cart"
+                                th:disabled="${product.quantity <= 0}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span th:text="${product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}">Add to
+                                    Cart</span>
                             </button>
-                            <button class="btn btn-outline btn-wishlist">
+                            <button type="button" class="btn btn-outline btn-wishlist">
                                 <i class="far fa-heart"></i>
                             </button>
                         </div>
@@ -155,11 +159,12 @@
                         <div class="product-meta">
                             <div class="meta-item">
                                 <span class="meta-label"><i class="fas fa-tag"></i> SKU:</span>
-                                <span class="meta-value">WCH-42-BRN-2024</span>
+                                <span class="meta-value" th:text="${product.sku ?: 'N/A'}">WCH-42-BRN-2024</span>
                             </div>
                             <div class="meta-item">
                                 <span class="meta-label"><i class="fas fa-folder"></i> Category:</span>
-                                <span class="meta-value">Accessories, Watches</span>
+                                <span class="meta-value"
+                                    th:text="${product.categoryNames ?: 'Uncategorized'}">Accessories, Watches</span>
                             </div>
                             <div class="meta-item">
                                 <span class="meta-label"><i class="fas fa-truck"></i> Shipping:</span>
@@ -181,11 +186,9 @@
                     <div id="description" class="tab-content active">
                         <div class="tab-panel">
                             <h3 class="mb-lg">Product Description</h3>
-                            <p style="line-height: 1.8; color: var(--text-secondary);">
-                                Experience the perfect blend of timeless elegance and modern functionality with our
-                                Classic Chronograph Watch. Features Swiss-made movement, sapphire crystal, and premium
-                                leather strap.
-                            </p>
+                            <div th:utext="${product.description}"
+                                style="line-height: 1.8; color: var(--text-secondary);">
+                            </div>
                         </div>
                     </div>
 
@@ -240,7 +243,19 @@
             </div>
         </section>
 
-    </div>
+        <style>
+            .stock-status.in-stock {
+                color: var(--success-color);
+                font-weight: 600;
+            }
 
+            .stock-status.out-of-stock {
+                color: var(--error-color);
+                font-weight: 600;
+            }
+        </style>
+
+
+    </div>
 
 </div>
