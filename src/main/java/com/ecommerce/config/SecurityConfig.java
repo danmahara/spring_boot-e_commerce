@@ -11,23 +11,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF Protection - Enabled for forms, disabled for API
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/api/**"))
 
-                // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/").permitAll()
-
-                        // Allow all admin paths - your interceptor handles auth
+                        .requestMatchers("/login", "/register").permitAll() // Add this
+                        .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
+                        .anyRequest().permitAll())
 
-                        // All other requests allowed
-                        .anyRequest().permitAll());
+                // Add this section to handle unauthenticated users
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/login");
+                        }));
 
         return http.build();
     }
