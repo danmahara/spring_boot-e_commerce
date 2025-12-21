@@ -22,6 +22,7 @@
 
 
 tinymce.init({
+    license_key: 'gpl',
     selector: 'textarea',  // applies to your description field
     // plugins: [
     //     // Core editing features
