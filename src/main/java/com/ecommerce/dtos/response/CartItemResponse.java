@@ -1,6 +1,9 @@
 package com.ecommerce.dtos.response;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.ecommerce.models.admin.Category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,5 +25,9 @@ public class CartItemResponse {
     private String productImage;
     private Integer quantity;
     private BigDecimal price;
+    private BigDecimal discountedPrice;
+    private BigDecimal originalLineTotal;
     private BigDecimal lineTotal;
+    private String description;
+    private List<Category> categories;
 }
