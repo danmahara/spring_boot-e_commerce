@@ -14,9 +14,11 @@ import com.ecommerce.exceptions.ResourceNotFoundException;
 import com.ecommerce.models.Cart;
 import com.ecommerce.models.CartItem;
 import com.ecommerce.models.User;
+import com.ecommerce.models.admin.Image;
 import com.ecommerce.models.admin.Product;
 import com.ecommerce.repository.CartItemRepository;
 import com.ecommerce.repository.CartRepository;
+import com.ecommerce.repository.admin.ImageRepository;
 import com.ecommerce.repository.admin.ProductRepository;
 import com.ecommerce.requests.AddToCartRequest;
 import com.ecommerce.services.CartService;
@@ -31,6 +33,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final ImageRepository imageRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -198,7 +201,41 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartItemResponse mapToCartItemResponse(CartItem item) {
+
         Product product = item.getProduct();
+
+        // Base price
+        BigDecimal unitPrice = product.getPrice();
+        
+        BigDecimal totalOriginalPrice=BigDecimal.ZERO;
+
+        // Apply discount if available
+        if (product.getDiscountType() != null && !product.getDiscountType().isBlank()) {
+
+            if ("fixed".equalsIgnoreCase(product.getDiscountType())
+                    && product.getDiscountPrice() != null
+                    && product.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0) {
+
+                unitPrice = product.getPrice().subtract(product.getDiscountPrice());
+                // totalOriginalPrice=product.getPrice()
+            }
+
+            // Optional: percentage discount
+            else if ("percentage".equalsIgnoreCase(product.getDiscountType())
+                    && product.getDiscountPrice() != null
+                    && product.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0) {
+
+                BigDecimal discountAmount = product.getPrice()
+                        .multiply(product.getDiscountPrice())
+                        .divide(BigDecimal.valueOf(100));
+
+                unitPrice = product.getPrice().subtract(discountAmount);
+            }
+        }
+
+        BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+        totalOriginalPrice=product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+
         return CartItemResponse.builder()
                 .id(item.getId())
                 .productId(product.getId())
@@ -206,16 +243,25 @@ public class CartServiceImpl implements CartService {
                 .productSlug(product.getSlug())
                 .productImage(getProductImage(product))
                 .quantity(item.getQuantity())
-                .price(item.getPrice())
-                .lineTotal(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .price(product.getPrice())
+                .discountedPrice(unitPrice)
+                .originalLineTotal(totalOriginalPrice)
+                .lineTotal(lineTotal)
+                .description(product.getDescription())
+                .categories(product.getCategories())
                 .build();
     }
 
     private String getProductImage(Product product) {
-        // Return first image or placeholder
+
+        List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("product", product.getId());
+
+        product.setImages(imgs);
+
         if (product.getImages() != null && !product.getImages().isEmpty()) {
-            return product.getImages().get(0).getPath();
+            return product.getFeatureImage();
         }
+
         return "/images/placeholder.png";
     }
 }
