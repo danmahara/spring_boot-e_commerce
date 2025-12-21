@@ -23,6 +23,7 @@ public class CartItemResponse {
     private String productName;
     private String productSlug;
     private String productImage;
+    private Integer productQuantity;
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal discountedPrice;
