@@ -20,10 +20,15 @@
 
                 <!-- Cart Icon -->
                 <li>
-                    <div class="cart-icon">
+                    <a sec:authorize="isAuthenticated()" th:href="@{'/'+${'user/cart'}}" class="cart-icon">
                         <i class="fas fa-shopping-cart" style="font-size: 1.5rem; color: var(--primary-color);"></i>
                         <span class="cart-count">0</span>
-                    </div>
+                    </a>
+
+                    <a sec:authorize="!isAuthenticated()" href="/login" class="cart-icon">
+                        <i class="fas fa-shopping-cart" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                        <span class="cart-count">0</span>
+                    </a>
                 </li>
 
                 <!-- User Profile Dropdown - Only visible when logged in -->
