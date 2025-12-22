@@ -61,24 +61,7 @@ public class UserDashboardController {
 
     }
 
-    /**
-     * Display all orders
-     */
-    @GetMapping("/orders")
-    public String orders(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        User user = userService.findByEmail(userDetails.getUsername());
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        List<Order> orders = orderService.findAllOrdersByUser(user.getId());
-
-        model.addAttribute("user", user);
-        model.addAttribute("orders", orders);
-
-        return "customer/orders";
-    }
+   
 
     /**
      * Display user profile
