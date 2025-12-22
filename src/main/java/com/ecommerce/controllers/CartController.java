@@ -13,4 +13,9 @@ public class CartController {
         return "pages/customer/cart";
     }
 
+    @GetMapping("/checkout")
+    public String checkout() {
+        return "pages/customer/checkout";
+    }
+
 }
