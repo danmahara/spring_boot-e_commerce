@@ -2,10 +2,14 @@ package com.ecommerce.models;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ecommerce.enums.OrderStatus;
 import com.ecommerce.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -135,21 +140,28 @@ public class Order {
     @Column(name = "cancelled_date")
     private LocalDateTime cancelledDate;
 
-    // // Order items
-    // @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval =
-    // true)
-    // private List<OrderItem> orderItems = new ArrayList<>();
+    // Order items relationship
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    // // Helper methods
-    // public void addOrderItem(OrderItem item) {
-    // orderItems.add(item);
-    // item.setOrder(this);
-    // }
+    // Helper methods for managing order items
+    public void addOrderItem(OrderItem item) {
+        orderItems.add(item);
+        item.setOrder(this);
+    }
 
-    // public void removeOrderItem(OrderItem item) {
-    // orderItems.remove(item);
-    // item.setOrder(null);
-    // }
+    public void removeOrderItem(OrderItem item) {
+        orderItems.remove(item);
+        item.setOrder(null);
+    }
+
+    public void setOrderItems(List<OrderItem> items) {
+        this.orderItems.clear();
+        if (items != null) {
+            items.forEach(this::addOrderItem);
+        }
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -167,20 +179,29 @@ public class Order {
     }
 
     private String generateOrderNumber() {
-        // Generate unique order number (you can customize this)
         return "ORD-" + System.currentTimeMillis();
     }
 
-    // Calculate total amount
-    // public void calculateTotalAmount() {
-    // this.subtotal = orderItems.stream()
-    // .map(OrderItem::getTotalAmount)
-    // .reduce(BigDecimal.ZERO, BigDecimal::add);
+    /**
+     * Calculate total amount from order items
+     */
+    public void calculateTotalAmount() {
+        this.subtotal = orderItems.stream()
+                .map(OrderItem::getLineTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    // this.totalAmount = subtotal
-    // .add(taxAmount)
-    // .add(shippingAmount)
-    // .subtract(discountAmount);
-    // }
+        this.totalAmount = subtotal
+                .add(taxAmount)
+                .add(shippingAmount)
+                .subtract(discountAmount);
+    }
 
+    /**
+     * Get total number of items in the order
+     */
+    public int getTotalItemCount() {
+        return orderItems.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
+    }
 }
