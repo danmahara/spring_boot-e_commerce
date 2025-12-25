@@ -383,7 +383,8 @@
             }
 
             .discount-row {
-                color: #10b981;
+                /* color: #10b981; */
+                color: #b91010;
             }
 
             .place-order-btn {
@@ -541,10 +542,9 @@
                                 <div class="address-card selected">
                                     <div class="address-name">Home Address</div>
                                     <div class="address-details">
-                                        John Doe<br>
-                                        123 Main Street, Apt 4B<br>
-                                        New York, NY 10001<br>
-                                        Phone: +1 (555) 123-4567
+                                        <span th:text="${user.fullName}"></span>
+                                        <span th:text="${user.address}"></span>
+                                        <span th:text="${user.phone}"></span>
                                     </div>
                                 </div>
 
@@ -561,30 +561,27 @@
 
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label class="form-label">First Name <span class="required">*</span></label>
-                                    <input type="text" class="form-input" value="John" placeholder="Enter first name">
+                                    <label class="form-label">Name <span class="required">*</span></label>
+                                    <input type="text" th:value="${user.fullName}" class="form-input" readonly
+                                        placeholder="Enter first name">
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="form-label">Last Name <span class="required">*</span></label>
-                                    <input type="text" class="form-input" value="Doe" placeholder="Enter last name">
-                                </div>
 
-                                <div class="form-group full-width">
+                                <div class="form-group ">
                                     <label class="form-label">Email Address <span class="required">*</span></label>
-                                    <input type="email" class="form-input" value="john.doe@example.com"
-                                        placeholder="Enter email">
+                                    <input type="email" th:value="${user.email}" class="form-input"
+                                        value="john.doe@example.com" placeholder="Enter email">
                                 </div>
 
-                                <div class="form-group full-width">
+                                <div class="form-group ">
                                     <label class="form-label">Phone Number <span class="required">*</span></label>
-                                    <input type="tel" class="form-input" value="+1 (555) 123-4567"
-                                        placeholder="Enter phone">
+                                    <input type="tel" th:value="${user.phone}" class="form-input"
+                                        value="+1 (555) 123-4567" placeholder="Enter phone">
                                 </div>
 
-                                <div class="form-group full-width">
+                                <div class="form-group ">
                                     <label class="form-label">Street Address <span class="required">*</span></label>
-                                    <input type="text" class="form-input" value="123 Main Street, Apt 4B"
+                                    <input type="text" class="form-input" th:value="${user.address}"
                                         placeholder="Enter street address">
                                 </div>
 
@@ -685,42 +682,9 @@
                             </h2>
 
                             <!-- Order Items -->
-                            <div class="order-items">
-                                <div class="order-item">
-                                    <div class="item-image">
-                                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
-                                            alt="Product">
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-name">Wireless Headphones Pro</div>
-                                        <div class="item-details">Qty: 1 × $149.99</div>
-                                        <div class="item-price">$149.99</div>
-                                    </div>
-                                </div>
+                            <div class="order-items" id="orderItemsContainer">
 
-                                <div class="order-item">
-                                    <div class="item-image">
-                                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200"
-                                            alt="Product">
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-name">Smart Watch Series 5</div>
-                                        <div class="item-details">Qty: 2 × $299.99</div>
-                                        <div class="item-price">$599.98</div>
-                                    </div>
-                                </div>
-
-                                <div class="order-item">
-                                    <div class="item-image">
-                                        <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200"
-                                            alt="Product">
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-name">Designer Sunglasses</div>
-                                        <div class="item-details">Qty: 1 × $89.99</div>
-                                        <div class="item-price">$89.99</div>
-                                    </div>
-                                </div>
+                                <!-- order items will populate here -->
                             </div>
 
                             <!-- Promo Code -->
@@ -735,28 +699,28 @@
                             <!-- Summary Rows -->
                             <div style="margin-top: 1.5rem;">
                                 <div class="summary-row">
-                                    <span>Subtotal (3 items)</span>
-                                    <span>$839.96</span>
+                                    <span id="subtotalCount">Subtotal (3 items)</span>
+                                    <span id="subtotalCountValue">$839.96</span>
                                 </div>
 
                                 <div class="summary-row discount-row">
                                     <span>Discount</span>
-                                    <span>-$50.00</span>
+                                    <span id="totalDiscountedAmount">-$50.00</span>
                                 </div>
 
                                 <div class="summary-row">
                                     <span>Shipping</span>
-                                    <span>$15.00</span>
+                                    <span>$0</span>
                                 </div>
 
                                 <div class="summary-row">
                                     <span>Tax (8%)</span>
-                                    <span>$67.20</span>
+                                    <span>$0</span>
                                 </div>
 
                                 <div class="summary-row total">
                                     <span>Total</span>
-                                    <span>$872.16</span>
+                                    <span id="totalValue">$10</span>
                                 </div>
                             </div>
 
@@ -780,7 +744,7 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                var selectedItem = document.querySelector(".payment-option")
+                var selectedItem = document.querySelector(".payment-option.selected")
                 const paymentOption = document.querySelectorAll(".payment-option").forEach(item => {
                     item.addEventListener("click", function () {
                         if (selectedItem) {
@@ -800,7 +764,7 @@
         <script>
             document.addEventListener("DOMContentLoaded", function () {
 
-                var selectedAddress = document.querySelector(".address-card.se")
+                var selectedAddress = document.querySelector(".address-card.selected")
 
                 document.querySelectorAll(".address-card").forEach(address => {
                     address.addEventListener("click", function () {
@@ -816,20 +780,106 @@
             })
         </script>
 
-        <!-- <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var selectedAddress = document.querySelector(".address-card.selected");
+        <script>
+            // Show toast notification
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" 
+                       style="color: ${type === 'success' ? '#10b981' : '#ef4444'}; font-size: 1.5rem;"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(toast);
 
-                document.querySelectorAll(".address-card").forEach(address => {
-                    address.addEventListener("click", function () {
-                        if (selectedAddress) {
-                            selectedAddress.classList.remove("selected");
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            let cartData = null
+            function getCsrfToken() {
+                return document.querySelector('meta[name="_csrf"]')?.content ||
+                    document.querySelector('input[name="_csrf"]')?.value;
+            }
+            async function fetchCartItems() {
+
+                try {
+
+                    const response = await fetch("/api/cart", {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': "application/json",
+                            'X-CSRF-TOKEN': getCsrfToken()
                         }
-                        selectedAddress = this;
-                        selectedAddress.classList.add("selected");
+                    });
+
+                    if (response.ok) {
+
+                        const result = await response.json()
+                        cartData = result.data;
+                        console.log(cartData);
+
+                        renderCart()
+                    } else {
+                        showToast("error")
+                    }
+
+                } catch (error) {
+
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                fetchCartItems()
+            })
+
+            function renderCart() {
+
+                const subtotalCount = document.getElementById("subtotalCount")
+                subtotalCount.innerHTML = `Subtotal (${cartData.totalQuantity > 0 ? cartData.totalQuantity + " items" : cartData.totalQuantity + " item"})`
+
+                const subtotalCountValue = document.getElementById("subtotalCountValue")
+                const totalSubtotal = cartData.items.reduce((total, item) => total + (item.price * item.quantity), 0)
+                document.getElementById("subtotalCountValue").innerHTML = totalSubtotal
+
+                // discount calculation
+                const totalDiscountedAmount = cartData.items.reduce((total, item) => total + (item.price == item.discountedPrice ? 0 : ((item.price * item.quantity) - item.discountedPrice * item.quantity)), 0)
+                console.log("Total discounted amount: ", totalDiscountedAmount);
+                document.getElementById("totalDiscountedAmount").innerHTML = `${totalDiscountedAmount > 0 ? '-$' + totalDiscountedAmount : '-$0.00'}`
+
+
+                document.getElementById("totalValue").innerHTML = `$${cartData?.totalAmount.toFixed(2)}`
+
+                const container = document.getElementById("orderItemsContainer")
+                container.innerHTML = ""
+                if (!cartData || cartData.items.length != 0) {
+
+
+                    cartData.items.forEach(item => {
+
+                        const row = `
+                      <div class="order-item">
+                                    <div class="item-image">
+                                        <img src="${item.productImage}"
+                                            alt="Product">
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-name">Wireless Headphones Pro</div>
+                                        <div class="item-details">Qty: ${item.quantity} × $${item.price == item.discountedPrice ? item.price : item.discountedPrice}</div>
+                                        <div class="item-price">$${item.price == item.discountedPrice ? item.price : item.lineTotal}</div>
+                                    </div>
+                                </div>
+                    `;
+                        container.insertAdjacentHTML("beforeend", row)
                     })
-                });
-            });
-        </script> -->
+
+                    console.log("TotalQuantity: " + totalQuantity);
+
+                }
+            }
+        </script>
     </div>
 </div>
