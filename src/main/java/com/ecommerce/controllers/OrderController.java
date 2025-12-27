@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ecommerce.models.Order;
@@ -16,14 +17,14 @@ import com.ecommerce.services.OrderService;
 import com.ecommerce.services.UserService;
 
 @Controller
-@RequestMapping("user/orders")
+@RequestMapping("/user/orders")
 public class OrderController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    OrderService orderService;
+    private OrderService orderService;
 
     /**
      * Display all orders
@@ -44,4 +45,29 @@ public class OrderController {
         return "pages/customer/order";
     }
 
+    /**
+     * Display order detail
+     */
+    @GetMapping("/{orderId}")
+    public String getOrderDetail(
+            @PathVariable Long orderId,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
+
+        User user = userService.findByEmail(userDetails.getUsername());
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Order order = orderService.findByIdAndUser(orderId, user.getId());
+            model.addAttribute("user", user);
+            model.addAttribute("order", order);
+            return "pages/customer/order_detail";
+        } catch (Exception e) {
+            // Order not found or doesn't belong to user
+            return "redirect:/user/orders";
+        }
+    }
 }
