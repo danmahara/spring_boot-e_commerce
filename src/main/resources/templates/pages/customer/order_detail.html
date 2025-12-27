@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
+
+<body>
+    <section th:fragment="section">
+        <!-- Include shared CSS -->
+        <link rel="stylesheet" th:href="@{/web/css/user-pages.css}" />
+
+        <section class="user-page-container">
+            <div class="container">
+                <!-- Header -->
+                <div class="user-header animate-fadeInUp">
+                    <div class="header-content align-start">
+                        <div class="header-left">
+                            <h1><i class="fas fa-receipt"></i> Order Details</h1>
+                            <div class="header-subtitle" th:text="'Order #' + ${order.orderNumber}">Order
+                                #ORD-2024-001234</div>
+                            <div class="header-meta">
+                                <i class="far fa-calendar-alt"></i>
+                                Placed on <span
+                                    th:text="${#temporals.format(order.orderDate, 'MMMM dd, yyyy ''at'' hh:mm a')}">December
+                                    27, 2024 at 10:30 AM</span>
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <span class="status-badge large gradient"
+                                th:classappend="${order.status.name() == 'PENDING'} ? 'status-pending' : 
+                                              (${order.status.name() == 'PROCESSING'} ? 'status-processing' : 
+                                              (${order.status.name() == 'SHIPPED'} ? 'status-shipped' : 
+                                              (${order.status.name() == 'DELIVERED'} ? 'status-delivered' : 'status-cancelled')))"
+                                th:text="${order.status}">PENDING</span>
+                            <a href="/user/orders" class="back-btn">
+                                <i class="fas fa-arrow-left"></i> Back to Orders
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Timeline -->
+                <div class="timeline-section animate-fadeInUp" style="animation-delay: 0.1s;">
+                    <h3 class="section-title"><i class="fas fa-shipping-fast"></i> Order Progress</h3>
+                    <div class="timeline">
+                        <div class="timeline-step"
+                            th:classappend="${order.status.name() == 'PENDING' || order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED'} ? 'completed' : ''">
+                            <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
+                            <span class="step-label">Order Placed</span>
+                            <span class="step-date" th:text="${#temporals.format(order.orderDate, 'MMM dd')}">Dec
+                                27</span>
+                        </div>
+                        <div class="timeline-step" th:classappend="${order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED'} ? 'completed' : 
+                                           (${order.status.name() == 'CANCELLED'} ? 'cancelled' : '')">
+                            <div class="step-icon"><i class="fas fa-cog"></i></div>
+                            <span class="step-label">Processing</span>
+                            <span class="step-date">-</span>
+                        </div>
+                        <div class="timeline-step" th:classappend="${order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED'} ? 'completed' : 
+                                           (${order.status.name() == 'CANCELLED'} ? 'cancelled' : '')">
+                            <div class="step-icon"><i class="fas fa-truck"></i></div>
+                            <span class="step-label">Shipped</span>
+                            <span class="step-date"
+                                th:text="${order.shippedDate != null} ? ${#temporals.format(order.shippedDate, 'MMM dd')} : '-'">-</span>
+                        </div>
+                        <div class="timeline-step" th:classappend="${order.status.name() == 'DELIVERED'} ? 'completed' : 
+                                           (${order.status.name() == 'CANCELLED'} ? 'cancelled' : '')">
+                            <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                            <span class="step-label">Delivered</span>
+                            <span class="step-date"
+                                th:text="${order.deliveredDate != null} ? ${#temporals.format(order.deliveredDate, 'MMM dd')} : '-'">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="content-grid">
+                    <div class="content-main">
+                        <!-- Order Items -->
+                        <div class="content-card animate-fadeInUp" style="animation-delay: 0.2s;">
+                            <h3 class="section-title">
+                                <i class="fas fa-box-open"></i>
+                                Order Items
+                                <span class="text-muted font-semibold" style="font-size: 0.9rem;"
+                                    th:text="'(' + ${#lists.size(order.orderItems)} + ' items)'">
+                                    (3 items)
+                                </span>
+                            </h3>
+                            <div class="items-list">
+                                <div class="item-card" th:each="item, iterStat : ${order.orderItems}">
+                                    <div class="item-image">
+                                        <img th:src="${item.productImage != null} ? ${item.productImage} : '/images/placeholder.png'"
+                                            th:alt="${item.productName}" onerror="this.src='/images/placeholder.png'">
+                                    </div>
+                                    <div class="item-details">
+                                        <div class="item-name">
+                                            <a th:href="@{/product/{id}(id=${item.product.id})}"
+                                                th:text="${item.productName}">Product Name</a>
+                                        </div>
+                                        <div class="item-sku" th:if="${item.productSku}">
+                                            SKU: <span th:text="${item.productSku}">SKU-12345</span>
+                                        </div>
+                                        <div class="item-meta">
+                                            <span><i class="fas fa-box"></i> Qty: <span
+                                                    th:text="${item.quantity}">2</span></span>
+                                            <span><i class="fas fa-tag"></i> $<span
+                                                    th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2)}">99.99</span>
+                                                each</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-pricing">
+                                        <div class="item-unit-price"
+                                            th:text="${item.quantity} + ' × $' + ${#numbers.formatDecimal(item.unitPrice, 1, 2)}">
+                                            2 × $99.99</div>
+                                        <div class="item-total-price"
+                                            th:text="'$' + ${#numbers.formatDecimal(item.totalAmount, 1, 2)}">$199.98
+                                        </div>
+                                        <div class="item-discount"
+                                            th:if="${item.discountAmount != null && item.discountAmount > 0}">
+                                            <i class="fas fa-tag"></i> Saved $<span
+                                                th:text="${#numbers.formatDecimal(item.discountAmount, 1, 2)}">10.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Addresses -->
+                        <div class="content-card animate-fadeInUp" style="animation-delay: 0.3s;">
+                            <h3 class="section-title"><i class="fas fa-map-marker-alt"></i> Delivery Information</h3>
+                            <div class="address-grid">
+                                <div class="address-card">
+                                    <div class="address-type">
+                                        <i class="fas fa-truck"></i> Shipping Address
+                                    </div>
+                                    <div class="address-content">
+                                        <span th:text="${order.shippingAddressLine1}">123 Main Street</span><br>
+                                        <span th:if="${order.shippingAddressLine2}"
+                                            th:text="${order.shippingAddressLine2}"></span>
+                                        <span th:if="${order.shippingAddressLine2}"><br></span>
+                                        <span
+                                            th:text="${order.shippingCity} + ', ' + ${order.shippingState} + ' ' + ${order.shippingPostalCode}">New
+                                            York, NY 10001</span><br>
+                                        <span th:text="${order.shippingCountry}">United States</span>
+                                    </div>
+                                </div>
+                                <div class="address-card">
+                                    <div class="address-type">
+                                        <i class="fas fa-file-invoice"></i> Billing Address
+                                    </div>
+                                    <div class="address-content">
+                                        <span th:text="${order.billingAddressLine1}">123 Main Street</span><br>
+                                        <span th:if="${order.billingAddressLine2}"
+                                            th:text="${order.billingAddressLine2}"></span>
+                                        <span th:if="${order.billingAddressLine2}"><br></span>
+                                        <span
+                                            th:text="${order.billingCity} + ', ' + ${order.billingState} + ' ' + ${order.billingPostalCode}">New
+                                            York, NY 10001</span><br>
+                                        <span th:text="${order.billingCountry}">United States</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Notes -->
+                        <div class="content-card animate-fadeInUp" style="animation-delay: 0.4s;"
+                            th:if="${order.notes != null && !order.notes.isEmpty()}">
+                            <h3 class="section-title"><i class="fas fa-sticky-note"></i> Order Notes</h3>
+                            <p class="text-muted" style="line-height: 1.7;" th:text="${order.notes}">
+                                Please leave the package at the front door if no one is home.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="summary-sidebar">
+                        <!-- Order Summary -->
+                        <div class="summary-card animate-fadeInUp" style="animation-delay: 0.2s;">
+                            <h3 class="summary-title"><i class="fas fa-receipt"></i> Order Summary</h3>
+
+                            <div class="summary-row">
+                                <span class="label"><i class="fas fa-shopping-cart"></i> Subtotal</span>
+                                <span class="value"
+                                    th:text="'$' + ${#numbers.formatDecimal(order.subtotal, 1, 2)}">$299.97</span>
+                            </div>
+
+                            <div class="summary-row discount"
+                                th:if="${order.discountAmount != null && order.discountAmount > 0}">
+                                <span class="label"><i class="fas fa-percent"></i> Discount</span>
+                                <span class="value"
+                                    th:text="'-$' + ${#numbers.formatDecimal(order.discountAmount, 1, 2)}">-$30.00</span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span class="label"><i class="fas fa-truck"></i> Shipping</span>
+                                <span class="value"
+                                    th:text="${order.shippingAmount != null && order.shippingAmount > 0} ? '$' + ${#numbers.formatDecimal(order.shippingAmount, 1, 2)} : 'Free'">Free</span>
+                            </div>
+
+                            <div class="summary-row" th:if="${order.taxAmount != null && order.taxAmount > 0}">
+                                <span class="label"><i class="fas fa-receipt"></i> Tax</span>
+                                <span class="value"
+                                    th:text="'$' + ${#numbers.formatDecimal(order.taxAmount, 1, 2)}">$0.00</span>
+                            </div>
+
+                            <div class="summary-row total">
+                                <span class="label">Total</span>
+                                <span class="value"
+                                    th:text="'$' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">$269.97</span>
+                            </div>
+
+                            <!-- Payment Info -->
+                            <div class="payment-info">
+                                <div class="payment-icon">
+                                    <i class="fas fa-credit-card" th:if="${order.paymentMethod == 'CARD'}"></i>
+                                    <i class="fab fa-paypal" th:if="${order.paymentMethod == 'PAYPAL'}"></i>
+                                    <i class="fab fa-google-pay" th:if="${order.paymentMethod == 'GOOGLE_PAY'}"></i>
+                                    <i class="fas fa-money-bill-wave" th:if="${order.paymentMethod == 'COD'}"></i>
+                                </div>
+                                <div class="payment-details">
+                                    <div class="payment-method" th:text="${order.paymentMethod}">Credit Card</div>
+                                    <div class="payment-status"
+                                        th:classappend="${order.paymentStatus.name() == 'PENDING'} ? 'pending' : ''"
+                                        th:text="${order.paymentStatus}">Paid</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="summary-card animate-fadeInUp" style="animation-delay: 0.3s;">
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-block" onclick="downloadInvoice()">
+                                    <i class="fas fa-download"></i> Download Invoice
+                                </button>
+
+                                <button class="btn btn-secondary btn-block" onclick="trackOrder()">
+                                    <i class="fas fa-map-marked-alt"></i> Track Shipment
+                                </button>
+
+                                <button class="btn btn-success btn-block" th:if="${order.status.name() == 'DELIVERED'}"
+                                    th:onclick="'reorder(' + ${order.id} + ')'">
+                                    <i class="fas fa-redo"></i> Reorder
+                                </button>
+
+                                <button class="btn btn-danger btn-block"
+                                    th:if="${order.status.name() == 'PENDING' || order.status.name() == 'PROCESSING'}"
+                                    th:onclick="'cancelOrder(' + ${order.id} + ')'">
+                                    <i class="fas fa-times"></i> Cancel Order
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Help Card -->
+                        <div class="help-card animate-fadeInUp" style="animation-delay: 0.4s;">
+                            <h4><i class="fas fa-headset"></i> Need Help?</h4>
+                            <p>Our support team is here to assist you with any questions about your order.</p>
+                            <button class="help-btn" onclick="contactSupport()">
+                                <i class="fas fa-envelope"></i> Contact Support
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+        </div>
+
+        <script th:inline="javascript">
+            const orderId = [[${ order.id }]];
+            const orderNumber = [[${ order.orderNumber }]];
+
+            function getCsrfToken() {
+                return document.querySelector('meta[name="_csrf"]')?.content ||
+                    document.querySelector('input[name="_csrf"]')?.value;
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" 
+                       style="color: ${type === 'success' ? '#10b981' : '#ef4444'}; font-size: 1.5rem;"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            function setLoading(isLoading) {
+                document.getElementById('loadingOverlay').classList.toggle('active', isLoading);
+            }
+
+            function downloadInvoice() {
+                showToast('Invoice download feature coming soon!', 'error');
+            }
+
+            function trackOrder() {
+                showToast('Order tracking feature coming soon!', 'error');
+            }
+
+            async function reorder(id) {
+                if (!confirm('Add all items from this order to your cart?')) return;
+                try {
+                    setLoading(true);
+                    const response = await fetch(`/api/orders/${id}/reorder`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': getCsrfToken()
+                        }
+                    });
+                    if (!response.ok) throw new Error('Failed to reorder');
+                    showToast('Items added to cart successfully');
+                    setTimeout(() => window.location.href = '/user/cart', 1500);
+                } catch (error) {
+                    console.error('Reorder error:', error);
+                    showToast('Failed to reorder items', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            async function cancelOrder(id) {
+                if (!confirm('Are you sure you want to cancel this order?')) return;
+                try {
+                    setLoading(true);
+                    const response = await fetch(`/api/orders/${id}/cancel`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': getCsrfToken()
+                        }
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showToast('Order cancelled successfully');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        showToast(result.message || 'Failed to cancel order', 'error');
+                    }
+                } catch (error) {
+                    console.error('Cancel order error:', error);
+                    showToast('Failed to cancel order', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            function contactSupport() {
+                window.location.href = '/contact?subject=Order ' + orderNumber;
+            }
+        </script>
+    </section>
+</body>
+
+</html>
