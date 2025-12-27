@@ -60,6 +60,7 @@
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
+                text-decoration: none;
             }
 
             .back-btn:hover {
@@ -388,10 +389,11 @@
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
             }
 
-            .empty-orders i {
+            .empty-orders .empty-icon {
                 font-size: 5rem;
                 color: #d1d5db;
                 margin-bottom: 1.5rem;
+                display: block;
             }
 
             .empty-orders h2 {
@@ -415,11 +417,21 @@
                 font-weight: 700;
                 cursor: pointer;
                 transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                text-decoration: none;
             }
 
             .shop-now-btn:hover {
                 transform: translateY(-3px);
                 box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
+                color: white;
+            }
+
+            .shop-now-btn i {
+                font-size: 1rem;
             }
 
             .loading-overlay {
@@ -531,6 +543,57 @@
                 cursor: not-allowed;
             }
 
+            .no-filter-results {
+                text-align: center;
+                padding: 3rem 2rem;
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            }
+
+            .no-filter-results .filter-icon {
+                font-size: 4rem;
+                color: #d1d5db;
+                margin-bottom: 1rem;
+                display: block;
+            }
+
+            .no-filter-results h3 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 0.5rem;
+            }
+
+            .no-filter-results p {
+                color: #6b7280;
+                margin-bottom: 1.5rem;
+            }
+
+            .clear-filters-btn {
+                padding: 0.75rem 1.5rem;
+                border: 2px solid #0ea5e9;
+                border-radius: 10px;
+                background: white;
+                color: #0ea5e9;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .clear-filters-btn:hover {
+                background: #0ea5e9;
+                color: white;
+            }
+
+            .clear-filters-btn i {
+                font-size: 0.9rem;
+            }
+
             @media (max-width: 768px) {
                 .orders-header h1 {
                     font-size: 1.5rem;
@@ -601,9 +664,9 @@
                             <h1>My Orders</h1>
                             <span class="orders-count" id="ordersCount">0 Orders</span>
                         </div>
-                        <button class="back-btn" onclick="location.href='/user/dashboard'">
+                        <a href="/user/dashboard" class="back-btn">
                             <i class="fas fa-arrow-left"></i> Back to Dashboard
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -702,8 +765,11 @@
                     if (!response.ok) throw new Error('Failed to fetch orders');
 
                     const result = await response.json();
+                    console.log("Orders api result: ", result);
+
                     ordersData = result.data || [];
                     filteredOrders = [...ordersData];
+                    console.log("Orders data: ", ordersData);
 
                     applyFilters();
                 } catch (error) {
@@ -715,20 +781,35 @@
                 }
             }
 
+            // Check if any filters are active
+            function hasActiveFilters() {
+                const statusFilter = document.getElementById('statusFilter').value;
+                const searchQuery = document.getElementById('searchInput').value.trim();
+                return statusFilter !== '' || searchQuery !== '';
+            }
+
+            // Clear all filters
+            function clearFilters() {
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('sortFilter').value = 'date-desc';
+                document.getElementById('searchInput').value = '';
+                applyFilters();
+            }
+
             // Apply filters and sorting
             function applyFilters() {
                 const statusFilter = document.getElementById('statusFilter').value;
                 const sortFilter = document.getElementById('sortFilter').value;
-                const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+                const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
 
-                // Filter orders
+                // Filter orders - FIXED: Use orderItems instead of items
                 filteredOrders = ordersData.filter(order => {
                     const matchesStatus = !statusFilter || order.status === statusFilter;
                     const matchesSearch = !searchQuery ||
-                        order.orderNumber.toLowerCase().includes(searchQuery) ||
-                        order.items?.some(item =>
-                            item.productName?.toLowerCase().includes(searchQuery)
-                        );
+                        (order.orderNumber && order.orderNumber.toLowerCase().includes(searchQuery)) ||
+                        (order.orderItems && order.orderItems.some(item =>
+                            item.productName && item.productName.toLowerCase().includes(searchQuery)
+                        ));
                     return matchesStatus && matchesSearch;
                 });
 
@@ -740,9 +821,9 @@
                         case 'date-asc':
                             return new Date(a.orderDate) - new Date(b.orderDate);
                         case 'amount-desc':
-                            return b.totalAmount - a.totalAmount;
+                            return (b.totalAmount || 0) - (a.totalAmount || 0);
                         case 'amount-asc':
-                            return a.totalAmount - b.totalAmount;
+                            return (a.totalAmount || 0) - (b.totalAmount || 0);
                         default:
                             return 0;
                     }
@@ -766,6 +847,7 @@
 
             // Format date
             function formatDate(dateString) {
+                if (!dateString) return 'N/A';
                 const date = new Date(dateString);
                 return date.toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -779,9 +861,17 @@
                 const container = document.getElementById('ordersContent');
                 const ordersCount = document.getElementById('ordersCount');
 
-                if (!filteredOrders || filteredOrders.length === 0) {
-                    renderEmptyOrders();
+                // Check if no orders at all
+                if (!ordersData || ordersData.length === 0) {
                     ordersCount.textContent = '0 Orders';
+                    renderEmptyOrders();
+                    return;
+                }
+
+                // Check if no orders match filters
+                if (!filteredOrders || filteredOrders.length === 0) {
+                    ordersCount.textContent = '0 Orders';
+                    renderNoFilterResults();
                     return;
                 }
 
@@ -801,7 +891,7 @@
                                     <div class="order-info">
                                         <div class="info-item">
                                             <span class="info-label">Order ID</span>
-                                            <span class="info-value order-id">#${order.orderNumber}</span>
+                                            <span class="info-value order-id">#${order.orderNumber || order.id}</span>
                                         </div>
                                         <div class="info-item">
                                             <span class="info-label">Date</span>
@@ -809,55 +899,59 @@
                                         </div>
                                         <div class="info-item">
                                             <span class="info-label">Items</span>
-                                            <span class="info-value">${order.items?.length || 0} Item(s)</span>
+                                            <span class="info-value">${order.orderItems?.length || 0} Item(s)</span>
                                         </div>
                                     </div>
                                     <span class="order-status ${getStatusClass(order.status)}">
-                                        ${order.status}
+                                        ${order.status || 'PENDING'}
                                     </span>
                                 </div>
 
                                 <div class="order-body">
                                     <div class="order-items">
-                                        ${order.items?.map(item => `
-                                            <div class="order-item">
-                                                <div class="item-image">
-                                                    <img src="${item.productImage || '/images/placeholder.png'}" 
-                                                         alt="${item.productName}">
-                                                </div>
-                                                <div class="item-details">
-                                                    <div class="item-name">${item.productName}</div>
-                                                    <div class="item-meta">
-                                                        <span><i class="fas fa-box"></i> Qty: ${item.quantity}</span>
-                                                        <span><i class="fas fa-tag"></i> $${item.price?.toFixed(2)}</span>
+                                        ${order.orderItems && order.orderItems.length > 0 ?
+                        order.orderItems.map(item => `
+                                                <div class="order-item">
+                                                    <div class="item-image">
+                                                        <img src="${item.productImage || '/images/placeholder.png'}" 
+                                                             alt="${item.productName || 'Product'}"
+                                                             onerror="this.src='/images/placeholder.png'">
                                                     </div>
+                                                    <div class="item-details">
+                                                        <div class="item-name">${item.productName || 'Product'}</div>
+                                                        <div class="item-meta">
+                                                            <span><i class="fas fa-box"></i> Qty: ${item.quantity || 1}</span>
+                                                            <span><i class="fas fa-tag"></i> $${(item.unitPrice || 0).toFixed(2)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item-price">$${((item.unitPrice || 0) * (item.quantity || 1)).toFixed(2)}</div>
                                                 </div>
-                                                <div class="item-price">$${(item.price * item.quantity)?.toFixed(2)}</div>
-                                            </div>
-                                        `).join('') || '<p>No items available</p>'}
+                                            `).join('')
+                        : '<p class="text-muted">No items available</p>'
+                    }
                                     </div>
                                 </div>
 
                                 <div class="order-footer">
                                     <div class="order-total">
                                         <span class="total-label">Total Amount</span>
-                                        <span class="total-amount">$${order.totalAmount?.toFixed(2)}</span>
+                                        <span class="total-amount">$${(order.totalAmount || 0).toFixed(2)}</span>
                                     </div>
                                     <div class="order-actions">
-                                        <button class="action-btn btn-primary" onclick="viewOrderDetails('${order.orderNumber}')">
+                                        <button class="action-btn btn-primary" onclick="viewOrderDetails(${order.id})">
                                             <i class="fas fa-eye"></i> View Details
                                         </button>
                                         ${order.status === 'DELIVERED' ? `
-                                            <button class="action-btn btn-secondary" onclick="reorder('${order.id}')">
+                                            <button class="action-btn btn-secondary" onclick="reorder(${order.id})">
                                                 <i class="fas fa-redo"></i> Reorder
                                             </button>
                                         ` : ''}
                                         ${order.status === 'PENDING' || order.status === 'PROCESSING' ? `
-                                            <button class="action-btn btn-danger" onclick="cancelOrder('${order.id}')">
+                                            <button class="action-btn btn-danger" onclick="cancelOrder(${order.id})">
                                                 <i class="fas fa-times"></i> Cancel
                                             </button>
                                         ` : ''}
-                                        <button class="action-btn btn-secondary" onclick="downloadInvoice('${order.id}')">
+                                        <button class="action-btn btn-secondary" onclick="downloadInvoice(${order.id})">
                                             <i class="fas fa-download"></i> Invoice
                                         </button>
                                     </div>
@@ -885,16 +979,31 @@
                 `;
             }
 
-            // Render empty orders
+            // Render empty orders (no orders at all)
             function renderEmptyOrders() {
                 const container = document.getElementById('ordersContent');
                 container.innerHTML = `
                     <div class="empty-orders">
-                        <i class="fas fa-shopping-bag"></i>
+                        <i class="fas fa-shopping-bag empty-icon"></i>
                         <h2>No orders yet</h2>
                         <p>Start shopping and your orders will appear here</p>
-                        <button class="shop-now-btn" onclick="location.href='/'">
+                        <a href="/" class="shop-now-btn">
                             <i class="fas fa-shopping-cart"></i> Start Shopping
+                        </a>
+                    </div>
+                `;
+            }
+
+            // Render no filter results (orders exist but none match filter)
+            function renderNoFilterResults() {
+                const container = document.getElementById('ordersContent');
+                container.innerHTML = `
+                    <div class="no-filter-results">
+                        <i class="fas fa-filter filter-icon"></i>
+                        <h3>No orders match your filters</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                        <button class="clear-filters-btn" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear Filters
                         </button>
                     </div>
                 `;
@@ -908,8 +1017,8 @@
             }
 
             // View order details
-            function viewOrderDetails(orderNumber) {
-                window.location.href = `/user/orders/${orderNumber}`;
+            function viewOrderDetails(orderId) {
+                window.location.href = `/user/orders/${orderId}`;
             }
 
             // Reorder
@@ -940,12 +1049,44 @@
 
             // Cancel order
             async function cancelOrder(orderId) {
-                if (!confirm('Are you sure you want to cancel ')) {
+                if (!confirm('Are you sure you want to cancel this order?')) return;
 
+                try {
+                    setLoading(true);
+                    const response = await fetch(`/api/orders/${orderId}/cancel`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': getCsrfToken()
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        showToast('Order cancelled successfully');
+                        await fetchOrders(); // Refresh orders list
+                    } else {
+                        showToast(result.message || 'Failed to cancel order', 'error');
+                    }
+                } catch (error) {
+                    console.error('Cancel order error:', error);
+                    showToast('Failed to cancel order', 'error');
+                } finally {
+                    setLoading(false);
                 }
-
             }
 
+            // Download invoice
+            function downloadInvoice(orderId) {
+                showToast('Invoice download feature coming soon!', 'error');
+                // TODO: Implement invoice download
+                // window.location.href = `/api/orders/${orderId}/invoice`;
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                fetchOrders();
+            });
         </script>
     </div>
 </div>
