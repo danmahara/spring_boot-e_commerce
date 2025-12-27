@@ -695,7 +695,7 @@
                     <div class="search-box">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" class="search-input" id="searchInput"
-                            placeholder="Search by Order ID or Product Name..." oninput="applyFilters()">
+                            placeholder="Search by Order ID or Product Name..." oninput="debounceSearch()">
                     </div>
                 </div>
 
@@ -716,6 +716,17 @@
             let filteredOrders = [];
             let currentPage = 1;
             const ordersPerPage = 5;
+            let searchTimeout = null; // For debouncing search
+
+            // Debounce search function - waits 300ms after user stops typing
+            function debounceSearch() {
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+                searchTimeout = setTimeout(() => {
+                    applyFilters();
+                }, 500);
+            }
 
             // Get CSRF token
             function getCsrfToken() {
