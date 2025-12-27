@@ -16,6 +16,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +25,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class UserAddress {
+@Builder
+public class UserAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +38,7 @@ class UserAddress {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "address_type", nullable = false, length = 20)
+    @Builder.Default
     private AddressType addressType = AddressType.SHIPPING;
 
     @Column(name = "address_line1", nullable = false)
@@ -54,15 +57,18 @@ class UserAddress {
     private String postalCode;
 
     @Column(name = "country", nullable = false, length = 100)
+    @Builder.Default
     private String country = "USA";
 
     @Column(name = "phone", length = 20)
     private String phone;
 
     @Column(name = "is_default")
+    @Builder.Default
     private Boolean isDefault = false;
 
     @Column(name = "is_active")
+    @Builder.Default
     private Boolean isActive = true;
 
     @Column(name = "created_date", nullable = false)
