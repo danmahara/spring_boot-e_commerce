@@ -235,11 +235,77 @@
                 color: #111827;
                 margin-bottom: 0.5rem;
                 font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .address-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+                background: #10b981;
+                color: white;
+                border-radius: 4px;
+                font-weight: 600;
+            }
+
+            .address-badge.shipping {
+                background: #0ea5e9;
+            }
+
+            .address-badge.billing {
+                background: #8b5cf6;
             }
 
             .address-details {
                 color: #6b7280;
                 line-height: 1.6;
+            }
+
+            .address-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.75rem;
+            }
+
+            .address-action-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+                border: 1px solid #e5e7eb;
+                background: white;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .address-action-btn:hover {
+                background: #f3f4f6;
+            }
+
+            .address-action-btn.delete:hover {
+                background: #fef2f2;
+                border-color: #ef4444;
+                color: #ef4444;
+            }
+
+            .add-address-card {
+                padding: 1.25rem;
+                border: 2px dashed #e5e7eb;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                color: #6b7280;
+                font-weight: 600;
+            }
+
+            .add-address-card:hover {
+                border-color: #0ea5e9;
+                color: #0ea5e9;
+                background: rgba(14, 165, 233, 0.05);
             }
 
             .payment-methods {
@@ -383,7 +449,6 @@
             }
 
             .discount-row {
-                /* color: #10b981; */
                 color: #b91010;
             }
 
@@ -408,6 +473,13 @@
             .place-order-btn:hover {
                 transform: translateY(-3px);
                 box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
+            }
+
+            .place-order-btn:disabled {
+                background: #9ca3af;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
             }
 
             .secure-badge {
@@ -459,6 +531,139 @@
                 transform: scale(1.05);
             }
 
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .modal-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .modal-content {
+                background: white;
+                padding: 2rem;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 90vh;
+                overflow-y: auto;
+                transform: translateY(-20px);
+                transition: all 0.3s ease;
+            }
+
+            .modal-overlay.active .modal-content {
+                transform: translateY(0);
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #111827;
+            }
+
+            .modal-close {
+                width: 40px;
+                height: 40px;
+                border: none;
+                background: #f3f4f6;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+                transition: all 0.2s ease;
+            }
+
+            .modal-close:hover {
+                background: #e5e7eb;
+            }
+
+            .modal-footer {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1.5rem;
+                justify-content: flex-end;
+            }
+
+            .btn-secondary {
+                padding: 0.875rem 1.5rem;
+                border: 2px solid #e5e7eb;
+                background: white;
+                border-radius: 10px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .btn-secondary:hover {
+                background: #f3f4f6;
+            }
+
+            .btn-primary {
+                padding: 0.875rem 1.5rem;
+                border: none;
+                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+                color: white;
+                border-radius: 10px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+            }
+
+            .loading-spinner {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 2px solid #ffffff;
+                border-radius: 50%;
+                border-top-color: transparent;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .no-addresses {
+                text-align: center;
+                padding: 2rem;
+                color: #6b7280;
+            }
+
+            .no-addresses i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                color: #d1d5db;
+            }
+
             @media (max-width: 1024px) {
                 .checkout-content {
                     grid-template-columns: 1fr;
@@ -489,10 +694,8 @@
                 }
             }
         </style>
-
         <section class="checkout-container">
             <div class="container">
-                <!-- Checkout Header -->
                 <div class="checkout-header">
                     <div class="header-content">
                         <div class="header-title">
@@ -502,8 +705,6 @@
                             <i class="fas fa-arrow-left"></i> Back to Cart
                         </a>
                     </div>
-
-                    <!-- Progress Steps -->
                     <div class="progress-steps">
                         <div class="step completed">
                             <div class="step-circle"><i class="fas fa-check"></i></div>
@@ -526,110 +727,26 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Checkout Content -->
                 <div class="checkout-content">
-                    <!-- Checkout Form -->
                     <div class="checkout-form">
-                        <!-- Shipping Address -->
                         <div class="form-section">
                             <h2 class="section-title">
                                 <i class="fas fa-shipping-fast"></i>
                                 Shipping Address
                             </h2>
-
-                            <div class="saved-addresses">
-                                <div class="address-card selected">
-                                    <div class="address-name">Home Address</div>
-                                    <div class="address-details">
-                                        <span th:text="${user.fullName}"></span>
-                                        <span th:text="${user.address}"></span>
-                                        <span th:text="${user.phone}"></span>
-                                    </div>
-                                </div>
-
-                                <div class="address-card">
-                                    <div class="address-name">Office Address</div>
-                                    <div class="address-details">
-                                        John Doe<br>
-                                        456 Business Ave, Suite 200<br>
-                                        New York, NY 10002<br>
-                                        Phone: +1 (555) 987-6543
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Name <span class="required">*</span></label>
-                                    <input type="text" th:value="${user.fullName}" class="form-input" readonly
-                                        placeholder="Enter first name">
-                                </div>
-
-
-                                <div class="form-group ">
-                                    <label class="form-label">Email Address <span class="required">*</span></label>
-                                    <input type="email" th:value="${user.email}" class="form-input"
-                                        value="john.doe@example.com" placeholder="Enter email">
-                                </div>
-
-                                <div class="form-group ">
-                                    <label class="form-label">Phone Number <span class="required">*</span></label>
-                                    <input type="tel" th:value="${user.phone}" class="form-input"
-                                        value="+1 (555) 123-4567" placeholder="Enter phone">
-                                </div>
-
-                                <div class="form-group ">
-                                    <label class="form-label">Street Address <span class="required">*</span></label>
-                                    <input type="text" class="form-input" th:value="${user.address}"
-                                        placeholder="Enter street address">
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">City <span class="required">*</span></label>
-                                    <input type="text" class="form-input" value="New York" placeholder="Enter city">
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">State <span class="required">*</span></label>
-                                    <select class="form-select">
-                                        <option value="NY">New York</option>
-                                        <option value="CA">California</option>
-                                        <option value="TX">Texas</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">ZIP Code <span class="required">*</span></label>
-                                    <input type="text" class="form-input" value="10001" placeholder="Enter ZIP">
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">Country <span class="required">*</span></label>
-                                    <select class="form-select">
-                                        <option value="US">United States</option>
-                                        <option value="CA">Canada</option>
-                                        <option value="UK">United Kingdom</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label class="form-label">Delivery Notes (Optional)</label>
-                                    <textarea class="form-textarea"
-                                        placeholder="Add any special delivery instructions..."></textarea>
-                                </div>
+                            <div class="saved-addresses" id="savedAddressesContainer"></div>
+                            <div class="add-address-card" onclick="openAddressModal()">
+                                <i class="fas fa-plus"></i>
+                                <span>Add New Address</span>
                             </div>
                         </div>
-
-                        <!-- Payment Method -->
                         <div class="form-section">
                             <h2 class="section-title">
                                 <i class="fas fa-credit-card"></i>
                                 Payment Method
                             </h2>
-
                             <div class="payment-methods">
-                                <div class="payment-option selected">
+                                <div class="payment-option selected" data-method="CARD">
                                     <div class="payment-icon"
                                         style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6);">
                                         <i class="fas fa-credit-card" style="color: white;"></i>
@@ -639,8 +756,7 @@
                                         <div class="payment-description">Pay securely with your card</div>
                                     </div>
                                 </div>
-
-                                <div class="payment-option">
+                                <div class="payment-option" data-method="PAYPAL">
                                     <div class="payment-icon">
                                         <i class="fab fa-paypal" style="color: #0070ba;"></i>
                                     </div>
@@ -649,8 +765,7 @@
                                         <div class="payment-description">Fast and secure payment</div>
                                     </div>
                                 </div>
-
-                                <div class="payment-option">
+                                <div class="payment-option" data-method="GOOGLE_PAY">
                                     <div class="payment-icon">
                                         <i class="fab fa-google-pay" style="color: #4285f4;"></i>
                                     </div>
@@ -659,8 +774,7 @@
                                         <div class="payment-description">Quick checkout with Google</div>
                                     </div>
                                 </div>
-
-                                <div class="payment-option">
+                                <div class="payment-option" data-method="COD">
                                     <div class="payment-icon">
                                         <i class="fas fa-money-bill-wave" style="color: #10b981;"></i>
                                     </div>
@@ -672,65 +786,48 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Order Summary -->
                     <div class="order-summary">
                         <div class="summary-card">
                             <h2 class="summary-title">
                                 <i class="fas fa-shopping-bag"></i>
                                 Order Summary
                             </h2>
-
-                            <!-- Order Items -->
-                            <div class="order-items" id="orderItemsContainer">
-
-                                <!-- order items will populate here -->
-                            </div>
-
-                            <!-- Promo Code -->
+                            <div class="order-items" id="orderItemsContainer"></div>
                             <div class="promo-section">
                                 <label class="form-label" style="margin-bottom: 0.5rem;">Promo Code</label>
                                 <div class="promo-input-group">
-                                    <input type="text" class="promo-input" placeholder="Enter promo code">
-                                    <button class="apply-btn">Apply</button>
+                                    <input type="text" class="promo-input" placeholder="Enter promo code"
+                                        id="promoCodeInput">
+                                    <button class="apply-btn" onclick="applyPromoCode()">Apply</button>
                                 </div>
                             </div>
-
-                            <!-- Summary Rows -->
                             <div style="margin-top: 1.5rem;">
                                 <div class="summary-row">
-                                    <span id="subtotalCount">Subtotal (3 items)</span>
-                                    <span id="subtotalCountValue">$839.96</span>
+                                    <span id="subtotalCount">Subtotal (0 items)</span>
+                                    <span id="subtotalCountValue">$0.00</span>
                                 </div>
-
                                 <div class="summary-row discount-row">
                                     <span>Discount</span>
-                                    <span id="totalDiscountedAmount">-$50.00</span>
+                                    <span id="totalDiscountedAmount">-$0.00</span>
                                 </div>
-
                                 <div class="summary-row">
                                     <span>Shipping</span>
                                     <span>$0</span>
                                 </div>
-
                                 <div class="summary-row">
                                     <span>Tax (8%)</span>
                                     <span>$0</span>
                                 </div>
-
                                 <div class="summary-row total">
                                     <span>Total</span>
-                                    <span id="totalValue">$10</span>
+                                    <span id="totalValue">$0.00</span>
                                 </div>
                             </div>
-
-                            <!-- Place Order Button -->
-                            <button class="place-order-btn">
+                            <!-- FIXED: Added id="placeOrderBtn" -->
+                            <button class="place-order-btn" id="placeOrderBtn" onclick="placeOrder()">
                                 <i class="fas fa-check-circle"></i>
                                 Place Order
                             </button>
-
-                            <!-- Secure Badge -->
                             <div class="secure-badge">
                                 <i class="fas fa-shield-alt"></i>
                                 Secure SSL Encrypted Payment
@@ -740,146 +837,405 @@
                 </div>
             </div>
         </section>
-
-
+        <div class="modal-overlay" id="addressModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="addressModalTitle">Add New Address</h3>
+                    <button class="modal-close" onclick="closeAddressModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="addressForm">
+                    <input type="hidden" id="addressId">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Address Type</label>
+                            <select class="form-select" id="addressType">
+                                <option value="SHIPPING">Shipping</option>
+                                <option value="BILLING">Billing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-input" id="phone" placeholder="Enter phone">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Address Line 1 <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="addressLine1" required
+                                placeholder="Street address">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Address Line 2</label>
+                            <input type="text" class="form-input" id="addressLine2"
+                                placeholder="Apartment, suite, etc. (optional)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="city" required placeholder="Enter city">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="state" required placeholder="Enter state">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Postal Code <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="postalCode" required
+                                placeholder="Enter postal code">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-select" id="country">
+                                <option value="USA">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="Nepal">Nepal</option>
+                                <option value="India">India</option>
+                                <option value="Australia">Australia</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width" style="flex-direction: row; align-items: center; gap: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="isDefault">
+                                <span>Set as default address</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeAddressModal()">Cancel</button>
+                    <button class="btn-primary" id="saveAddressBtn" onclick="saveAddress()">
+                        <span id="saveAddressBtnText">Save Address</span>
+                    </button>
+                </div>
+            </div>
+        </div>
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var selectedItem = document.querySelector(".payment-option.selected")
-                const paymentOption = document.querySelectorAll(".payment-option").forEach(item => {
-                    item.addEventListener("click", function () {
-                        if (selectedItem) {
+            let cartData = null;
+            let addressesData = [];
+            let selectedAddressId = null;
+            let selectedPaymentMethod = 'CARD';
+            let editingAddressId = null;
 
-                            selectedItem.classList.remove("selected")
-                        }
-                        selectedItem = item
-                        selectedItem.classList.add("selected")
-
-                    })
-                })
-
-            })
-        </script>
-
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-
-                var selectedAddress = document.querySelector(".address-card.selected")
-
-                document.querySelectorAll(".address-card").forEach(address => {
-                    address.addEventListener("click", function () {
-                        if (selectedAddress) {
-                            selectedAddress.classList.remove("selected")
-                        }
-                        selectedAddress = address
-                        selectedAddress.classList.add("selected")
-
-                    })
-                })
-
-            })
-        </script>
-
-        <script>
-            // Show toast notification
-            function showToast(message, type = 'success') {
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" 
-                       style="color: ${type === 'success' ? '#10b981' : '#ef4444'}; font-size: 1.5rem;"></i>
-                    <span>${message}</span>
-                `;
-                document.body.appendChild(toast);
-
-                setTimeout(() => toast.classList.add('show'), 100);
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            }
-
-            let cartData = null
             function getCsrfToken() {
                 return document.querySelector('meta[name="_csrf"]')?.content ||
                     document.querySelector('input[name="_csrf"]')?.value;
             }
-            async function fetchCartItems() {
 
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.style.cssText = `position: fixed; top: 20px; right: 20px; padding: 1rem 1.5rem;
+                    background: ${type === 'success' ? '#10b981' : '#ef4444'}; color: white; border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 2000; display: flex; align-items: center;
+                    gap: 0.5rem; transform: translateX(100%); transition: transform 0.3s ease;`;
+                toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.style.transform = 'translateX(0)', 100);
+                setTimeout(() => { toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
+            }
+
+            async function fetchAddresses() {
                 try {
-
-                    const response = await fetch("/api/cart", {
+                    const response = await fetch('/api/addresses', {
                         method: 'GET',
-                        headers: {
-                            'Content-Type': "application/json",
-                            'X-CSRF-TOKEN': getCsrfToken()
-                        }
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() }
                     });
-
                     if (response.ok) {
-
-                        const result = await response.json()
-                        cartData = result.data;
-                        console.log(cartData);
-
-                        renderCart()
-                    } else {
-                        showToast("error")
+                        const result = await response.json();
+                        addressesData = result.data || [];
+                        renderAddresses();
                     }
-
                 } catch (error) {
-
+                    console.error('Error fetching addresses:', error);
+                    showToast('Failed to load addresses', 'error');
                 }
+            }
+
+            function renderAddresses() {
+                const container = document.getElementById('savedAddressesContainer');
+                container.innerHTML = '';
+                if (addressesData.length === 0) {
+                    container.innerHTML = `<div class="no-addresses"><i class="fas fa-map-marker-alt"></i><p>No saved addresses yet. Add a new address to continue.</p></div>`;
+                    selectedAddressId = null;
+                    updatePlaceOrderButton();
+                    return;
+                }
+                addressesData.forEach(address => {
+                    const isSelected = selectedAddressId === address.id || (selectedAddressId === null && address.isDefault);
+                    if (isSelected && selectedAddressId === null) selectedAddressId = address.id;
+                    const typeBadgeClass = address.addressType === 'SHIPPING' ? 'shipping' : 'billing';
+                    const card = document.createElement('div');
+                    card.className = `address-card ${isSelected ? 'selected' : ''}`;
+                    card.dataset.addressId = address.id;
+                    card.innerHTML = `
+                        <div class="address-name">
+                            <span class="address-badge ${typeBadgeClass}">${address.addressType}</span>
+                            ${address.isDefault ? '<span class="address-badge">Default</span>' : ''}
+                        </div>
+                        <div class="address-details">
+                            ${address.addressLine1}${address.addressLine2 ? ', ' + address.addressLine2 : ''}<br>
+                            ${address.city}, ${address.state} ${address.postalCode}<br>
+                            ${address.country}<br>
+                            ${address.phone ? 'Phone: ' + address.phone : ''}
+                        </div>
+                        <div class="address-actions">
+                            <button class="address-action-btn" onclick="event.stopPropagation(); editAddress(${address.id})"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="address-action-btn delete" onclick="event.stopPropagation(); deleteAddress(${address.id})"><i class="fas fa-trash"></i> Delete</button>
+                            ${!address.isDefault ? `<button class="address-action-btn" onclick="event.stopPropagation(); setDefaultAddress(${address.id})"><i class="fas fa-star"></i> Set Default</button>` : ''}
+                        </div>`;
+                    card.addEventListener('click', () => selectAddress(address.id));
+                    container.appendChild(card);
+                });
+                updatePlaceOrderButton();
+            }
+
+            function selectAddress(addressId) {
+                selectedAddressId = addressId;
+                document.querySelectorAll('.address-card').forEach(card => {
+                    card.classList.toggle('selected', parseInt(card.dataset.addressId) === addressId);
+                });
+                updatePlaceOrderButton();
+            }
+
+            function openAddressModal(addressId = null) {
+                editingAddressId = addressId;
+                const modal = document.getElementById('addressModal');
+                const title = document.getElementById('addressModalTitle');
+                const form = document.getElementById('addressForm');
+                form.reset();
+                document.getElementById('addressId').value = '';
+                if (addressId) {
+                    title.textContent = 'Edit Address';
+                    const address = addressesData.find(a => a.id === addressId);
+                    if (address) {
+                        document.getElementById('addressId').value = address.id;
+                        document.getElementById('addressType').value = address.addressType || 'SHIPPING';
+                        document.getElementById('phone').value = address.phone || '';
+                        document.getElementById('addressLine1').value = address.addressLine1 || '';
+                        document.getElementById('addressLine2').value = address.addressLine2 || '';
+                        document.getElementById('city').value = address.city || '';
+                        document.getElementById('state').value = address.state || '';
+                        document.getElementById('postalCode').value = address.postalCode || '';
+                        document.getElementById('country').value = address.country || 'USA';
+                        document.getElementById('isDefault').checked = address.isDefault || false;
+                    }
+                } else {
+                    title.textContent = 'Add New Address';
+                }
+                modal.classList.add('active');
+            }
+
+            function closeAddressModal() {
+                document.getElementById('addressModal').classList.remove('active');
+                editingAddressId = null;
+            }
+
+            function editAddress(addressId) { openAddressModal(addressId); }
+
+            async function saveAddress() {
+                const form = document.getElementById('addressForm');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+                const btn = document.getElementById('saveAddressBtn');
+                const btnText = document.getElementById('saveAddressBtnText');
+                btn.disabled = true;
+                btnText.innerHTML = '<span class="loading-spinner"></span>';
+                const addressData = {
+                    addressType: document.getElementById('addressType').value,
+                    phone: document.getElementById('phone').value,
+                    addressLine1: document.getElementById('addressLine1').value,
+                    addressLine2: document.getElementById('addressLine2').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    postalCode: document.getElementById('postalCode').value,
+                    country: document.getElementById('country').value,
+                    isDefault: document.getElementById('isDefault').checked
+                };
+                try {
+                    const addressId = document.getElementById('addressId').value;
+                    const url = addressId ? `/api/addresses/${addressId}` : '/api/addresses';
+                    const method = addressId ? 'PUT' : 'POST';
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() },
+                        body: JSON.stringify(addressData)
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showToast(addressId ? 'Address updated successfully' : 'Address added successfully');
+                        closeAddressModal();
+                        await fetchAddresses();
+                        if (result.data && result.data.id) selectAddress(result.data.id);
+                    } else {
+                        showToast(result.message || 'Failed to save address', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error saving address:', error);
+                    showToast('Failed to save address', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btnText.textContent = 'Save Address';
+                }
+            }
+
+            async function deleteAddress(addressId) {
+                if (!confirm('Are you sure you want to delete this address?')) return;
+                try {
+                    const response = await fetch(`/api/addresses/${addressId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() }
+                    });
+                    if (response.ok) {
+                        showToast('Address deleted successfully');
+                        if (selectedAddressId === addressId) selectedAddressId = null;
+                        await fetchAddresses();
+                    } else {
+                        showToast('Failed to delete address', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting address:', error);
+                    showToast('Failed to delete address', 'error');
+                }
+            }
+
+            async function setDefaultAddress(addressId) {
+                try {
+                    const response = await fetch(`/api/addresses/${addressId}/set-default`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() }
+                    });
+                    if (response.ok) {
+                        showToast('Default address updated');
+                        await fetchAddresses();
+                    } else {
+                        showToast('Failed to update default address', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error setting default address:', error);
+                    showToast('Failed to update default address', 'error');
+                }
+            }
+
+            function updatePlaceOrderButton() {
+                const btn = document.getElementById('placeOrderBtn');
+                if (!btn) return;
+                const hasAddress = selectedAddressId !== null;
+                const hasItems = cartData && cartData.items && cartData.items.length > 0;
+                btn.disabled = !hasAddress || !hasItems;
             }
 
             document.addEventListener("DOMContentLoaded", function () {
-                fetchCartItems()
-            })
+                var selectedPaymentOption = document.querySelector(".payment-option.selected");
+                document.querySelectorAll(".payment-option").forEach(item => {
+                    item.addEventListener("click", function () {
+                        if (selectedPaymentOption) selectedPaymentOption.classList.remove("selected");
+                        selectedPaymentOption = item;
+                        selectedPaymentOption.classList.add("selected");
+                        selectedPaymentMethod = item.dataset.method;
+                    });
+                });
+            });
 
-            function renderCart() {
-
-                const subtotalCount = document.getElementById("subtotalCount")
-                subtotalCount.innerHTML = `Subtotal (${cartData.totalQuantity > 0 ? cartData.totalQuantity + " items" : cartData.totalQuantity + " item"})`
-
-                const subtotalCountValue = document.getElementById("subtotalCountValue")
-                const totalSubtotal = cartData.items.reduce((total, item) => total + (item.price * item.quantity), 0)
-                document.getElementById("subtotalCountValue").innerHTML = totalSubtotal
-
-                // discount calculation
-                const totalDiscountedAmount = cartData.items.reduce((total, item) => total + (item.price == item.discountedPrice ? 0 : ((item.price * item.quantity) - item.discountedPrice * item.quantity)), 0)
-                console.log("Total discounted amount: ", totalDiscountedAmount);
-                document.getElementById("totalDiscountedAmount").innerHTML = `${totalDiscountedAmount > 0 ? '-$' + totalDiscountedAmount : '-$0.00'}`
-
-
-                document.getElementById("totalValue").innerHTML = `$${cartData?.totalAmount.toFixed(2)}`
-
-                const container = document.getElementById("orderItemsContainer")
-                container.innerHTML = ""
-                if (!cartData || cartData.items.length != 0) {
-
-
-                    cartData.items.forEach(item => {
-
-                        const row = `
-                      <div class="order-item">
-                                    <div class="item-image">
-                                        <img src="${item.productImage}"
-                                            alt="Product">
-                                    </div>
-                                    <div class="item-info">
-                                        <div class="item-name">Wireless Headphones Pro</div>
-                                        <div class="item-details">Qty: ${item.quantity} × $${item.price == item.discountedPrice ? item.price : item.discountedPrice}</div>
-                                        <div class="item-price">$${item.price == item.discountedPrice ? item.price : item.lineTotal}</div>
-                                    </div>
-                                </div>
-                    `;
-                        container.insertAdjacentHTML("beforeend", row)
-                    })
-
-                    console.log("TotalQuantity: " + totalQuantity);
-
+            async function fetchCartItems() {
+                try {
+                    const response = await fetch("/api/cart", {
+                        method: 'GET',
+                        headers: { 'Content-Type': "application/json", 'X-CSRF-TOKEN': getCsrfToken() }
+                    });
+                    if (response.ok) {
+                        const result = await response.json();
+                        cartData = result.data;
+                        renderCart();
+                        updatePlaceOrderButton();
+                    } else {
+                        showToast("Failed to load cart", "error");
+                    }
+                } catch (error) {
+                    console.error('Error fetching cart:', error);
                 }
             }
+
+            function renderCart() {
+                if (!cartData) return;
+
+                // FIXED: Calculate totalQuantity properly
+                const items = cartData.items || [];
+                const totalQuantity = cartData.totalQuantity || items.reduce((sum, item) => sum + item.quantity, 0);
+
+                document.getElementById("subtotalCount").innerHTML = `Subtotal (${totalQuantity} ${totalQuantity === 1 ? 'item' : 'items'})`;
+
+                const totalSubtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+                document.getElementById("subtotalCountValue").innerHTML = `$${totalSubtotal.toFixed(2)}`;
+
+                const totalDiscountedAmount = items.reduce((total, item) => {
+                    const discountedPrice = item.discountedPrice || item.price;
+                    return total + (item.price === discountedPrice ? 0 : ((item.price * item.quantity) - (discountedPrice * item.quantity)));
+                }, 0);
+                document.getElementById("totalDiscountedAmount").innerHTML = `${totalDiscountedAmount > 0 ? '-$' + totalDiscountedAmount.toFixed(2) : '-$0.00'}`;
+
+                document.getElementById("totalValue").innerHTML = `$${cartData.totalAmount?.toFixed(2) || '0.00'}`;
+
+                const container = document.getElementById("orderItemsContainer");
+                container.innerHTML = "";
+
+                if (items.length > 0) {
+                    items.forEach(item => {
+                        const discountedPrice = item.discountedPrice || item.price;
+                        const displayPrice = item.price === discountedPrice ? item.price : discountedPrice;
+                        const lineTotal = item.lineTotal || (displayPrice * item.quantity);
+                        const row = `
+                            <div class="order-item">
+                                <div class="item-image"><img src="${item.productImage || ''}" alt="Product"></div>
+                                <div class="item-info">
+                                    <div class="item-name">${item.productName || 'Product'}</div>
+                                    <div class="item-details">Qty: ${item.quantity} × $${displayPrice.toFixed(2)}</div>
+                                    <div class="item-price">$${lineTotal.toFixed(2)}</div>
+                                </div>
+                            </div>`;
+                        container.insertAdjacentHTML("beforeend", row);
+                    });
+                }
+            }
+
+            async function placeOrder() {
+                if (!selectedAddressId) { showToast('Please select a shipping address', 'error'); return; }
+                const btn = document.getElementById('placeOrderBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+                try {
+                    const orderData = { shippingAddressId: selectedAddressId, paymentMethod: selectedPaymentMethod, notes: '' };
+                    const response = await fetch('/api/orders/make-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() },
+                        body: JSON.stringify(orderData)
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showToast('Order placed successfully!');
+                        // setTimeout(() => { window.location.href = `/user/orders/${result.data.id}`; }, 1500);
+                        setTimeout(() => { window.location.href = `/user/orders`; }, 1500);
+                    } else {
+                        // showToast(result.message || 'Failed to place order', 'error');
+                        showToast(result.message + " msg");
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+                    }
+                } catch (error) {
+                    console.error('Error placing order:', error);
+                    showToast('Failed to place order', 'error'); // showing this error even if order is placed successfully
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+                }
+            }
+
+            function applyPromoCode() {
+                const code = document.getElementById('promoCodeInput').value.trim();
+                if (!code) { showToast('Please enter a promo code', 'error'); return; }
+                showToast('Promo code feature coming soon!', 'error');
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                fetchCartItems();
+                fetchAddresses();
+            });
         </script>
     </div>
 </div>
