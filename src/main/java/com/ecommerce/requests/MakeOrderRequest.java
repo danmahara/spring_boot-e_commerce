@@ -1,15 +1,10 @@
 package com.ecommerce.requests;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,24 +12,16 @@ import java.util.List;
 @AllArgsConstructor
 public class MakeOrderRequest {
 
-    @Valid
-    @NotEmpty(message = "Order items cannot be empty")
-    private List<OrderItemRequest> items;
-
-    @Valid
     @NotNull(message = "Shipping address is required")
-    private AddressRequest shippingAddress;
+    private Long shippingAddressId;
 
-    @Valid
-    @NotNull(message = "Billing address is required")
-    private AddressRequest billingAddress;
+    private Long billingAddressId; // Optional, if different from shipping
 
-    @NotNull(message = "Payment method is required")
     private String paymentMethod;
 
     private String notes;
 
-    private BigDecimal discountAmount;
+    private String promoCode;
 
     @Getter
     @Setter

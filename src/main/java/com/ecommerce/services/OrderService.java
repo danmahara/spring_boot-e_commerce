@@ -1,13 +1,9 @@
 package com.ecommerce.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,142 +11,216 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ecommerce.enums.OrderStatus;
 import com.ecommerce.enums.PaymentStatus;
+import com.ecommerce.models.Cart;
+import com.ecommerce.models.CartItem;
 import com.ecommerce.models.Order;
 import com.ecommerce.models.OrderItem;
 import com.ecommerce.models.User;
-import com.ecommerce.models.admin.Product;
+import com.ecommerce.models.UserAddress;
+import com.ecommerce.repository.AddressRepository;
+import com.ecommerce.repository.CartRepository;
 import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.repository.UserRepository;
-import com.ecommerce.repository.admin.ProductRepository;
 import com.ecommerce.requests.MakeOrderRequest;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    private static final BigDecimal TAX_RATE = new BigDecimal("0"); // 10% tax
-    private static final BigDecimal SHIPPING_AMOUNT = new BigDecimal("0"); // Flat shipping
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final AddressRepository addressRepository;
 
     /**
-     * Create a new order from request
+     * Find all orders by user
+     */
+    public List<Order> findAllOrdersByUser(Long userId) {
+        return orderRepository.findByUserIdOrderByOrderDateDesc(userId);
+    }
+
+    /**
+     * Find order by ID
+     */
+    public Order findById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    /**
+     * Find order by ID and user
+     */
+    public Order findByIdAndUser(Long orderId, Long userId) {
+        return orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    /**
+     * Create a new order from cart
      */
     @Transactional
     public Order createOrder(Long userId, MakeOrderRequest request) {
-        // Find user
+        // Get user
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Get shipping address
+        UserAddress shippingAddress = addressRepository
+                .findByIdAndUserIdAndIsActiveTrue(request.getShippingAddressId(), userId)
+                .orElseThrow(() -> new RuntimeException("Shipping address not found"));
+
+        // Get billing address (use shipping if not provided)
+        UserAddress billingAddress = shippingAddress;
+        if (request.getBillingAddressId() != null) {
+            billingAddress = addressRepository.findByIdAndUserIdAndIsActiveTrue(request.getBillingAddressId(), userId)
+                    .orElseThrow(() -> new RuntimeException("Billing address not found"));
+        }
+
+        // Get user's cart
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+            throw new RuntimeException("Cart is empty");
+        }
 
         // Create order
         Order order = new Order();
-        order.setOrderNumber(generateOrderNumber());
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
 
-        // Set addresses
-        setShippingAddress(order, request.getShippingAddress());
-        setBillingAddress(order, request.getBillingAddress());
+        // Set shipping address
+        order.setShippingAddressLine1(shippingAddress.getAddressLine1());
+        order.setShippingAddressLine2(shippingAddress.getAddressLine2());
+        order.setShippingCity(shippingAddress.getCity());
+        order.setShippingState(shippingAddress.getState());
+        order.setShippingPostalCode(shippingAddress.getPostalCode());
+        order.setShippingCountry(shippingAddress.getCountry());
 
-        // Set payment info
+        // Set billing address
+        order.setBillingAddressLine1(billingAddress.getAddressLine1());
+        order.setBillingAddressLine2(billingAddress.getAddressLine2());
+        order.setBillingCity(billingAddress.getCity());
+        order.setBillingState(billingAddress.getState());
+        order.setBillingPostalCode(billingAddress.getPostalCode());
+        order.setBillingCountry(billingAddress.getCountry());
+
+        // Set payment method
         order.setPaymentMethod(request.getPaymentMethod());
+
+        // Set notes
         order.setNotes(request.getNotes());
 
-        // Create order items
-        List<OrderItem> orderItems = new ArrayList<>();
+        // Create order items from cart items
         BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal totalDiscount = BigDecimal.ZERO;
 
-        for (MakeOrderRequest.OrderItemRequest itemRequest : request.getItems()) {
-            Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(
-                            () -> new IllegalArgumentException("Product not found: " + itemRequest.getProductId()));
-
-            // Check stock availability
-            if (product.getQuantity() < itemRequest.getQuantity()) {
-                throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
-            }
-
+        for (CartItem cartItem : cart.getCartItems()) {
             OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setProduct(product);
-            orderItem.setProductName(product.getName());
-            orderItem.setProductSku(product.getSku());
-            orderItem.setProductImage(product.getFeatureImage());
-            orderItem.setQuantity(itemRequest.getQuantity());
-            orderItem.setUnitPrice(product.getPrice());
-            orderItem.setNotes(itemRequest.getNotes());
+            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setProductName(cartItem.getProduct().getName());
+            orderItem.setProductSku(cartItem.getProduct().getSku());
+            orderItem.setProductImage(cartItem.getProduct().getFeatureImage());
+            orderItem.setUnitPrice(cartItem.getPrice());
+            orderItem.setQuantity(cartItem.getQuantity());
 
-            // Calculate item total
-            BigDecimal itemSubtotal = product.getPrice().multiply(new BigDecimal(itemRequest.getQuantity()));
-            BigDecimal itemTax = itemSubtotal.multiply(TAX_RATE).setScale(2, RoundingMode.HALF_UP);
-            BigDecimal itemTotal = itemSubtotal.add(itemTax);
+            // Calculate discount - get discounted price from Product
+            BigDecimal originalPrice = cartItem.getPrice();
+            BigDecimal discountedPrice = cartItem.getProduct().getDiscountPrice() != null
+                    ? cartItem.getProduct().getDiscountPrice()
+                    : originalPrice;
 
-            orderItem.setDiscountAmount(BigDecimal.ZERO);
-            orderItem.setTaxAmount(itemTax);
+            BigDecimal itemDiscount = originalPrice.subtract(discountedPrice)
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            orderItem.setDiscountAmount(itemDiscount);
+            totalDiscount = totalDiscount.add(itemDiscount);
+
+            // Calculate total for this item (using cart item's line total which already has
+            // the correct price)
+            BigDecimal itemTotal = cartItem.getLineTotal();
             orderItem.setTotalAmount(itemTotal);
+            subtotal = subtotal.add(itemTotal);
 
-            orderItems.add(orderItem);
-            subtotal = subtotal.add(itemSubtotal);
-
-            // Reduce product stock
-            product.setQuantity(product.getQuantity() - itemRequest.getQuantity());
-            productRepository.save(product);
+            order.addOrderItem(orderItem);
         }
 
-        order.setOrderItems(orderItems);
-
-        // Calculate order totals
-        BigDecimal taxAmount = subtotal.multiply(TAX_RATE).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal discountAmount = request.getDiscountAmount() != null ? request.getDiscountAmount() : BigDecimal.ZERO;
-        BigDecimal totalAmount = subtotal.add(taxAmount).add(SHIPPING_AMOUNT).subtract(discountAmount);
-
+        // Set order amounts
         order.setSubtotal(subtotal);
-        order.setTaxAmount(taxAmount);
-        order.setShippingAmount(SHIPPING_AMOUNT);
-        order.setDiscountAmount(discountAmount);
-        order.setTotalAmount(totalAmount);
+        order.setDiscountAmount(totalDiscount);
+        order.setShippingAmount(BigDecimal.ZERO); // Free shipping
+        order.setTaxAmount(BigDecimal.ZERO); // Can calculate if needed
+        order.setTotalAmount(subtotal);
 
         // Save order
+        Order savedOrder = orderRepository.save(order);
+
+        // Clear cart after successful order
+        cart.getCartItems().clear();
+        cart.setTotalAmount(BigDecimal.ZERO);
+        cartRepository.save(cart);
+
+        return savedOrder;
+    }
+
+    /**
+     * Update order status
+     */
+    @Transactional
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = findById(orderId);
+        order.setStatus(status);
+
+        // Update related timestamps
+        switch (status) {
+            case SHIPPED:
+                order.setShippedDate(LocalDateTime.now());
+                break;
+            case DELIVERED:
+                order.setDeliveredDate(LocalDateTime.now());
+                break;
+            case CANCELLED:
+                order.setCancelledDate(LocalDateTime.now());
+                break;
+            default:
+                break;
+        }
+
         return orderRepository.save(order);
     }
 
     /**
-     * Generate unique order number
+     * Update payment status
      */
-    private String generateOrderNumber() {
-        return "ORD-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    @Transactional
+    public Order updatePaymentStatus(Long orderId, PaymentStatus status, String transactionId) {
+        Order order = findById(orderId);
+        order.setPaymentStatus(status);
+        if (transactionId != null) {
+            order.setTransactionId(transactionId);
+        }
+        return orderRepository.save(order);
     }
 
     /**
-     * Set shipping address from request
+     * Cancel order
      */
-    private void setShippingAddress(Order order, MakeOrderRequest.AddressRequest address) {
-        order.setShippingAddressLine1(address.getAddressLine1());
-        order.setShippingAddressLine2(address.getAddressLine2());
-        order.setShippingCity(address.getCity());
-        order.setShippingState(address.getState());
-        order.setShippingPostalCode(address.getPostalCode());
-        order.setShippingCountry(address.getCountry());
-    }
+    @Transactional
+    public Order cancelOrder(Long orderId, Long userId) {
+        Order order = findByIdAndUser(orderId, userId);
 
-    /**
-     * Set billing address from request
-     */
-    private void setBillingAddress(Order order, MakeOrderRequest.AddressRequest address) {
-        order.setBillingAddressLine1(address.getAddressLine1());
-        order.setBillingAddressLine2(address.getAddressLine2());
-        order.setBillingCity(address.getCity());
-        order.setBillingState(address.getState());
-        order.setBillingPostalCode(address.getPostalCode());
-        order.setBillingCountry(address.getCountry());
+        if (order.getStatus() == OrderStatus.SHIPPED ||
+                order.getStatus() == OrderStatus.DELIVERED) {
+            throw new RuntimeException("Cannot cancel shipped or delivered order");
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setCancelledDate(LocalDateTime.now());
+
+        return orderRepository.save(order);
     }
 
     /**
@@ -159,13 +229,6 @@ public class OrderService {
     public List<Order> findRecentOrdersByUser(Long userId, int limit) {
         PageRequest pageRequest = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "orderDate"));
         return orderRepository.findByUserId(userId, pageRequest).getContent();
-    }
-
-    /**
-     * Find all orders by user
-     */
-    public List<Order> findAllOrdersByUser(Long userId) {
-        return orderRepository.findByUserIdOrderByOrderDateDesc(userId);
     }
 
     /**
@@ -188,19 +251,5 @@ public class OrderService {
      */
     public int countPendingOrdersByUser(Long userId) {
         return orderRepository.countByUserIdAndStatus(userId, OrderStatus.PENDING);
-    }
-
-    /**
-     * Find order by ID
-     */
-    public Order findById(Long orderId) {
-        return orderRepository.findById(orderId).orElse(null);
-    }
-
-    /**
-     * Save order
-     */
-    public Order save(Order order) {
-        return orderRepository.save(order);
     }
 }
