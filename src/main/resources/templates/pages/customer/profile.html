@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
+
+<body>
+    <section th:fragment="section">
+        <!-- Include shared CSS -->
+        <link rel="stylesheet" th:href="@{/web/css/user-pages.css}" />
+
+        <!-- Profile-specific styles -->
+        <style>
+            /* Profile Header */
+            .profile-header {
+                background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
+                padding: 3rem 2rem;
+                border-radius: 16px;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .profile-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 400px;
+                height: 400px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+            }
+
+            .profile-header::after {
+                content: '';
+                position: absolute;
+                bottom: -30%;
+                left: -10%;
+                width: 300px;
+                height: 300px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 50%;
+            }
+
+            .profile-header-content {
+                display: flex;
+                align-items: center;
+                gap: 2rem;
+                position: relative;
+                z-index: 1;
+            }
+
+            .profile-avatar {
+                width: 140px;
+                height: 140px;
+                border-radius: 50%;
+                border: 5px solid rgba(255, 255, 255, 0.3);
+                overflow: hidden;
+                background: white;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                flex-shrink: 0;
+            }
+
+            .profile-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .profile-info {
+                color: white;
+                flex: 1;
+            }
+
+            .profile-name {
+                font-size: 2.5rem;
+                font-weight: 800;
+                margin-bottom: 0.5rem;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .profile-email {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .profile-member-since {
+                font-size: 0.9rem;
+                opacity: 0.8;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .profile-badges {
+                display: flex;
+                gap: 0.75rem;
+                margin-top: 1rem;
+            }
+
+            .profile-badge {
+                padding: 0.5rem 1rem;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                backdrop-filter: blur(10px);
+            }
+
+            .profile-badge.verified {
+                background: rgba(16, 185, 129, 0.3);
+            }
+
+            .profile-badge.premium {
+                background: rgba(245, 158, 11, 0.3);
+            }
+
+            .profile-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .profile-actions .btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                backdrop-filter: blur(10px);
+            }
+
+            .profile-actions .btn:hover {
+                background: white;
+                color: #0ea5e9;
+                border-color: white;
+            }
+
+            /* Stats Grid */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .stat-card {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+                text-align: center;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                border: 2px solid transparent;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+                border-color: #0ea5e9;
+            }
+
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                margin: 0 auto 1rem;
+            }
+
+            .stat-icon.orders {
+                background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+                color: #1e40af;
+            }
+
+            .stat-icon.wishlist {
+                background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+                color: #be185d;
+            }
+
+            .stat-icon.reviews {
+                background: linear-gradient(135deg, #fef3c7, #fde68a);
+                color: #92400e;
+            }
+
+            .stat-icon.rewards {
+                background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+                color: #065f46;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #111827;
+                margin-bottom: 0.25rem;
+            }
+
+            .stat-label {
+                font-size: 0.9rem;
+                color: #6b7280;
+                font-weight: 600;
+            }
+
+            /* Profile Grid */
+            .profile-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+
+            /* Info Row */
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem 0;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+            .info-row-label {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                color: #6b7280;
+                font-weight: 500;
+            }
+
+            .info-row-label i {
+                width: 20px;
+                color: #0ea5e9;
+            }
+
+            .info-row-value {
+                font-weight: 600;
+                color: #111827;
+            }
+
+            /* Quick Actions */
+            .quick-actions {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+
+            .quick-action-card {
+                padding: 1.5rem;
+                background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+                border-radius: 12px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+                text-decoration: none;
+            }
+
+            .quick-action-card:hover {
+                background: white;
+                border-color: #0ea5e9;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 16px rgba(14, 165, 233, 0.15);
+            }
+
+            .quick-action-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+                margin: 0 auto 0.75rem;
+            }
+
+            .quick-action-label {
+                font-weight: 600;
+                color: #111827;
+                font-size: 0.9rem;
+            }
+
+            /* Recent Activity */
+            .activity-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1rem 0;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+
+            .activity-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+                flex-shrink: 0;
+            }
+
+            .activity-icon.order {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .activity-icon.review {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .activity-icon.wishlist {
+                background: #fce7f3;
+                color: #be185d;
+            }
+
+            .activity-icon.account {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .activity-content {
+                flex: 1;
+            }
+
+            .activity-title {
+                font-weight: 600;
+                color: #111827;
+                margin-bottom: 0.25rem;
+            }
+
+            .activity-time {
+                font-size: 0.85rem;
+                color: #9ca3af;
+            }
+
+            /* Security Card */
+            .security-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1.25rem;
+                background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+                border-radius: 12px;
+                margin-bottom: 1rem;
+            }
+
+            .security-item:last-child {
+                margin-bottom: 0;
+            }
+
+            .security-info {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .security-icon {
+                width: 45px;
+                height: 45px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+            }
+
+            .security-icon.enabled {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .security-icon.disabled {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .security-text h4 {
+                font-weight: 600;
+                color: #111827;
+                margin: 0 0 0.25rem 0;
+            }
+
+            .security-text p {
+                font-size: 0.85rem;
+                color: #6b7280;
+                margin: 0;
+            }
+
+            /* Preferences */
+            .preference-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem 0;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .preference-toggle:last-child {
+                border-bottom: none;
+            }
+
+            .toggle-switch {
+                position: relative;
+                width: 50px;
+                height: 26px;
+                background: #e5e7eb;
+                border-radius: 13px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .toggle-switch.active {
+                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            }
+
+            .toggle-switch::after {
+                content: '';
+                position: absolute;
+                top: 3px;
+                left: 3px;
+                width: 20px;
+                height: 20px;
+                background: white;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .toggle-switch.active::after {
+                left: 27px;
+            }
+
+            /* Responsive */
+            @media (max-width: 1024px) {
+                .profile-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .profile-header-content {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .profile-avatar {
+                    width: 120px;
+                    height: 120px;
+                }
+
+                .profile-name {
+                    font-size: 1.75rem;
+                }
+
+                .profile-badges {
+                    justify-content: center;
+                }
+
+                .profile-actions {
+                    flex-direction: row;
+                    width: 100%;
+                }
+
+                .profile-actions .btn {
+                    flex: 1;
+                }
+
+                .quick-actions {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+        </style>
+
+        <section class="user-page-container">
+            <div class="container">
+                <!-- Profile Header -->
+                <div class="profile-header animate-fadeInUp">
+                    <div class="profile-header-content">
+                        <div class="profile-avatar">
+                            <img src="https://ui-avatars.com/api/?name=John+Doe&size=200&background=0ea5e9&color=fff&bold=true"
+                                alt="Profile Avatar">
+                        </div>
+                        <div class="profile-info">
+                            <h1 class="profile-name" th:text="${user.fullName}">John Doe</h1>
+                            <div class="profile-email">
+                                <i class="fas fa-envelope"></i>
+                                <span th:text="${user.email}"></span>
+                            </div>
+                            <div class="profile-member-since">
+                                <i class="fas fa-calendar-alt"></i>
+                                Member since January 2023
+                            </div>
+                            <div class="profile-badges">
+                                <span class="profile-badge verified">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span th:text="${user.status==true?'Verified':'Not Verified'}"></span>
+                                </span>
+                                <span class="profile-badge premium">
+                                    <i class="fas fa-crown"></i> Premium Member
+                                </span>
+                                <span class="profile-badge">
+                                    <i class="fas fa-star"></i> Top Reviewer
+                                </span>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn" onclick="openEditProfile()">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                            <button class="btn" onclick="window.location.href='/user/settings'">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.1s;"
+                        onclick="window.location.href='/user/orders'">
+                        <div class="stat-icon orders">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.15s;"
+                        onclick="window.location.href='/user/wishlist'">
+                        <div class="stat-icon wishlist">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Wishlist Items</div>
+                    </div>
+                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.2s;"
+                        onclick="window.location.href='/user/reviews'">
+                        <div class="stat-icon reviews">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Reviews Given</div>
+                    </div>
+                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.25s;"
+                        onclick="window.location.href='/user/rewards'">
+                        <div class="stat-icon rewards">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="stat-value">1,250</div>
+                        <div class="stat-label">Reward Points</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="content-card animate-fadeInUp" style="animation-delay: 0.3s;">
+                    <h3 class="section-title">
+                        <i class="fas fa-bolt"></i>
+                        Quick Actions
+                    </h3>
+                    <div class="quick-actions">
+                        <a href="/user/orders" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="quick-action-label">Track Orders</div>
+                        </a>
+                        <a href="/user/addresses" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="quick-action-label">Manage Addresses</div>
+                        </a>
+                        <a href="/user/payment-methods" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="quick-action-label">Payment Methods</div>
+                        </a>
+                        <a href="/user/wishlist" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="quick-action-label">My Wishlist</div>
+                        </a>
+                        <a href="/user/reviews" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="quick-action-label">My Reviews</div>
+                        </a>
+                        <a href="/support" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="quick-action-label">Get Support</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Grid -->
+                <div class="profile-grid">
+                    <!-- Personal Information -->
+                    <div class="content-card animate-fadeInUp" style="animation-delay: 0.35s;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="section-title mb-0">
+                                <i class="fas fa-user"></i>
+                                Personal Information
+                            </h3>
+                            <button class="btn btn-sm btn-secondary" onclick="openEditProfile()">
+                                <i class="fas fa-pen"></i> Edit
+                            </button>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-row-label">
+                                <i class="fas fa-user"></i>
+                                Full Name
+                            </div>
+                            <div class="info-row-value">John Doe</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-row-label">
+                                <i class="fas fa-envelope"></i>
+                                Email Address
+                            </div>
+                            <div class="info-row-value">john.doe@example.com</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-row-label">
+                                <i class="fas fa-phone"></i>
+                                Phone Number
+                            </div>
+                            <div class="info-row-value">+1 (555) 123-4567</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-row-label">
+                                <i class="fas fa-birthday-cake"></i>
+                                Date of Birth
+                            </div>
+                            <div class="info-row-value">March 15, 1990</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-row-label">
+                                <i class="fas fa-venus-mars"></i>
+                                Gender
+                            </div>
+                            <div class="info-row-value">Male</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="content-card animate-fadeInUp" style="animation-delay: 0.4s;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="section-title mb-0">
+                                <i class="fas fa-clock"></i>
+                                Recent Activity
+                            </h3>
+                            <a href="/user/activity" class="btn btn-sm btn-secondary">
+                                View All
+                            </a>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon order">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Order #ORD-2024-001234 Delivered</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon review">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">You reviewed "Wireless Headphones"</div>
+                                <div class="activity-time">Yesterday at 3:45 PM</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon wishlist">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Added "Smart Watch Pro" to wishlist</div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon order">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Order #ORD-2024-001230 Placed</div>
+                                <div class="activity-time">3 days ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon account">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Password changed successfully</div>
+                                <div class="activity-time">1 week ago</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Default Address -->
+                    <div class="content-card animate-fadeInUp" style="animation-delay: 0.45s;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="section-title mb-0">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Default Address
+                            </h3>
+                            <a href="/user/addresses" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-pen"></i> Manage
+                            </a>
+                        </div>
+                        <div class="address-card">
+                            <div class="address-type">
+                                <i class="fas fa-home"></i> Home Address
+                                <span class="meta-tag" style="margin-left: auto;">Default</span>
+                            </div>
+                            <div class="address-content">
+                                <strong>John Doe</strong>
+                                123 Main Street, Apt 4B<br>
+                                New York, NY 10001<br>
+                                United States<br>
+                                <span class="text-muted">Phone: +1 (555) 123-4567</span>
+                            </div>
+                        </div>
+                        <div class="address-card mt-2">
+                            <div class="address-type">
+                                <i class="fas fa-building"></i> Office Address
+                            </div>
+                            <div class="address-content">
+                                <strong>John Doe</strong>
+                                456 Business Ave, Suite 100<br>
+                                New York, NY 10002<br>
+                                United States<br>
+                                <span class="text-muted">Phone: +1 (555) 987-6543</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="content-card animate-fadeInUp" style="animation-delay: 0.5s;">
+                        <h3 class="section-title">
+                            <i class="fas fa-shield-alt"></i>
+                            Security Settings
+                        </h3>
+                        <div class="security-item">
+                            <div class="security-info">
+                                <div class="security-icon enabled">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="security-text">
+                                    <h4>Password</h4>
+                                    <p>Last changed 1 week ago</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary"
+                                onclick="openChangePassword()">Change</button>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-info">
+                                <div class="security-icon enabled">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="security-text">
+                                    <h4>Two-Factor Authentication</h4>
+                                    <p>Enabled via SMS</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-secondary">Manage</button>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-info">
+                                <div class="security-icon disabled">
+                                    <i class="fas fa-fingerprint"></i>
+                                </div>
+                                <div class="security-text">
+                                    <h4>Biometric Login</h4>
+                                    <p>Not enabled</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-primary">Enable</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="content-card animate-fadeInUp" style="animation-delay: 0.55s;">
+                    <h3 class="section-title">
+                        <i class="fas fa-bell"></i>
+                        Notification Preferences
+                    </h3>
+                    <div class="profile-grid" style="gap: 1rem;">
+                        <div>
+                            <div class="preference-toggle">
+                                <div class="info-row-label">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Notifications
+                                </div>
+                                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                            <div class="preference-toggle">
+                                <div class="info-row-label">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    SMS Notifications
+                                </div>
+                                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                            <div class="preference-toggle">
+                                <div class="info-row-label">
+                                    <i class="fas fa-bell"></i>
+                                    Push Notifications
+                                </div>
+                                <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="preference-toggle">
+                                <div class="info-row-label">
+                                    <i class="fas fa-tag"></i>
+                                    Promotional Offers
+                                </div>
+                                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                            <div class="preference-toggle">
+                                <div class="info-row-label">
+                                    <i class="fas fa-box"></i>
+                                    Order Updates
+                                </div>
+                                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                            <div class="preference-toggle">
+                                <div class="info-row-label">
+                                    <i class="fas fa-newspaper"></i>
+                                    Newsletter
+                                </div>
+                                <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="help-card animate-fadeInUp" style="animation-delay: 0.6s;">
+                    <h4><i class="fas fa-question-circle"></i> Need Help with Your Account?</h4>
+                    <p>Our support team is available 24/7 to help you with any questions or concerns.</p>
+                    <button class="help-btn" onclick="window.location.href='/support'">
+                        <i class="fas fa-headset"></i> Contact Support
+                    </button>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="content-card animate-fadeInUp mt-4"
+                    style="animation-delay: 0.65s; border: 2px solid #fee2e2;">
+                    <h3 class="section-title" style="color: #991b1b;">
+                        <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                        Danger Zone
+                    </h3>
+                    <div class="d-flex justify-content-between align-items-center" style="flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h4 style="margin: 0 0 0.25rem 0; color: #111827; font-weight: 600;">Delete Account</h4>
+                            <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">
+                                Once you delete your account, there is no going back. Please be certain.
+                            </p>
+                        </div>
+                        <button class="btn btn-danger" onclick="confirmDeleteAccount()">
+                            <i class="fas fa-trash-alt"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+        </div>
+
+        <script>
+            function getCsrfToken() {
+                return document.querySelector('meta[name="_csrf"]')?.content ||
+                    document.querySelector('input[name="_csrf"]')?.value;
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" 
+                       style="color: ${type === 'success' ? '#10b981' : '#ef4444'}; font-size: 1.5rem;"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            function setLoading(isLoading) {
+                document.getElementById('loadingOverlay').classList.toggle('active', isLoading);
+            }
+
+            function openEditProfile() {
+                showToast('Edit profile feature coming soon!', 'info');
+            }
+
+            function openChangePassword() {
+                showToast('Change password feature coming soon!', 'info');
+            }
+
+            function confirmDeleteAccount() {
+                if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                    if (confirm('This is your final warning. All your data will be permanently deleted. Continue?')) {
+                        showToast('Account deletion feature coming soon!', 'error');
+                    }
+                }
+            }
+        </script>
+    </section>
+</body>
+
+</html>

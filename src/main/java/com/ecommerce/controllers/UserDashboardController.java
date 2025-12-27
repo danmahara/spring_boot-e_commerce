@@ -61,8 +61,6 @@ public class UserDashboardController {
 
     }
 
-   
-
     /**
      * Display user profile
      */
@@ -76,7 +74,7 @@ public class UserDashboardController {
 
         model.addAttribute("user", user);
 
-        return "customer/profile";
+        return "pages/customer/profile";
     }
 
     /**
