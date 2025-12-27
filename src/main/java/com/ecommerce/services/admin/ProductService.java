@@ -164,14 +164,14 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts() {
-        List<Product> pages = productRepository.findAll();
+        List<Product> products = productRepository.findAll();
 
         // Load images for each page
-        for (Product page : pages) {
-            List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("product", page.getId());
-            page.setImages(imgs);
+        for (Product product : products) {
+            List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("product", product.getId());
+            product.setImages(imgs);
         }
-        return pages;
+        return products;
     }
 
     @Transactional
