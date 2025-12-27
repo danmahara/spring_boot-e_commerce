@@ -17,10 +17,13 @@ import com.ecommerce.models.Order;
 import com.ecommerce.models.OrderItem;
 import com.ecommerce.models.User;
 import com.ecommerce.models.UserAddress;
+import com.ecommerce.models.admin.Image;
+import com.ecommerce.models.admin.Product;
 import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.CartRepository;
 import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.repository.UserRepository;
+import com.ecommerce.repository.admin.ImageRepository;
 import com.ecommerce.requests.MakeOrderRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
+    private final ImageRepository imageRepository;
 
     /**
      * Find all orders by user
@@ -124,7 +128,14 @@ public class OrderService {
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setProductName(cartItem.getProduct().getName());
             orderItem.setProductSku(cartItem.getProduct().getSku());
-            orderItem.setProductImage(cartItem.getProduct().getFeatureImage());
+
+            // store product image in order items table
+            List<Image> imgs = imageRepository.findByImageableTypeAndImageableId("product",
+                    cartItem.getProduct().getId());
+            Product p = new Product();
+            p.setImages(imgs);
+
+            orderItem.setProductImage(p.getFeatureImage());
             orderItem.setUnitPrice(cartItem.getPrice());
             orderItem.setQuantity(cartItem.getQuantity());
 
