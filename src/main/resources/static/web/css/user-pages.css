@@ -603,56 +603,47 @@
 /* ============================================
    PAYMENT INFO
    ============================================ */
-.payment-methods {
-    display: grid;
-    gap: 1rem;
-}
-
-.payment-option {
-    padding: 1.25rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.payment-info {
     display: flex;
     align-items: center;
     gap: 1rem;
-}
-
-.payment-option:hover {
-    border-color: #0ea5e9;
-    transform: translateY(-2px);
-}
-
-.payment-option.selected {
-    border-color: #0ea5e9;
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(139, 92, 246, 0.05));
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 12px;
+    margin-top: 1.5rem;
 }
 
 .payment-icon {
     width: 50px;
     height: 50px;
-    background: #f3f4f6;
-    border-radius: 10px;
+    background: white;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    color: #10b981;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.payment-info {
+.payment-details {
     flex: 1;
 }
 
-.payment-name {
+.payment-method {
     font-weight: 700;
     color: #111827;
     margin-bottom: 0.25rem;
 }
 
-.payment-description {
-    font-size: 0.875rem;
-    color: #6b7280;
+.payment-status {
+    font-size: 0.85rem;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.payment-status.pending {
+    color: #f59e0b;
 }
 
 /* ============================================
@@ -1459,4 +1450,169 @@
 
 .w-100 {
     width: 100%;
+}
+
+/* Additional Flex Utilities */
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.align-items-start {
+    align-items: flex-start;
+}
+
+.align-items-end {
+    align-items: flex-end;
+}
+
+.gap-0 {
+    gap: 0;
+}
+
+.gap-4 {
+    gap: 2rem;
+}
+
+/* Margin Auto Utilities */
+.ml-auto {
+    margin-left: auto;
+}
+
+.mr-auto {
+    margin-right: auto;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Padding Utilities */
+.p-0 {
+    padding: 0;
+}
+
+.p-1 {
+    padding: 0.5rem;
+}
+
+.p-2 {
+    padding: 1rem;
+}
+
+.p-3 {
+    padding: 1.5rem;
+}
+
+.p-4 {
+    padding: 2rem;
+}
+
+/* Border Utilities */
+.border-0 {
+    border: none;
+}
+
+.rounded {
+    border-radius: 8px;
+}
+
+.rounded-lg {
+    border-radius: 12px;
+}
+
+.rounded-xl {
+    border-radius: 16px;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
+
+/* Shadow Utilities */
+.shadow-sm {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Overflow Utilities */
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+/* Position Utilities */
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+/* Display Utilities */
+.d-none {
+    display: none;
+}
+
+.d-block {
+    display: block;
+}
+
+.d-inline {
+    display: inline;
+}
+
+.d-inline-block {
+    display: inline-block;
+}
+
+.d-grid {
+    display: grid;
+}
+
+/* Cursor Utilities */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+/* Text Utilities */
+.text-left {
+    text-align: left;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.text-capitalize {
+    text-transform: capitalize;
+}
+
+.text-nowrap {
+    white-space: nowrap;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

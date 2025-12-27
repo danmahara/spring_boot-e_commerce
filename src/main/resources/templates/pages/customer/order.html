@@ -1,668 +1,19 @@
 <!DOCTYPE html>
-<div lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
-    <div th:fragment="section">
-        <style>
-            .orders-container {
-                min-height: 100vh;
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                padding: 2rem 0;
-            }
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: layout(~{::section})">
 
-            .orders-header {
-                background: white;
-                padding: 2rem;
-                margin-bottom: 2rem;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            }
+<body>
+    <section th:fragment="section">
+        <!-- Include shared CSS -->
+        <link rel="stylesheet" th:href="@{/web/css/user-pages.css}" />
 
-            .header-content {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .header-title {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-            }
-
-            .header-title h1 {
-                font-size: 2rem;
-                font-weight: 800;
-                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                margin: 0;
-            }
-
-            .orders-count {
-                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-                color: white;
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
-                font-weight: 700;
-                font-size: 0.9rem;
-            }
-
-            .back-btn {
-                padding: 0.75rem 1.5rem;
-                border-radius: 12px;
-                border: 2px solid #0ea5e9;
-                background: white;
-                color: #0ea5e9;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                text-decoration: none;
-            }
-
-            .back-btn:hover {
-                background: #0ea5e9;
-                color: white;
-                transform: translateX(-5px);
-            }
-
-            .filters-bar {
-                background: white;
-                padding: 1.5rem;
-                margin-bottom: 2rem;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-                display: flex;
-                gap: 1rem;
-                flex-wrap: wrap;
-                align-items: center;
-            }
-
-            .filter-group {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-
-            .filter-label {
-                font-weight: 600;
-                color: #6b7280;
-                font-size: 0.9rem;
-            }
-
-            .filter-select {
-                padding: 0.6rem 1rem;
-                border: 2px solid #e5e7eb;
-                border-radius: 10px;
-                background: white;
-                color: #111827;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                min-width: 150px;
-            }
-
-            .filter-select:hover,
-            .filter-select:focus {
-                border-color: #0ea5e9;
-                outline: none;
-            }
-
-            .search-box {
-                flex: 1;
-                min-width: 250px;
-                position: relative;
-            }
-
-            .search-input {
-                width: 100%;
-                padding: 0.6rem 1rem 0.6rem 2.5rem;
-                border: 2px solid #e5e7eb;
-                border-radius: 10px;
-                font-size: 0.95rem;
-                transition: all 0.3s ease;
-            }
-
-            .search-input:focus {
-                border-color: #0ea5e9;
-                outline: none;
-            }
-
-            .search-icon {
-                position: absolute;
-                left: 0.8rem;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #9ca3af;
-            }
-
-            .orders-list {
-                display: flex;
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-
-            .order-card {
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-                overflow: hidden;
-                transition: all 0.3s ease;
-            }
-
-            .order-card:hover {
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-                transform: translateY(-2px);
-            }
-
-            .order-header {
-                padding: 1.5rem;
-                background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-                border-bottom: 2px solid #e5e7eb;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .order-info {
-                display: flex;
-                gap: 2rem;
-                flex-wrap: wrap;
-            }
-
-            .info-item {
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .info-label {
-                font-size: 0.8rem;
-                color: #6b7280;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .info-value {
-                font-size: 1rem;
-                color: #111827;
-                font-weight: 700;
-            }
-
-            .order-id {
-                color: #0ea5e9;
-            }
-
-            .order-status {
-                padding: 0.5rem 1.2rem;
-                border-radius: 20px;
-                font-weight: 700;
-                font-size: 0.85rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .status-pending {
-                background: #fef3c7;
-                color: #92400e;
-            }
-
-            .status-processing {
-                background: #dbeafe;
-                color: #1e40af;
-            }
-
-            .status-shipped {
-                background: #e0e7ff;
-                color: #4338ca;
-            }
-
-            .status-delivered {
-                background: #d1fae5;
-                color: #065f46;
-            }
-
-            .status-cancelled {
-                background: #fee2e2;
-                color: #991b1b;
-            }
-
-            .order-body {
-                padding: 1.5rem;
-            }
-
-            .order-items {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .order-item {
-                display: flex;
-                gap: 1rem;
-                padding: 1rem;
-                background: #f9fafb;
-                border-radius: 12px;
-                transition: all 0.3s ease;
-            }
-
-            .order-item:hover {
-                background: #f3f4f6;
-            }
-
-            .item-image {
-                width: 80px;
-                height: 80px;
-                border-radius: 10px;
-                overflow: hidden;
-                flex-shrink: 0;
-                background: white;
-            }
-
-            .item-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .item-details {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .item-name {
-                font-weight: 700;
-                color: #111827;
-                font-size: 1rem;
-            }
-
-            .item-meta {
-                display: flex;
-                gap: 1rem;
-                font-size: 0.85rem;
-                color: #6b7280;
-            }
-
-            .item-price {
-                font-weight: 700;
-                color: #0ea5e9;
-                font-size: 1.1rem;
-                align-self: flex-start;
-            }
-
-            .order-footer {
-                padding: 1.5rem;
-                background: #f9fafb;
-                border-top: 2px solid #e5e7eb;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .order-total {
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .total-label {
-                font-size: 0.9rem;
-                color: #6b7280;
-                font-weight: 600;
-            }
-
-            .total-amount {
-                font-size: 1.75rem;
-                font-weight: 800;
-                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-
-            .order-actions {
-                display: flex;
-                gap: 0.75rem;
-                flex-wrap: wrap;
-            }
-
-            .action-btn {
-                padding: 0.7rem 1.3rem;
-                border-radius: 10px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            .btn-primary {
-                border: none;
-                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-                color: white;
-            }
-
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
-            }
-
-            .btn-secondary {
-                border: 2px solid #e5e7eb;
-                background: white;
-                color: #6b7280;
-            }
-
-            .btn-secondary:hover {
-                border-color: #0ea5e9;
-                color: #0ea5e9;
-            }
-
-            .btn-danger {
-                border: 2px solid #ef4444;
-                background: white;
-                color: #ef4444;
-            }
-
-            .btn-danger:hover {
-                background: #ef4444;
-                color: white;
-            }
-
-            .empty-orders {
-                text-align: center;
-                padding: 4rem 2rem;
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            }
-
-            .empty-orders .empty-icon {
-                font-size: 5rem;
-                color: #d1d5db;
-                margin-bottom: 1.5rem;
-                display: block;
-            }
-
-            .empty-orders h2 {
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: #111827;
-                margin-bottom: 0.5rem;
-            }
-
-            .empty-orders p {
-                color: #6b7280;
-                margin-bottom: 2rem;
-            }
-
-            .shop-now-btn {
-                padding: 1rem 2rem;
-                border: none;
-                border-radius: 12px;
-                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-                color: white;
-                font-weight: 700;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-                text-decoration: none;
-            }
-
-            .shop-now-btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
-                color: white;
-            }
-
-            .shop-now-btn i {
-                font-size: 1rem;
-            }
-
-            .loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 9999;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-            }
-
-            .loading-overlay.active {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .spinner {
-                width: 50px;
-                height: 50px;
-                border: 5px solid #f3f4f6;
-                border-top: 5px solid #0ea5e9;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-            .toast {
-                position: fixed;
-                top: 2rem;
-                right: 2rem;
-                background: white;
-                padding: 1rem 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                z-index: 10000;
-                opacity: 0;
-                transform: translateX(400px);
-                transition: all 0.3s ease;
-            }
-
-            .toast.show {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            .toast.success {
-                border-left: 4px solid #10b981;
-            }
-
-            .toast.error {
-                border-left: 4px solid #ef4444;
-            }
-
-            .pagination {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 0.5rem;
-                margin-top: 2rem;
-                padding: 1.5rem;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            }
-
-            .page-btn {
-                padding: 0.6rem 1rem;
-                border: 2px solid #e5e7eb;
-                border-radius: 8px;
-                background: white;
-                color: #6b7280;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .page-btn:hover:not(:disabled) {
-                border-color: #0ea5e9;
-                color: #0ea5e9;
-            }
-
-            .page-btn.active {
-                background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-                color: white;
-                border-color: transparent;
-            }
-
-            .page-btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-            .no-filter-results {
-                text-align: center;
-                padding: 3rem 2rem;
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            }
-
-            .no-filter-results .filter-icon {
-                font-size: 4rem;
-                color: #d1d5db;
-                margin-bottom: 1rem;
-                display: block;
-            }
-
-            .no-filter-results h3 {
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: #111827;
-                margin-bottom: 0.5rem;
-            }
-
-            .no-filter-results p {
-                color: #6b7280;
-                margin-bottom: 1.5rem;
-            }
-
-            .clear-filters-btn {
-                padding: 0.75rem 1.5rem;
-                border: 2px solid #0ea5e9;
-                border-radius: 10px;
-                background: white;
-                color: #0ea5e9;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-            }
-
-            .clear-filters-btn:hover {
-                background: #0ea5e9;
-                color: white;
-            }
-
-            .clear-filters-btn i {
-                font-size: 0.9rem;
-            }
-
-            @media (max-width: 768px) {
-                .orders-header h1 {
-                    font-size: 1.5rem;
-                }
-
-                .header-content {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-
-                .filters-bar {
-                    flex-direction: column;
-                }
-
-                .filter-select,
-                .search-box {
-                    width: 100%;
-                }
-
-                .order-header {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-
-                .order-info {
-                    width: 100%;
-                }
-
-                .order-footer {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-
-                .order-actions {
-                    width: 100%;
-                }
-
-                .action-btn {
-                    flex: 1;
-                    justify-content: center;
-                }
-
-                .toast {
-                    right: 1rem;
-                    left: 1rem;
-                }
-            }
-
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        </style>
-
-        <section class="orders-container">
+        <section class="user-page-container">
             <div class="container">
-                <!-- Orders Header -->
-                <div class="orders-header">
+                <!-- Page Header -->
+                <div class="user-header animate-fadeInUp">
                     <div class="header-content">
                         <div class="header-title">
                             <h1>My Orders</h1>
-                            <span class="orders-count" id="ordersCount">0 Orders</span>
+                            <span class="count-badge" id="ordersCount">0 Orders</span>
                         </div>
                         <a href="/user/dashboard" class="back-btn">
                             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -671,7 +22,7 @@
                 </div>
 
                 <!-- Filters Bar -->
-                <div class="filters-bar">
+                <div class="filters-bar animate-fadeInUp" style="animation-delay: 0.1s;">
                     <div class="filter-group">
                         <label class="filter-label">Status:</label>
                         <select class="filter-select" id="statusFilter" onchange="applyFilters()">
@@ -716,25 +67,18 @@
             let filteredOrders = [];
             let currentPage = 1;
             const ordersPerPage = 5;
-            let searchTimeout = null; // For debouncing search
+            let searchTimeout = null;
 
-            // Debounce search function - waits 300ms after user stops typing
             function debounceSearch() {
-                if (searchTimeout) {
-                    clearTimeout(searchTimeout);
-                }
-                searchTimeout = setTimeout(() => {
-                    applyFilters();
-                }, 500);
+                if (searchTimeout) clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => applyFilters(), 600);
             }
 
-            // Get CSRF token
             function getCsrfToken() {
                 return document.querySelector('meta[name="_csrf"]')?.content ||
                     document.querySelector('input[name="_csrf"]')?.value;
             }
 
-            // Show toast notification
             function showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
@@ -751,37 +95,24 @@
                 }, 3000);
             }
 
-            // Show/hide loading
             function setLoading(isLoading) {
                 const overlay = document.getElementById('loadingOverlay');
-                if (isLoading) {
-                    overlay.classList.add('active');
-                } else {
-                    overlay.classList.remove('active');
-                }
+                overlay.classList.toggle('active', isLoading);
             }
 
-            // Fetch orders
             async function fetchOrders() {
                 try {
                     setLoading(true);
                     const response = await fetch('/api/orders', {
-                        method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': getCsrfToken()
                         }
                     });
-
                     if (!response.ok) throw new Error('Failed to fetch orders');
-
                     const result = await response.json();
-                    console.log("Orders api result: ", result);
-
                     ordersData = result.data || [];
                     filteredOrders = [...ordersData];
-                    console.log("Orders data: ", ordersData);
-
                     applyFilters();
                 } catch (error) {
                     console.error('Error fetching orders:', error);
@@ -792,14 +123,6 @@
                 }
             }
 
-            // Check if any filters are active
-            function hasActiveFilters() {
-                const statusFilter = document.getElementById('statusFilter').value;
-                const searchQuery = document.getElementById('searchInput').value.trim();
-                return statusFilter !== '' || searchQuery !== '';
-            }
-
-            // Clear all filters
             function clearFilters() {
                 document.getElementById('statusFilter').value = '';
                 document.getElementById('sortFilter').value = 'date-desc';
@@ -807,36 +130,26 @@
                 applyFilters();
             }
 
-            // Apply filters and sorting
             function applyFilters() {
                 const statusFilter = document.getElementById('statusFilter').value;
                 const sortFilter = document.getElementById('sortFilter').value;
                 const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
 
-                // Filter orders - FIXED: Use orderItems instead of items
                 filteredOrders = ordersData.filter(order => {
                     const matchesStatus = !statusFilter || order.status === statusFilter;
                     const matchesSearch = !searchQuery ||
-                        (order.orderNumber && order.orderNumber.toLowerCase().includes(searchQuery)) ||
-                        (order.orderItems && order.orderItems.some(item =>
-                            item.productName && item.productName.toLowerCase().includes(searchQuery)
-                        ));
+                        (order.orderNumber?.toLowerCase().includes(searchQuery)) ||
+                        (order.orderItems?.some(item => item.productName?.toLowerCase().includes(searchQuery)));
                     return matchesStatus && matchesSearch;
                 });
 
-                // Sort orders
                 filteredOrders.sort((a, b) => {
                     switch (sortFilter) {
-                        case 'date-desc':
-                            return new Date(b.orderDate) - new Date(a.orderDate);
-                        case 'date-asc':
-                            return new Date(a.orderDate) - new Date(b.orderDate);
-                        case 'amount-desc':
-                            return (b.totalAmount || 0) - (a.totalAmount || 0);
-                        case 'amount-asc':
-                            return (a.totalAmount || 0) - (b.totalAmount || 0);
-                        default:
-                            return 0;
+                        case 'date-desc': return new Date(b.orderDate) - new Date(a.orderDate);
+                        case 'date-asc': return new Date(a.orderDate) - new Date(b.orderDate);
+                        case 'amount-desc': return (b.totalAmount || 0) - (a.totalAmount || 0);
+                        case 'amount-asc': return (a.totalAmount || 0) - (b.totalAmount || 0);
+                        default: return 0;
                     }
                 });
 
@@ -844,7 +157,6 @@
                 renderOrders();
             }
 
-            // Get status class
             function getStatusClass(status) {
                 const statusMap = {
                     'PENDING': 'status-pending',
@@ -856,30 +168,23 @@
                 return statusMap[status] || 'status-pending';
             }
 
-            // Format date
             function formatDate(dateString) {
                 if (!dateString) return 'N/A';
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
                 });
             }
 
-            // Render orders
             function renderOrders() {
                 const container = document.getElementById('ordersContent');
                 const ordersCount = document.getElementById('ordersCount');
 
-                // Check if no orders at all
                 if (!ordersData || ordersData.length === 0) {
                     ordersCount.textContent = '0 Orders';
                     renderEmptyOrders();
                     return;
                 }
 
-                // Check if no orders match filters
                 if (!filteredOrders || filteredOrders.length === 0) {
                     ordersCount.textContent = '0 Orders';
                     renderNoFilterResults();
@@ -888,21 +193,19 @@
 
                 ordersCount.textContent = `${filteredOrders.length} Order${filteredOrders.length > 1 ? 's' : ''}`;
 
-                // Pagination
                 const startIndex = (currentPage - 1) * ordersPerPage;
-                const endIndex = startIndex + ordersPerPage;
-                const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+                const paginatedOrders = filteredOrders.slice(startIndex, startIndex + ordersPerPage);
                 const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
                 container.innerHTML = `
-                    <div class="orders-list">
+                    <div class="items-list">
                         ${paginatedOrders.map((order, index) => `
-                            <div class="order-card" style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${index * 0.1}s;">
-                                <div class="order-header">
-                                    <div class="order-info">
+                            <div class="user-card hoverable animate-fadeInUp" style="animation-delay: ${index * 0.1}s;">
+                                <div class="card-header">
+                                    <div class="info-grid">
                                         <div class="info-item">
                                             <span class="info-label">Order ID</span>
-                                            <span class="info-value order-id">#${order.orderNumber || order.id}</span>
+                                            <span class="info-value highlight">#${order.orderNumber || order.id}</span>
                                         </div>
                                         <div class="info-item">
                                             <span class="info-label">Date</span>
@@ -913,17 +216,17 @@
                                             <span class="info-value">${order.orderItems?.length || 0} Item(s)</span>
                                         </div>
                                     </div>
-                                    <span class="order-status ${getStatusClass(order.status)}">
+                                    <span class="status-badge ${getStatusClass(order.status)}">
                                         ${order.status || 'PENDING'}
                                     </span>
                                 </div>
 
-                                <div class="order-body">
-                                    <div class="order-items">
-                                        ${order.orderItems && order.orderItems.length > 0 ?
+                                <div class="card-body">
+                                    <div class="items-list">
+                                        ${order.orderItems?.length > 0 ?
                         order.orderItems.map(item => `
-                                                <div class="order-item">
-                                                    <div class="item-image">
+                                                <div class="item-card no-hover">
+                                                    <div class="item-image small">
                                                         <img src="${item.productImage || '/images/placeholder.png'}" 
                                                              alt="${item.productName || 'Product'}"
                                                              onerror="this.src='/images/placeholder.png'">
@@ -935,7 +238,9 @@
                                                             <span><i class="fas fa-tag"></i> $${(item.unitPrice || 0).toFixed(2)}</span>
                                                         </div>
                                                     </div>
-                                                    <div class="item-price">$${((item.unitPrice || 0) * (item.quantity || 1)).toFixed(2)}</div>
+                                                    <div class="item-pricing">
+                                                        <div class="item-total-price">$${((item.unitPrice || 0) * (item.quantity || 1)).toFixed(2)}</div>
+                                                    </div>
                                                 </div>
                                             `).join('')
                         : '<p class="text-muted">No items available</p>'
@@ -943,26 +248,26 @@
                                     </div>
                                 </div>
 
-                                <div class="order-footer">
-                                    <div class="order-total">
+                                <div class="card-footer">
+                                    <div class="total-display">
                                         <span class="total-label">Total Amount</span>
                                         <span class="total-amount">$${(order.totalAmount || 0).toFixed(2)}</span>
                                     </div>
-                                    <div class="order-actions">
-                                        <button class="action-btn btn-primary" onclick="viewOrderDetails(${order.id})">
+                                    <div class="action-buttons horizontal">
+                                        <button class="btn btn-primary btn-sm" onclick="viewOrderDetails(${order.id})">
                                             <i class="fas fa-eye"></i> View Details
                                         </button>
                                         ${order.status === 'DELIVERED' ? `
-                                            <button class="action-btn btn-secondary" onclick="reorder(${order.id})">
+                                            <button class="btn btn-secondary btn-sm" onclick="reorder(${order.id})">
                                                 <i class="fas fa-redo"></i> Reorder
                                             </button>
                                         ` : ''}
                                         ${order.status === 'PENDING' || order.status === 'PROCESSING' ? `
-                                            <button class="action-btn btn-danger" onclick="cancelOrder(${order.id})">
+                                            <button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})">
                                                 <i class="fas fa-times"></i> Cancel
                                             </button>
                                         ` : ''}
-                                        <button class="action-btn btn-secondary" onclick="downloadInvoice(${order.id})">
+                                        <button class="btn btn-secondary btn-sm" onclick="downloadInvoice(${order.id})">
                                             <i class="fas fa-download"></i> Invoice
                                         </button>
                                     </div>
@@ -977,8 +282,7 @@
                                 <i class="fas fa-chevron-left"></i>
                             </button>
                             ${Array.from({ length: totalPages }, (_, i) => i + 1).map(page => `
-                                <button class="page-btn ${page === currentPage ? 'active' : ''}" 
-                                        onclick="changePage(${page})">
+                                <button class="page-btn ${page === currentPage ? 'active' : ''}" onclick="changePage(${page})">
                                     ${page}
                                 </button>
                             `).join('')}
@@ -990,52 +294,44 @@
                 `;
             }
 
-            // Render empty orders (no orders at all)
             function renderEmptyOrders() {
-                const container = document.getElementById('ordersContent');
-                container.innerHTML = `
-                    <div class="empty-orders">
+                document.getElementById('ordersContent').innerHTML = `
+                    <div class="empty-state">
                         <i class="fas fa-shopping-bag empty-icon"></i>
                         <h2>No orders yet</h2>
                         <p>Start shopping and your orders will appear here</p>
-                        <a href="/" class="shop-now-btn">
+                        <a href="/" class="btn btn-primary btn-lg">
                             <i class="fas fa-shopping-cart"></i> Start Shopping
                         </a>
                     </div>
                 `;
             }
 
-            // Render no filter results (orders exist but none match filter)
             function renderNoFilterResults() {
-                const container = document.getElementById('ordersContent');
-                container.innerHTML = `
-                    <div class="no-filter-results">
+                document.getElementById('ordersContent').innerHTML = `
+                    <div class="no-results">
                         <i class="fas fa-filter filter-icon"></i>
                         <h3>No orders match your filters</h3>
                         <p>Try adjusting your search or filter criteria</p>
-                        <button class="clear-filters-btn" onclick="clearFilters()">
+                        <button class="btn btn-outline-primary" onclick="clearFilters()">
                             <i class="fas fa-times"></i> Clear Filters
                         </button>
                     </div>
                 `;
             }
 
-            // Change page
             function changePage(page) {
                 currentPage = page;
                 renderOrders();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // View order details
             function viewOrderDetails(orderId) {
                 window.location.href = `/user/orders/${orderId}`;
             }
 
-            // Reorder
             async function reorder(orderId) {
                 if (!confirm('Add all items from this order to your cart?')) return;
-
                 try {
                     setLoading(true);
                     const response = await fetch(`/api/orders/${orderId}/reorder`, {
@@ -1045,9 +341,7 @@
                             'X-CSRF-TOKEN': getCsrfToken()
                         }
                     });
-
                     if (!response.ok) throw new Error('Failed to reorder');
-
                     showToast('Items added to cart successfully');
                     setTimeout(() => window.location.href = '/user/cart', 1500);
                 } catch (error) {
@@ -1058,10 +352,8 @@
                 }
             }
 
-            // Cancel order
             async function cancelOrder(orderId) {
                 if (!confirm('Are you sure you want to cancel this order?')) return;
-
                 try {
                     setLoading(true);
                     const response = await fetch(`/api/orders/${orderId}/cancel`, {
@@ -1071,12 +363,10 @@
                             'X-CSRF-TOKEN': getCsrfToken()
                         }
                     });
-
                     const result = await response.json();
-
                     if (response.ok && result.success) {
                         showToast('Order cancelled successfully');
-                        await fetchOrders(); // Refresh orders list
+                        await fetchOrders();
                     } else {
                         showToast(result.message || 'Failed to cancel order', 'error');
                     }
@@ -1088,16 +378,13 @@
                 }
             }
 
-            // Download invoice
             function downloadInvoice(orderId) {
                 showToast('Invoice download feature coming soon!', 'error');
-                // TODO: Implement invoice download
-                // window.location.href = `/api/orders/${orderId}/invoice`;
             }
 
-            document.addEventListener("DOMContentLoaded", function () {
-                fetchOrders();
-            });
+            document.addEventListener("DOMContentLoaded", fetchOrders);
         </script>
-    </div>
-</div>
+    </section>
+</body>
+
+</html>
