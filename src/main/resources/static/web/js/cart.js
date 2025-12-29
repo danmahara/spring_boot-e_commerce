@@ -301,24 +301,45 @@ class CartManager {
         event.preventDefault();
 
         if (!this.isLoggedIn()) {
-            window.location.href = `${this.loginUrl}?redirect=${encodeURIComponent(window.location.pathname)}`;
+            window.location.href =
+                `${this.loginUrl}?redirect=${encodeURIComponent(window.location.pathname)}`;
             return;
         }
 
-        // Toggle wishlist icon
         const btn = event.currentTarget;
-        const icon = btn.querySelector('i');
+        const icon = btn.querySelector("i");
 
-        if (icon.classList.contains('far')) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            this.showNotification('Added to wishlist!', 'success');
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            this.showNotification('Removed from wishlist', 'info');
-        }
+        const userId = btn.dataset.userId;
+        const productId = btn.dataset.productId;
+
+        fetch("/api/wishlist/toggle", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]')?.content
+            },
+            body: JSON.stringify({ userId, productId })
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (!result.success) throw new Error();
+
+                if (result.data === true) {
+                    icon.classList.remove("far");
+                    icon.classList.add("fas");
+                    this.showNotification("Added to wishlist!", "success");
+                } else {
+                    icon.classList.remove("fas");
+                    icon.classList.add("far");
+                    this.showNotification("Removed from wishlist", "success");
+                }
+            })
+            .catch(() => {
+                this.showNotification("Something went wrong", "error");
+            });
     }
+
+
 
     /**
      * Process pending cart action after login

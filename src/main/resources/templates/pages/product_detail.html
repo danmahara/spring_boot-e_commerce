@@ -150,8 +150,9 @@
                                 <span th:text="${product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}">Add to
                                     Cart</span>
                             </button>
-                            <button type="button" class="btn btn-outline btn-wishlist">
-                                <i class="far fa-heart"></i>
+                            <button type="button" id="addToWishList" class="btn btn-outline btn-wishlist"
+                                th:attr="data-user-id=${user?.id}, data-product-id=${product.id}">
+                                <i th:class="${isWishlisted} ? 'fas fa-heart' : 'far fa-heart'"></i>
                             </button>
                         </div>
 
