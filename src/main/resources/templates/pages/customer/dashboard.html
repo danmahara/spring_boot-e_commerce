@@ -311,7 +311,7 @@
                         <div class="stat-icon saved">
                             <i class="fas fa-heart"></i>
                         </div>
-                        <div class="stat-value" th:text="${savedItems ?: '0'}">8</div>
+                        <div class="stat-value" th:text="${wishlistCount ?: '0'}">8</div>
                         <div class="stat-label">Saved Items</div>
                     </div>
                 </div>
@@ -361,7 +361,7 @@
 
                         <button class="action-btn" onclick="location.href='/user/cart'">
                             <i class="fas fa-shopping-cart"></i>
-                                My Carts
+                            My Carts
                         </button>
 
                         <button class="action-btn" onclick="location.href='/user/orders'">
