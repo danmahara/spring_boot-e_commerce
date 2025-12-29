@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.dtos.response.AddressResponse;
 import com.ecommerce.dtos.response.ApiResponse;
+import com.ecommerce.models.User;
+import com.ecommerce.models.UserAddress;
 import com.ecommerce.requests.AddressRequest;
 import com.ecommerce.security.CustomUserDetails;
 import com.ecommerce.services.AddressService;
+import com.ecommerce.services.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +61,21 @@ public class AddressRestController {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Failed to retrieve address", e.getMessage()));
         }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse<List<AddressResponse>>> getAddressByUserId(@PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        try {
+            List<AddressResponse> userAddresses = addressService.getAddressesByUserId(userId);
+            return ResponseEntity.ok(ApiResponse.success("Address Fethed successfully", userAddresses));
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Failed to fetch address", e.getMessage()));
+
+        }
+
     }
 
     /**

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ecommerce.models.Order;
 import com.ecommerce.models.User;
+import com.ecommerce.repository.WishListRepository;
 import com.ecommerce.services.OrderService;
 import com.ecommerce.services.UserService;
 
@@ -25,6 +26,9 @@ public class UserDashboardController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private WishListRepository wishListRepository;
 
     /**
      * Display customer dashboard
@@ -56,6 +60,7 @@ public class UserDashboardController {
         model.addAttribute("totalSpent", totalSpent != null ? totalSpent : BigDecimal.ZERO);
         model.addAttribute("pendingOrders", pendingOrders);
         model.addAttribute("savedItems", savedItems);
+        model.addAttribute("wishlistCount", wishListRepository.countByUser(user));
 
         return "pages/customer/dashboard";
 

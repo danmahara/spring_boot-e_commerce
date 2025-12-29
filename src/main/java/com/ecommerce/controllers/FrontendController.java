@@ -9,17 +9,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ecommerce.enums.PageTemplate;
+import com.ecommerce.models.User;
 import com.ecommerce.models.admin.Page;
 import com.ecommerce.models.admin.Product;
+import com.ecommerce.repository.WishListRepository;
 import com.ecommerce.services.FrontendService;
+import com.ecommerce.services.UserService;
+import com.ecommerce.utils.SecurityUtils;
 
 @Controller
 public class FrontendController {
 
     private final FrontendService frontendService;
+    private final SecurityUtils securityUtils;
+    private final UserService userService;
+    private final WishListRepository wishListRepository;
 
-    FrontendController(FrontendService frontendService) {
+    FrontendController(FrontendService frontendService, SecurityUtils securityUtils, UserService userService,
+            WishListRepository wishListRepository) {
         this.frontendService = frontendService;
+        this.securityUtils = securityUtils;
+        this.userService = userService;
+        this.wishListRepository = wishListRepository;
     }
 
     @GetMapping("/")
@@ -37,6 +48,14 @@ public class FrontendController {
     public String getProductDetailPage(@PathVariable String slug, Model model) {
 
         Product product = frontendService.findProductBySlug(slug);
+
+        System.out.println("LOgged in user: " + securityUtils.getCurrentUsername());
+        User user = userService.findByEmail(securityUtils.getCurrentUsername());
+        if (user != null) {
+            model.addAttribute("user", user);
+            boolean isWishlisted = wishListRepository.existsByUserIdAndProductId(user.getId(), product.getId());
+            model.addAttribute("isWishlisted", isWishlisted);
+        }
 
         model.addAttribute("product", product);
         System.out.println("Product: " + product.getName());
