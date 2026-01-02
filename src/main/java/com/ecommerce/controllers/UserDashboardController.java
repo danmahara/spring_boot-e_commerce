@@ -48,7 +48,7 @@ public class UserDashboardController {
         List<Order> recentOrders = orderService.findRecentOrdersByUser(user.getId(), 5);
 
         // Calculate statistics
-        int totalOrders = orderService.countOrdersByUser(user.getId());
+        int totalOrders = orderService.countOrdersByUserId(user.getId());
         BigDecimal totalSpent = orderService.calculateTotalSpentByUser(user.getId());
         int pendingOrders = orderService.countPendingOrdersByUser(user.getId());
         int savedItems = 0; // Implement wishlist count if you have wishlist feature
@@ -64,22 +64,6 @@ public class UserDashboardController {
 
         return "pages/customer/dashboard";
 
-    }
-
-    /**
-     * Display user profile
-     */
-    @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        User user = userService.findByEmail(userDetails.getUsername());
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        model.addAttribute("user", user);
-
-        return "pages/customer/profile";
     }
 
     /**
