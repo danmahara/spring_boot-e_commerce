@@ -185,6 +185,15 @@
                 color: #be185d;
             }
 
+            .stat-icon.cart {
+                background: linear-gradient(135deg, #4facfe, #00f2fe);
+            }
+
+            .stat-icon.cart i {
+                color: #ffffff;
+            }
+
+
             .stat-icon.reviews {
                 background: linear-gradient(135deg, #fef3c7, #fde68a);
                 color: #92400e;
@@ -512,28 +521,33 @@
                             </div>
                             <div class="profile-member-since">
                                 <i class="fas fa-calendar-alt"></i>
-                                Member since January 2023
+                                Member since
+                                <span th:text="${#temporals.format(user.createdAt,'MMMM yyy')}"></span>
                             </div>
                             <div class="profile-badges">
                                 <span class="profile-badge verified">
                                     <i class="fas fa-check-circle"></i>
                                     <span th:text="${user.status==true?'Verified':'Not Verified'}"></span>
                                 </span>
-                                <span class="profile-badge premium">
+
+                                <!-- <span class="profile-badge premium">
                                     <i class="fas fa-crown"></i> Premium Member
                                 </span>
                                 <span class="profile-badge">
                                     <i class="fas fa-star"></i> Top Reviewer
-                                </span>
+                                </span> -->
                             </div>
                         </div>
                         <div class="profile-actions">
-                            <button class="btn" onclick="openEditProfile()">
+                            <a href="/user/dashboard" class="btn">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <!-- <button class="btn" onclick="openEditProfile()">
                                 <i class="fas fa-edit"></i> Edit Profile
                             </button>
                             <button class="btn" onclick="window.location.href='/user/settings'">
                                 <i class="fas fa-cog"></i> Settings
-                            </button>
+                            </button> -->
                         </div>
                     </div>
                 </div>
@@ -548,6 +562,7 @@
                         <div class="stat-value" th:text="${userOrders}">0</div>
                         <div class="stat-label">Total Orders</div>
                     </div>
+
                     <div class="stat-card animate-fadeInUp" style="animation-delay: 0.15s;"
                         onclick="window.location.href='/user/wishlist'">
                         <div class="stat-icon wishlist">
@@ -556,21 +571,15 @@
                         <div class="stat-value" th:text="${userWishlists}">0</div>
                         <div class="stat-label">Wishlist Items</div>
                     </div>
-                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.2s;"
-                        onclick="window.location.href='/user/reviews'">
-                        <div class="stat-icon reviews">
-                            <i class="fas fa-star"></i>
+
+                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.15s;"
+                        onclick="window.location.href='/user/cart'">
+                        <div class="stat-icon cart">
+                            <i class="fas fa-shopping-cart"></i>
+
                         </div>
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">Reviews Given</div>
-                    </div>
-                    <div class="stat-card animate-fadeInUp" style="animation-delay: 0.25s;"
-                        onclick="window.location.href='/user/rewards'">
-                        <div class="stat-icon rewards">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <div class="stat-value">1,250</div>
-                        <div class="stat-label">Reward Points</div>
+                        <div class="stat-value" th:text="${userWishlists}">0</div>
+                        <div class="stat-label">Cart Items</div>
                     </div>
                 </div>
 
