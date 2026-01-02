@@ -67,23 +67,6 @@ public class UserDashboardController {
     }
 
     /**
-     * Display wishlist
-     */
-    @GetMapping("/wishlist")
-    public String wishlist(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        User user = userService.findByEmail(userDetails.getUsername());
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        // Implement wishlist logic here
-        model.addAttribute("user", user);
-
-        return "customer/wishlist";
-    }
-
-    /**
      * Display addresses
      */
     @GetMapping("/addresses")
