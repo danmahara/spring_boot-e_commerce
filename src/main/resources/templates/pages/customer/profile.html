@@ -545,7 +545,7 @@
                         <div class="stat-icon orders">
                             <i class="fas fa-shopping-bag"></i>
                         </div>
-                        <div class="stat-value">24</div>
+                        <div class="stat-value" th:text="${userOrders}">0</div>
                         <div class="stat-label">Total Orders</div>
                     </div>
                     <div class="stat-card animate-fadeInUp" style="animation-delay: 0.15s;"
@@ -553,7 +553,7 @@
                         <div class="stat-icon wishlist">
                             <i class="fas fa-heart"></i>
                         </div>
-                        <div class="stat-value">12</div>
+                        <div class="stat-value" th:text="${userWishlists}">0</div>
                         <div class="stat-label">Wishlist Items</div>
                     </div>
                     <div class="stat-card animate-fadeInUp" style="animation-delay: 0.2s;"
@@ -587,36 +587,20 @@
                             </div>
                             <div class="quick-action-label">Track Orders</div>
                         </a>
-                        <a href="/user/addresses" class="quick-action-card">
+                        <a href="#addressesSection" class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
                             <div class="quick-action-label">Manage Addresses</div>
                         </a>
-                        <a href="/user/payment-methods" class="quick-action-card">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-credit-card"></i>
-                            </div>
-                            <div class="quick-action-label">Payment Methods</div>
-                        </a>
+
                         <a href="/user/wishlist" class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-heart"></i>
                             </div>
                             <div class="quick-action-label">My Wishlist</div>
                         </a>
-                        <a href="/user/reviews" class="quick-action-card">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="quick-action-label">My Reviews</div>
-                        </a>
-                        <a href="/support" class="quick-action-card">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-headset"></i>
-                            </div>
-                            <div class="quick-action-label">Get Support</div>
-                        </a>
+
                     </div>
                 </div>
 
@@ -638,23 +622,23 @@
                                 <i class="fas fa-user"></i>
                                 Full Name
                             </div>
-                            <div class="info-row-value">John Doe</div>
+                            <div class="info-row-value" th:text="${user.fullName}">John Doe</div>
                         </div>
                         <div class="info-row">
                             <div class="info-row-label">
                                 <i class="fas fa-envelope"></i>
                                 Email Address
                             </div>
-                            <div class="info-row-value">john.doe@example.com</div>
+                            <div class="info-row-value" th:text="${user.email}">john.doe@example.com</div>
                         </div>
                         <div class="info-row">
                             <div class="info-row-label">
                                 <i class="fas fa-phone"></i>
                                 Phone Number
                             </div>
-                            <div class="info-row-value">+1 (555) 123-4567</div>
+                            <div class="info-row-value" th:text="${user.phone}">9800000000</div>
                         </div>
-                        <div class="info-row">
+                        <!-- <div class="info-row">
                             <div class="info-row-label">
                                 <i class="fas fa-birthday-cake"></i>
                                 Date of Birth
@@ -667,11 +651,11 @@
                                 Gender
                             </div>
                             <div class="info-row-value">Male</div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Recent Activity -->
-                    <div class="content-card animate-fadeInUp" style="animation-delay: 0.4s;">
+                    <!-- <div class="content-card animate-fadeInUp" style="animation-delay: 0.4s;">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="section-title mb-0">
                                 <i class="fas fa-clock"></i>
@@ -726,10 +710,10 @@
                                 <div class="activity-time">1 week ago</div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Default Address -->
-                    <div class="content-card animate-fadeInUp" style="animation-delay: 0.45s;">
+                    <div id="addressesSection" class="content-card animate-fadeInUp" style="animation-delay: 0.45s;">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="section-title mb-0">
                                 <i class="fas fa-map-marker-alt"></i>
@@ -743,11 +727,29 @@
 
                         </div>
                     </div>
+                    <style>
+                        #addressesSection {
+                            scroll-margin-top: 70px;
+                        }
+                    </style>
+                    <script>
+
+                        document.querySelector('a[href="#addressesSection"]').addEventListener('click', function (e) {
+                            e.preventDefault(); // prevent default jump
+
+                            const target = document.querySelector('#addressesSection');
+                            const navbarHeight = 70; // change this to your navbar height
+
+                            window.scrollTo({
+                                top: target.offsetTop - navbarHeight,
+                                behavior: 'smooth'
+                            });
+                        });
+
+                    </script>
 
                     <style>
-                        /* ============================================
-   MODAL STYLES
-   ============================================ */
+                        /* ================ MODAL STYLES ================ */
                         .modal-overlay {
                             position: fixed;
                             top: 0;

@@ -245,7 +245,7 @@ public class OrderService {
     /**
      * Count total orders by user
      */
-    public int countOrdersByUser(Long userId) {
+    public int countOrdersByUserId(Long userId) {
         return orderRepository.countByUserId(userId);
     }
 

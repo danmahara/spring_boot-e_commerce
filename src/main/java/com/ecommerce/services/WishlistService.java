@@ -61,4 +61,8 @@ public class WishlistService {
                     return true; // added
                 });
     }
+
+    public long countByUserId(Long id) {
+        return wishlistRepository.countByUserId(id);
+    }
 }
